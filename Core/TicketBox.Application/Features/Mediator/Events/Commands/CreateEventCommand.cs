@@ -1,14 +1,14 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TicketBox.Domain.Entities
+namespace TicketBox.Application.Features.Mediator.Events.Commands
 {
-    public class Event
+    public class CreateEventCommand : IRequest
     {
-        public int EventId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime EventDate { get; set; }
@@ -17,6 +17,6 @@ namespace TicketBox.Domain.Entities
         public decimal Price { get; set; }
         public string ImageUrl { get; set; }
         public int CategoryId { get; set; }
-        public Category Category { get; set; }
+
     }
 }
