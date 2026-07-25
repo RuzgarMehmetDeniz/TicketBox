@@ -27,7 +27,6 @@ namespace TicketBox.Application.Features.Mediator.Tickets.Handlers
             value.EventId = request.EventId;
             value.Price = request.Price;
             value.PurchaseDate = request.PurchaseDate;
-            value.AttendeeId = request.AttendeeId;
 
             await _context.SaveChangesAsync(cancellationToken);
         }

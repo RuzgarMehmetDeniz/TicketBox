@@ -25,7 +25,6 @@ namespace TicketBox.Application.Features.Mediator.Tickets.Handlers
             var values = new Ticket
             {
                 EventId = request.EventId,
-                AttendeeId = request.AttendeeId,
                 PurchaseDate = request.PurchaseDate,
                 Price = request.Price
             };

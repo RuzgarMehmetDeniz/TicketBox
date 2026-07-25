@@ -10,5 +10,9 @@ namespace TicketBox.Domain.Entities
     {
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
+        public string? IconUrl { get; set; }
+        public string? Description { get; set; }   // Kategori açıklaması
+        public bool IsActive { get; set; }          // Kategoriyi pasife alabilmek için
+        public ICollection<Event> Events { get; set; }
     }
 }

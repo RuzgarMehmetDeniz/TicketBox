@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TicketBox.Domain.Entities
 {
@@ -13,10 +9,20 @@ namespace TicketBox.Domain.Entities
         public int EventId { get; set; }
         public Event Event { get; set; }
 
-        public int AttendeeId { get; set; }
-        public Attendee Attendee { get; set; }
+        public string AppUserId { get; set; }
+        public AppUser AppUser { get; set; }
 
+        public string PNRCode { get; set; }
+        public string? TicketImageUrl { get; set; }
         public DateTime PurchaseDate { get; set; }
         public decimal Price { get; set; }
+        public string Status { get; set; }
+        public bool IsEmailSent { get; set; }
+
+        public int? CouponId { get; set; }             // Nullable - kupon kullanılmayabilir
+        public Coupon? Coupon { get; set; }
+
+        public Payment Payment { get; set; }
+        public Refund? Refund { get; set; }
     }
 }

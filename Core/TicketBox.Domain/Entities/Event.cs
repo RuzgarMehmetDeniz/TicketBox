@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TicketBox.Domain.Entities
 {
@@ -14,9 +11,21 @@ namespace TicketBox.Domain.Entities
         public DateTime EventDate { get; set; }
         public string Location { get; set; }
         public int Capacity { get; set; }
+        public int RemainingCapacity { get; set; }
         public decimal Price { get; set; }
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime CreatedDate { get; set; }
+
+        public string CreatedByUserId { get; set; }
+        public AppUser CreatedByUser { get; set; }
+
         public int CategoryId { get; set; }
         public Category Category { get; set; }
+
+        public ICollection<Ticket> Tickets { get; set; }
+        public ICollection<Review> Reviews { get; set; }
+        public ICollection<Favorite> Favorites { get; set; }
+        public ICollection<EventGallery> Galleries { get; set; }
     }
 }

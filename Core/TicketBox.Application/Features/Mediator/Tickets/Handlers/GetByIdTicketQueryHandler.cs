@@ -26,7 +26,6 @@ namespace TicketBox.Application.Features.Mediator.Tickets.Handlers
             {
                 TicketId = x.TicketId,
                 EventId = x.EventId,
-                AttendeeId = x.AttendeeId,
                 PurchaseDate = x.PurchaseDate,
                 Price = x.Price
             }).FirstOrDefaultAsync(cancellationToken);

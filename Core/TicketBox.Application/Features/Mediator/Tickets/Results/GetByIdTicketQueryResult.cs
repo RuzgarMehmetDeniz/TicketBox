@@ -14,9 +14,6 @@ namespace TicketBox.Application.Features.Mediator.Tickets.Results
         public int EventId { get; set; }
         public Event Event { get; set; }
 
-        public int AttendeeId { get; set; }
-        public Attendee Attendee { get; set; }
-
         public DateTime PurchaseDate { get; set; }
         public decimal Price { get; set; }
     }
