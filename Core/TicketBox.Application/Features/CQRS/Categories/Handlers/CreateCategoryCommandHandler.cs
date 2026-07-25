@@ -12,7 +12,7 @@ using TicketBox.Domain.Entities;
 
 namespace TicketBox.Application.Features.CQRS.Categories.Handlers
 {
-    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CategoryResult>
+    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, GetCategoryQueryResult>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -23,14 +23,14 @@ namespace TicketBox.Application.Features.CQRS.Categories.Handlers
             _mapper = mapper;
         }
 
-        public async Task<CategoryResult> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<GetCategoryQueryResult> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
             var category = _mapper.Map<Category>(request);
 
             await _unitOfWork.CategoryRepository.AddAsync(category);
             await _unitOfWork.SaveChangesAsync();
 
-            return _mapper.Map<CategoryResult>(category);
+            return _mapper.Map<GetCategoryQueryResult>(category);
         }
     }
 }

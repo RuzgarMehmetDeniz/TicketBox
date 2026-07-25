@@ -8,7 +8,7 @@ using TicketBox.Application.Features.CQRS.Categories.Results;
 
 namespace TicketBox.Application.Features.CQRS.Categories.Queries
 {
-    public class GetAllCategoriesQuery : IRequest<List<CategoryResult>>
+    public class GetAllCategoriesQuery : IRequest<List<GetCategoryQueryResult>>
     {
     }
 }

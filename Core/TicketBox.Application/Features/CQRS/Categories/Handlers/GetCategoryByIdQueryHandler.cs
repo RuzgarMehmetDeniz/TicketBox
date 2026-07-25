@@ -6,7 +6,7 @@ using TicketBox.Application.Features.Repository;
 
 namespace TicketBox.Application.Features.CQRS.Categories.Handlers
 {
-    public class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery, CategoryResult>
+    public class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery, GetCategoryByIdQueryResult>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -17,14 +17,14 @@ namespace TicketBox.Application.Features.CQRS.Categories.Handlers
             _mapper = mapper;
         }
 
-        public async Task<CategoryResult> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
+        public async Task<GetCategoryByIdQueryResult> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
         {
             var category = await _unitOfWork.CategoryRepository.GetByIdAsync(request.CategoryId);
 
             if (category == null)
                 throw new KeyNotFoundException($"Category with id {request.CategoryId} not found.");
 
-            return _mapper.Map<CategoryResult>(category);
+            return _mapper.Map<GetCategoryByIdQueryResult>(category);
         }
     }
 }

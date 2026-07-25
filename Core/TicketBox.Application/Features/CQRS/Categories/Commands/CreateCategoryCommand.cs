@@ -8,7 +8,7 @@ using TicketBox.Application.Features.CQRS.Categories.Results;
 
 namespace TicketBox.Application.Features.CQRS.Categories.Commands
 {
-    public class CreateCategoryCommand : IRequest<CategoryResult>
+    public class CreateCategoryCommand : IRequest<GetCategoryQueryResult>
     {
         public string CategoryName { get; set; }
         public string IconUrl { get; set; }

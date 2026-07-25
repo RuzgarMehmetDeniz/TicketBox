@@ -1,14 +1,12 @@
-﻿using MediatR;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TicketBox.Application.Features.CQRS.Categories.Results;
 
-namespace TicketBox.Application.Features.CQRS.Categories.Commands
+namespace TicketBox.Application.Features.CQRS.Categories.Results
 {
-    public class UpdateCategoryCommand : IRequest<GetCategoryQueryResult>
+    public class GetCategoryByIdQueryResult
     {
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
