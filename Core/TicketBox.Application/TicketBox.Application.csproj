@@ -5,6 +5,7 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="13.0.1" />
 		<PackageReference Include="FluentValidation" Version="12.1.1" />
 		<PackageReference Include="MediatR" Version="13.1.0" />
 	</ItemGroup>
@@ -12,8 +13,6 @@
 		<ProjectReference Include="..\..\Core\TicketBox.Domain\TicketBox.Domain.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<Folder Include="Features\CQRS\" />
-		<Folder Include="Features\Mapping\" />
 		<Folder Include="Features\Validation\" />
 		<Folder Include="Features\Repository\" />
 	</ItemGroup>
