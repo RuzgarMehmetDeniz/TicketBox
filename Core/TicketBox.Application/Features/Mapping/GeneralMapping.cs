@@ -1,15 +1,10 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TicketBox.Application.Features.CQRS.AppUsers.Commands;
 using TicketBox.Application.Features.CQRS.AppUsers.Results;
 using TicketBox.Application.Features.CQRS.Categories.Commands;
-using TicketBox.Application.Features.CQRS.Categories.Handlers;
-using TicketBox.Application.Features.CQRS.Categories.Queries;
 using TicketBox.Application.Features.CQRS.Categories.Results;
+using TicketBox.Application.Features.CQRS.Coupons.Commands;
+using TicketBox.Application.Features.CQRS.Coupons.Results;
 using TicketBox.Domain.Entities;
 
 namespace TicketBox.Application.Features.Mapping
@@ -23,18 +18,19 @@ namespace TicketBox.Application.Features.Mapping
             CreateMap<Category, UpdateCategoryCommand>().ReverseMap();
             CreateMap<Category, GetCategoryQueryResult>().ReverseMap();
             CreateMap<Category, GetCategoryByIdQueryResult>().ReverseMap();
+            CreateMap<GetCategoryByIdQueryResult, UpdateCategoryCommand>().ReverseMap();
 
-             //===== APPUSER =====
+            //===== APPUSER =====
             CreateMap<AppUser, GetAppUserByIdQueryResult>().ReverseMap();
             CreateMap<AppUser, GetAppUserQueryResult>().ReverseMap();       
             CreateMap<AppUser, UpdateAppUserCommand>().ReverseMap();       
-            CreateMap<AppUser, RegisterAppUserCommand>().ReverseMap();       
+            CreateMap<AppUser, RegisterAppUserCommand>().ReverseMap();
 
             //// ===== AUDITLOG =====
-            //CreateMap<AuditLog, AuditLogResult>().ReverseMap();
-            //CreateMap<AuditLog, CreateAuditLogCommand>().ReverseMap();     
-            //CreateMap<AuditLog, UpdateAuditLogCommand>().ReverseMap();     
-            //CreateMap<AuditLog, GetAuditLogByIdResult>().ReverseMap();     
+            CreateMap<Coupon, GetCouponQueryResult>().ReverseMap();
+            CreateMap<Coupon, GetCouponByIdQueryResult>().ReverseMap();
+            CreateMap<Coupon, CreateCouponCommand>().ReverseMap();
+            CreateMap<Coupon, UpdateCouponCommand>().ReverseMap();
 
             //// ===== CHATMESSAGE =====
             //CreateMap<ChatMessage, ChatMessageResult>().ReverseMap();

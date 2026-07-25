@@ -6,7 +6,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
-		<PackageReference Include="FluentValidation" Version="12.1.1" />
+		<PackageReference Include="FluentValidation" Version="11.11.0" />
 		<PackageReference Include="MediatR" Version="13.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.11" />
 	</ItemGroup>
@@ -14,7 +14,6 @@
 		<ProjectReference Include="..\..\Core\TicketBox.Domain\TicketBox.Domain.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<Folder Include="Features\Validation\" />
 		<Folder Include="Features\Repository\" />
 	</ItemGroup>
 </Project>

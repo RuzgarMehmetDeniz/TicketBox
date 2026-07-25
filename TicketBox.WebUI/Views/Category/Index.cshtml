@@ -1,0 +1,45 @@
+﻿@model List<GetCategoryQueryResult>
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Kategoriler</title>
+</head>
+<body>
+    <h2>Kategoriler</h2>
+
+    <a asp-controller="Category" asp-action="Create">Yeni Kategori Ekle</a>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Ad</th>
+                <th>Açıklama</th>
+                <th>Aktif mi</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Model)
+            {
+                <tr>
+                    <td>@category.CategoryName</td>
+                    <td>@category.Description</td>
+                    <td>@(category.IsActive ? "Evet" : "Hayır")</td>
+                    <td>
+                        <a asp-controller="Category" asp-action="Details" asp-route-id="@category.CategoryId">Detay</a>
+                        <a asp-controller="Category" asp-action="Update" asp-route-id="@category.CategoryId">Güncelle</a>
+                        <form asp-controller="Category" asp-action="Delete" asp-route-id="@category.CategoryId" method="post" style="display:inline">
+                            <button type="submit" onclick="return confirm('Silmek istediğinize emin misiniz?')">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,63 @@
+﻿@model TicketBox.Application.Features.CQRS.AppUsers.Commands.RegisterAppUserCommand
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Kayıt Ol</title>
+</head>
+<body>
+    <h2>Kayıt Ol</h2>
+
+    <div asp-validation-summary="All"></div>
+
+    <form asp-controller="Register" asp-action="Index" method="post">
+        <div>
+            <label>Ad</label>
+            <input asp-for="Name" />
+            <span asp-validation-for="Name"></span>
+        </div>
+        <div>
+            <label>Soyad</label>
+            <input asp-for="Surname" />
+            <span asp-validation-for="Surname"></span>
+        </div>
+        <div>
+            <label>Kullanıcı Adı</label>
+            <input asp-for="UserName" />
+            <span asp-validation-for="UserName"></span>
+        </div>
+        <div>
+            <label>Yaş</label>
+            <input asp-for="Age" type="number" />
+            <span asp-validation-for="Age"></span>
+        </div>
+        <div>
+            <label>Şehir</label>
+            <input asp-for="City" />
+            <span asp-validation-for="City"></span>
+        </div>
+        <div>
+            <label>Ülke</label>
+            <input asp-for="Country" />
+            <span asp-validation-for="Country"></span>
+        </div>
+        <div>
+            <label>Email</label>
+            <input asp-for="Email" type="email" />
+            <span asp-validation-for="Email"></span>
+        </div>
+        <div>
+            <label>Şifre</label>
+            <input asp-for="Password" type="password" />
+            <span asp-validation-for="Password"></span>
+        </div>
+        <button type="submit">Kayıt Ol</button>
+    </form>
+
+    <a asp-controller="Login" asp-action="Index">Zaten hesabın var mı? Giriş yap</a>
+</body>
+</html>

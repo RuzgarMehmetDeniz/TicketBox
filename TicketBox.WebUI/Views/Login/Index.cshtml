@@ -1,0 +1,33 @@
+﻿@model TicketBox.Application.Features.CQRS.AppUsers.Commands.LoginAppUserCommand
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Giriş Yap</title>
+</head>
+<body>
+    <h2>Giriş Yap</h2>
+
+    <div asp-validation-summary="All"></div>
+
+    <form asp-controller="Login" asp-action="Index" method="post">
+        <div>
+            <label>Kullanıcı Adı</label>
+            <input asp-for="UserName" />
+            <span asp-validation-for="UserName"></span>
+        </div>
+        <div>
+            <label>Şifre</label>
+            <input asp-for="Password" type="password" />
+            <span asp-validation-for="Password"></span>
+        </div>
+        <button type="submit">Giriş Yap</button>
+    </form>
+
+    <a href="/Register/Index/"> Hesabın yokmu? Kayıt Ol</a>
+</body>
+</html>

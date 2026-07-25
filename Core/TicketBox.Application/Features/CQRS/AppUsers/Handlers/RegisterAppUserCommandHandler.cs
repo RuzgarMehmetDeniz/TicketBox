@@ -22,8 +22,8 @@ namespace TicketBox.Application.Features.CQRS.AppUsers.Handlers
         public async Task<bool> Handle(RegisterAppUserCommand request, CancellationToken cancellationToken)
         {
             var user = _mapper.Map<AppUser>(request);
-            user.UserName = request.Email;
-
+            user.UserName = request.UserName;
+            user.CreatedDate = DateTime.UtcNow;
             var result = await _userManager.CreateAsync(user, request.Password);
             return result.Succeeded;
         }

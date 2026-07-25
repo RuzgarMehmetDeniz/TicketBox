@@ -1,12 +1,16 @@
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 using TicketBox.Application.Features.Repository;
+using TicketBox.Application.Validation.CategoryValidation;
 using TicketBox.Domain.Entities;
 using TicketBox.Persistance.Context;
 using TicketBox.Persistance.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// DbContext
 builder.Services.AddDbContext<TicketContext>();
 
 // Identity
@@ -17,21 +21,43 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
 })
-    .AddEntityFrameworkStores<TicketContext>()
-    .AddDefaultTokenProviders();
+.AddEntityFrameworkStores<TicketContext>()
+.AddDefaultTokenProviders();
 
-// Repository & Unit of Work
+// Repository
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // MediatR
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(
-    typeof(TicketBox.Application.AssemblyReference).Assembly));
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(TicketBox.Application.AssemblyReference).Assembly);
+});
 
-builder.Services.AddControllersWithViews();
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(TicketBox.Application.AssemblyReference).Assembly);
+
+// FluentValidation
+builder.Services.AddControllersWithViews()
+    .AddFluentValidation(fv =>
+    {
+        fv.RegisterValidatorsFromAssemblyContaining<CreateCategoryValidator>();
+    });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Türkçe Kültür
+var culture = new CultureInfo("tr-TR");
+
+CultureInfo.DefaultThreadCurrentCulture = culture;
+CultureInfo.DefaultThreadCurrentUICulture = culture;
+
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(culture),
+    SupportedCultures = new[] { culture },
+    SupportedUICultures = new[] { culture }
+});
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -43,7 +69,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication();   // Authorization'dan ÖNCE gelmeli
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
