@@ -11,7 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\TicketBox.Application\TicketBox.Application.csproj" />
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure\TicketBox.Persistance\TicketBox.Persistance.csproj" />
   </ItemGroup>
 
 </Project>

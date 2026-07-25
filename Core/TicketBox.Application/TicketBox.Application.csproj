@@ -1,17 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MediatR" Version="13.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Infrastructure\TicketBox.Persistance\TicketBox.Persistance.csproj" />
-  </ItemGroup>
-
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="FluentValidation" Version="12.1.1" />
+		<PackageReference Include="MediatR" Version="13.1.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Core\TicketBox.Domain\TicketBox.Domain.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Features\CQRS\" />
+		<Folder Include="Features\Mapping\" />
+		<Folder Include="Features\Validation\" />
+		<Folder Include="Features\Repository\" />
+	</ItemGroup>
 </Project>

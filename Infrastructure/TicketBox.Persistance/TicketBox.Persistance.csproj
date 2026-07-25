@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\TicketBox.Domain\TicketBox.Domain.csproj" />
+    <ProjectReference Include="..\..\Core\TicketBox.Application\TicketBox.Application.csproj" />
   </ItemGroup>
 
 </Project>
