@@ -37,20 +37,23 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddAutoMapper(typeof(TicketBox.Application.AssemblyReference).Assembly);
 
 // FluentValidation
-builder.Services.AddControllersWithViews()
+builder.Services.AddControllersWithViews(options =>
+{
+    // Non-nullable string alanlar için otomatik [Required] davranýþýný kapat
+    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+})
     .AddFluentValidation(fv =>
     {
         fv.RegisterValidatorsFromAssemblyContaining<CreateCategoryValidator>();
+        fv.DisableDataAnnotationsValidation = true; // Sadece FluentValidation çalýþsýn
     });
 
 var app = builder.Build();
 
 // Türkçe Kültür
 var culture = new CultureInfo("tr-TR");
-
 CultureInfo.DefaultThreadCurrentCulture = culture;
 CultureInfo.DefaultThreadCurrentUICulture = culture;
-
 app.UseRequestLocalization(new RequestLocalizationOptions
 {
     DefaultRequestCulture = new RequestCulture(culture),
