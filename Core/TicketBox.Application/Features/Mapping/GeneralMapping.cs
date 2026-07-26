@@ -11,8 +11,20 @@ using TicketBox.Application.Features.CQRS.ChatSessions.Commands;
 using TicketBox.Application.Features.CQRS.ChatSessions.Results;
 using TicketBox.Application.Features.CQRS.Coupons.Commands;
 using TicketBox.Application.Features.CQRS.Coupons.Results;
+using TicketBox.Application.Features.CQRS.EventGalleries.Commands;
+using TicketBox.Application.Features.CQRS.EventGalleries.Results;
+using TicketBox.Application.Features.CQRS.Events.Commands;
+using TicketBox.Application.Features.CQRS.Events.Results;
 using TicketBox.Application.Features.CQRS.Notifications.Commands;
 using TicketBox.Application.Features.CQRS.Notifications.Results;
+using TicketBox.Application.Features.CQRS.Payments.Commands;
+using TicketBox.Application.Features.CQRS.Payments.Results;
+using TicketBox.Application.Features.CQRS.Refunds.Commands;
+using TicketBox.Application.Features.CQRS.Refunds.Results;
+using TicketBox.Application.Features.CQRS.Reviews.Commands;
+using TicketBox.Application.Features.CQRS.Reviews.Results;
+using TicketBox.Application.Features.CQRS.Tickets.Commands;
+using TicketBox.Application.Features.CQRS.Tickets.Results;
 using TicketBox.Domain.Entities;
 
 namespace TicketBox.Application.Features.Mapping
@@ -21,14 +33,14 @@ namespace TicketBox.Application.Features.Mapping
     {
         public GeneralMapping()
         {
-            // ===== CATEGORY =====
+            //// ===== CATEGORY =====
             CreateMap<Category, CreateCategoryCommand>().ReverseMap();
             CreateMap<Category, UpdateCategoryCommand>().ReverseMap();
             CreateMap<Category, GetCategoryQueryResult>().ReverseMap();
             CreateMap<Category, GetCategoryByIdQueryResult>().ReverseMap();
             CreateMap<GetCategoryByIdQueryResult, UpdateCategoryCommand>().ReverseMap();
 
-            //===== APPUSER =====
+            //// ===== APPUSER =====
             CreateMap<AppUser, GetAppUserByIdQueryResult>().ReverseMap();
             CreateMap<AppUser, GetAppUserQueryResult>().ReverseMap();       
             CreateMap<AppUser, UpdateAppUserCommand>().ReverseMap();       
@@ -46,61 +58,58 @@ namespace TicketBox.Application.Features.Mapping
             CreateMap<AuditLog, GetAuditLogQueryResult>().ReverseMap();
             CreateMap<AuditLog, GetAuditLogByIdQueryResult>().ReverseMap();
 
-            // ===== NOTIFICATION =====
+            //// ===== NOTIFICATION =====
             CreateMap<Notification, CreateNotificationCommand>().ReverseMap();
             CreateMap<Notification, UpdateNotificationCommand>().ReverseMap();
             CreateMap<Notification, GetNotificationQueryResult>().ReverseMap();
             CreateMap<Notification, GetNotificationByIdQueryResult>().ReverseMap();
 
-            // ===== CHATSESSION =====
+            //// ===== CHATSESSION =====
             CreateMap<CreateChatSessionCommand, ChatSession>().ReverseMap();
             CreateMap<ChatSession, UpdateChatSessionCommand>().ReverseMap();
             CreateMap<ChatSession, GetChatSessionQueryResult>().ReverseMap();
             CreateMap<ChatSession, GetChatSessionByIdQueryResult>().ReverseMap();
 
-            // ===== CHATMESSAGE =====
+            //// ===== CHATMESSAGE =====
             CreateMap<CreateChatMessageCommand, ChatMessage>().ReverseMap();
             CreateMap<ChatMessage, UpdateChatMessageCommand>().ReverseMap();
             CreateMap<ChatMessage, GetChatMessageQueryResult>().ReverseMap();
             CreateMap<ChatMessage, GetChatMessageByIdQueryResult>().ReverseMap();
 
-            //// ===== CHATSESSION =====
-            //CreateMap<ChatSession, ChatSessionResult>().ReverseMap();
-            //CreateMap<ChatSession, CreateChatSessionCommand>().ReverseMap();   
-            //CreateMap<ChatSession, UpdateChatSessionCommand>().ReverseMap();   
-            //CreateMap<ChatSession, GetChatSessionByIdResult>().ReverseMap();   
-
-            //// ===== COUPON =====
-            //CreateMap<Coupon, CouponResult>().ReverseMap();
-            //CreateMap<Coupon, CreateCouponCommand>().ReverseMap();         
-            //CreateMap<Coupon, UpdateCouponCommand>().ReverseMap();         
-            //CreateMap<Coupon, GetCouponByIdResult>().ReverseMap();         
-
             //// ===== EVENT =====
-            //CreateMap<Event, EventResult>()
-            //    .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName))
-            //    .ReverseMap()
-            //    .ForMember(dest => dest.Category, opt => opt.Ignore());
-            //CreateMap<Event, CreateEventCommand>().ReverseMap();           
-            //CreateMap<Event, UpdateEventCommand>().ReverseMap();           
-            //CreateMap<Event, GetEventByIdResult>().ReverseMap();           
+            CreateMap<Event, CreateEventCommand>().ReverseMap();
+            CreateMap<Event, UpdateEventCommand>().ReverseMap();
+            CreateMap<Event, GetEventQueryResult>().ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName)).ReverseMap();
+            CreateMap<Event, GetEventByIdQueryResult>().ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName)).ReverseMap();
+
+            //// ===== TICKET =====
+            CreateMap<Ticket , CreateTicketCommand>().ReverseMap();
+            CreateMap<Ticket, UpdateTicketCommand>().ReverseMap();
+            CreateMap<Ticket, GetTicketQueryResult>().ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title)).ReverseMap();
+            CreateMap<Ticket, GetTicketByIdQueryResult>().ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title)).ReverseMap();
+
+            //// ===== PAYMENT =====
+            CreateMap<Payment,CreatePaymentCommand>().ReverseMap();
+            CreateMap<Payment, UpdatePaymentCommand>().ReverseMap();
+            CreateMap<Payment, GetPaymentQueryResult>().ForMember(dest => dest.PNRCode, opt => opt.MapFrom(src => src.Ticket.PNRCode)).ReverseMap();
+            CreateMap<Payment, GetPaymentByIdQueryResult>().ForMember(dest => dest.PNRCode, opt => opt.MapFrom(src => src.Ticket.PNRCode)).ReverseMap();
+
+            //// ===== REFUND =====
+            CreateMap<CreateRefundCommand, Refund>().ReverseMap();
+            CreateMap<Refund, GetRefundQueryResult>().ForMember(dest => dest.PNRCode, opt => opt.MapFrom(src => src.Ticket.PNRCode)).ReverseMap();
+            CreateMap<Refund, GetRefundByIdQueryResult>().ForMember(dest => dest.PNRCode, opt => opt.MapFrom(src => src.Ticket.PNRCode)).ReverseMap();
+
+            //// ===== REVIEW =====
+            CreateMap<CreateReviewCommand, Review>().ReverseMap();
+            CreateMap<Review, UpdateReviewCommand>().ReverseMap();
+            CreateMap<Review, GetReviewQueryResult>().ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title)).ReverseMap();
+            CreateMap<Review, GetReviewByIdQueryResult>().ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title)).ReverseMap();
 
             //// ===== EVENTGALLERY =====
-            //CreateMap<EventGallery, EventGalleryResult>().ReverseMap();
-            //CreateMap<EventGallery, CreateEventGalleryCommand>().ReverseMap();  
-            //CreateMap<EventGallery, UpdateEventGalleryCommand>().ReverseMap();  
-            //CreateMap<EventGallery, GetEventGalleryByIdResult>().ReverseMap();  
-
-            //// ===== FAVORITE =====
-            //CreateMap<Favorite, FavoriteResult>().ReverseMap();
-            //CreateMap<Favorite, CreateFavoriteCommand>().ReverseMap();     
-            //CreateMap<Favorite, GetFavoriteByIdResult>().ReverseMap();     
-
-            //// ===== NOTIFICATION =====
-            //CreateMap<Notification, NotificationResult>().ReverseMap();
-            //CreateMap<Notification, CreateNotificationCommand>().ReverseMap(); 
-            //CreateMap<Notification, UpdateNotificationCommand>().ReverseMap(); 
-            //CreateMap<Notification, GetNotificationByIdResult>().ReverseMap(); 
+            CreateMap<EventGallery,CreateEventGalleryCommand>().ReverseMap();
+            CreateMap<EventGallery, UpdateEventGalleryCommand>().ReverseMap();
+            CreateMap<EventGallery, GetEventGalleryQueryResult>().ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title)).ReverseMap();
+            CreateMap<EventGallery, GetEventGalleryByIdQueryResult>().ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title)).ReverseMap();
 
             //// ===== PAYMENT =====
             //CreateMap<Payment, PaymentResult>().ReverseMap();
