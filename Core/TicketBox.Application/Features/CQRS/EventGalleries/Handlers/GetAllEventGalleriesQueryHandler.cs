@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TicketBox.Application.Features.CQRS.EventGalleries.Queries;
 using TicketBox.Application.Features.CQRS.EventGalleries.Results;
 using TicketBox.Application.Features.Repository;
+using TicketBox.Application.Features.Specification.SpecificationEventGalleries;
 
 namespace TicketBox.Application.Features.CQRS.EventGalleries.Handlers
 {
@@ -22,7 +23,8 @@ namespace TicketBox.Application.Features.CQRS.EventGalleries.Handlers
 
         public async Task<List<GetEventGalleryQueryResult>> Handle(GetAllEventGalleriesQuery request, CancellationToken cancellationToken)
         {
-            var galleries = await _unitOfWork.EventGalleryRepository.GetAllAsync();
+            var spec = new EventGalleryWithEventSpecification();
+            var galleries = await _unitOfWork.EventGalleryRepository.GetAllWithSpecAsync(spec);
             return _mapper.Map<List<GetEventGalleryQueryResult>>(galleries);
         }
     }

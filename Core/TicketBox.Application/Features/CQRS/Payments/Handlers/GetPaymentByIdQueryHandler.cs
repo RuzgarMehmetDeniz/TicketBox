@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TicketBox.Application.Features.CQRS.Payments.Queries;
 using TicketBox.Application.Features.CQRS.Payments.Results;
 using TicketBox.Application.Features.Repository;
+using TicketBox.Application.Features.Specification.SpecificationPayments;
 
 namespace TicketBox.Application.Features.CQRS.Payments.Handlers
 {
@@ -21,7 +22,8 @@ namespace TicketBox.Application.Features.CQRS.Payments.Handlers
 
         public async Task<GetPaymentByIdQueryResult> Handle(GetPaymentByIdQuery request, CancellationToken cancellationToken)
         {
-            var payment = await _unitOfWork.PaymentRepository.GetByIdAsync(request.PaymentId);
+            var spec = new PaymentWithTicketSpecification(request.PaymentId);
+            var payment = await _unitOfWork.PaymentRepository.GetEntityWithSpecAsync(spec);
             return _mapper.Map<GetPaymentByIdQueryResult>(payment);
         }
     }

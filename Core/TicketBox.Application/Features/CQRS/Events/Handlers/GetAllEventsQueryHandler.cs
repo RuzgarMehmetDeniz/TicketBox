@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TicketBox.Application.Features.CQRS.Events.Queries;
 using TicketBox.Application.Features.CQRS.Events.Results;
 using TicketBox.Application.Features.Repository;
+using TicketBox.Application.Features.Specification.SpecificationEvents;
 
 namespace TicketBox.Application.Features.CQRS.Events.Handlers
 {
@@ -22,7 +23,8 @@ namespace TicketBox.Application.Features.CQRS.Events.Handlers
 
         public async Task<List<GetEventQueryResult>> Handle(GetAllEventsQuery request, CancellationToken cancellationToken)
         {
-            var events = await _unitOfWork.EventRepository.GetAllAsync();
+            var spec = new EventWithCategorySpecification();
+            var events = await _unitOfWork.EventRepository.GetAllWithSpecAsync(spec);
             return _mapper.Map<List<GetEventQueryResult>>(events);
         }
     }

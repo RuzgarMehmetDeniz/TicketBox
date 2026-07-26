@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TicketBox.Application.Features.CQRS.Refunds.Queries;
 using TicketBox.Application.Features.CQRS.Refunds.Results;
 using TicketBox.Application.Features.Repository;
+using TicketBox.Application.Features.Specification.SpecificationRefunds;
 
 namespace TicketBox.Application.Features.CQRS.Refunds.Handlers
 {
@@ -22,7 +23,8 @@ namespace TicketBox.Application.Features.CQRS.Refunds.Handlers
 
         public async Task<List<GetRefundQueryResult>> Handle(GetAllRefundsQuery request, CancellationToken cancellationToken)
         {
-            var refunds = await _unitOfWork.RefundRepository.GetAllAsync();
+            var spec = new RefundWithTicketSpecification();
+            var refunds = await _unitOfWork.RefundRepository.GetAllWithSpecAsync(spec);
             return _mapper.Map<List<GetRefundQueryResult>>(refunds);
         }
     }

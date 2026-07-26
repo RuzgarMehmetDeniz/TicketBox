@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TicketBox.Application.Features.CQRS.Reviews.Queries;
 using TicketBox.Application.Features.CQRS.Reviews.Results;
 using TicketBox.Application.Features.Repository;
+using TicketBox.Application.Features.Specification.SpecificationReviews;
 
 namespace TicketBox.Application.Features.CQRS.Reviews.Handlers
 {
@@ -22,7 +23,8 @@ namespace TicketBox.Application.Features.CQRS.Reviews.Handlers
 
         public async Task<List<GetReviewQueryResult>> Handle(GetAllReviewsQuery request, CancellationToken cancellationToken)
         {
-            var reviews = await _unitOfWork.ReviewRepository.GetAllAsync();
+            var spec = new ReviewWithEventSpecification();
+            var reviews = await _unitOfWork.ReviewRepository.GetAllWithSpecAsync(spec);
             return _mapper.Map<List<GetReviewQueryResult>>(reviews);
         }
     }

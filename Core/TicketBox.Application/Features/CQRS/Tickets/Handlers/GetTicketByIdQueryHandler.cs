@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TicketBox.Application.Features.CQRS.Tickets.Queries;
 using TicketBox.Application.Features.CQRS.Tickets.Results;
 using TicketBox.Application.Features.Repository;
+using TicketBox.Application.Features.Specification.SpecificationTickets;
 
 namespace TicketBox.Application.Features.CQRS.Tickets.Handlers
 {
@@ -21,7 +22,8 @@ namespace TicketBox.Application.Features.CQRS.Tickets.Handlers
 
         public async Task<GetTicketByIdQueryResult> Handle(GetTicketByIdQuery request, CancellationToken cancellationToken)
         {
-            var ticket = await _unitOfWork.TicketRepository.GetByIdAsync(request.TicketId);
+            var spec = new TicketWithEventSpecification(request.TicketId);
+            var ticket = await _unitOfWork.TicketRepository.GetEntityWithSpecAsync(spec);
             return _mapper.Map<GetTicketByIdQueryResult>(ticket);
         }
     }
