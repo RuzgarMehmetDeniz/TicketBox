@@ -1,10 +1,18 @@
 ﻿using AutoMapper;
 using TicketBox.Application.Features.CQRS.AppUsers.Commands;
 using TicketBox.Application.Features.CQRS.AppUsers.Results;
+using TicketBox.Application.Features.CQRS.AuditLogs.Commands;
+using TicketBox.Application.Features.CQRS.AuditLogs.Results;
 using TicketBox.Application.Features.CQRS.Categories.Commands;
 using TicketBox.Application.Features.CQRS.Categories.Results;
+using TicketBox.Application.Features.CQRS.ChatMessages.Commands;
+using TicketBox.Application.Features.CQRS.ChatMessages.Results;
+using TicketBox.Application.Features.CQRS.ChatSessions.Commands;
+using TicketBox.Application.Features.CQRS.ChatSessions.Results;
 using TicketBox.Application.Features.CQRS.Coupons.Commands;
 using TicketBox.Application.Features.CQRS.Coupons.Results;
+using TicketBox.Application.Features.CQRS.Notifications.Commands;
+using TicketBox.Application.Features.CQRS.Notifications.Results;
 using TicketBox.Domain.Entities;
 
 namespace TicketBox.Application.Features.Mapping
@@ -26,17 +34,35 @@ namespace TicketBox.Application.Features.Mapping
             CreateMap<AppUser, UpdateAppUserCommand>().ReverseMap();       
             CreateMap<AppUser, RegisterAppUserCommand>().ReverseMap();
 
-            //// ===== AUDITLOG =====
+            //// ===== Coupon =====
             CreateMap<Coupon, GetCouponQueryResult>().ReverseMap();
             CreateMap<Coupon, GetCouponByIdQueryResult>().ReverseMap();
             CreateMap<Coupon, CreateCouponCommand>().ReverseMap();
             CreateMap<Coupon, UpdateCouponCommand>().ReverseMap();
 
-            //// ===== CHATMESSAGE =====
-            //CreateMap<ChatMessage, ChatMessageResult>().ReverseMap();
-            //CreateMap<ChatMessage, CreateChatMessageCommand>().ReverseMap();   
-            //CreateMap<ChatMessage, UpdateChatMessageCommand>().ReverseMap();   
-            //CreateMap<ChatMessage, GetChatMessageByIdResult>().ReverseMap();   
+            //// ===== AUDITLOG  =====
+            CreateMap<AuditLog, CreateAuditLogCommand>().ReverseMap();
+            CreateMap<AuditLog, UpdateAuditLogCommand>().ReverseMap();
+            CreateMap<AuditLog, GetAuditLogQueryResult>().ReverseMap();
+            CreateMap<AuditLog, GetAuditLogByIdQueryResult>().ReverseMap();
+
+            // ===== NOTIFICATION =====
+            CreateMap<Notification, CreateNotificationCommand>().ReverseMap();
+            CreateMap<Notification, UpdateNotificationCommand>().ReverseMap();
+            CreateMap<Notification, GetNotificationQueryResult>().ReverseMap();
+            CreateMap<Notification, GetNotificationByIdQueryResult>().ReverseMap();
+
+            // ===== CHATSESSION =====
+            CreateMap<CreateChatSessionCommand, ChatSession>().ReverseMap();
+            CreateMap<ChatSession, UpdateChatSessionCommand>().ReverseMap();
+            CreateMap<ChatSession, GetChatSessionQueryResult>().ReverseMap();
+            CreateMap<ChatSession, GetChatSessionByIdQueryResult>().ReverseMap();
+
+            // ===== CHATMESSAGE =====
+            CreateMap<CreateChatMessageCommand, ChatMessage>().ReverseMap();
+            CreateMap<ChatMessage, UpdateChatMessageCommand>().ReverseMap();
+            CreateMap<ChatMessage, GetChatMessageQueryResult>().ReverseMap();
+            CreateMap<ChatMessage, GetChatMessageByIdQueryResult>().ReverseMap();
 
             //// ===== CHATSESSION =====
             //CreateMap<ChatSession, ChatSessionResult>().ReverseMap();

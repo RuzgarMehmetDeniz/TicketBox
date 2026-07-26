@@ -21,6 +21,8 @@ namespace TicketBox.Application.Features.Repository
         IGenericRepository<EventGallery, int> EventGalleryRepository { get; }
         IGenericRepository<ChatSession, int> ChatSessionRepository { get; }
         IGenericRepository<AppUser, string> AppUserRepository { get; }
+        IGenericRepository<AuditLog, int> AuditLogRepository { get; }
+        IGenericRepository<ChatMessage, int> ChatMessageRepository { get; }
 
         Task<int> SaveChangesAsync();
     }

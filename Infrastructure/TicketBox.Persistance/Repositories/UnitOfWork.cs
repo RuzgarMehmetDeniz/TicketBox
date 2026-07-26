@@ -24,6 +24,8 @@ namespace TicketBox.Persistance.Repositories
             EventGalleryRepository = new GenericRepository<EventGallery, int>(_context);
             ChatSessionRepository = new GenericRepository<ChatSession, int>(_context);
             AppUserRepository = new GenericRepository<AppUser, string>(_context);
+            AuditLogRepository = new GenericRepository<AuditLog, int>(_context);
+            ChatMessageRepository = new GenericRepository<ChatMessage, int>(_context);
         }
 
         public IGenericRepository<Category, int> CategoryRepository { get; }
@@ -38,6 +40,8 @@ namespace TicketBox.Persistance.Repositories
         public IGenericRepository<EventGallery, int> EventGalleryRepository { get; }
         public IGenericRepository<ChatSession, int> ChatSessionRepository { get; }
         public IGenericRepository<AppUser, string> AppUserRepository { get; }
+        public IGenericRepository<AuditLog, int> AuditLogRepository { get; }
+        public IGenericRepository<ChatMessage, int> ChatMessageRepository { get; }
 
         public async Task<int> SaveChangesAsync()
         {
