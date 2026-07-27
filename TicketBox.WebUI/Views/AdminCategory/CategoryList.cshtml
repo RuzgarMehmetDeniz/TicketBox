@@ -1,0 +1,115 @@
+﻿@model List<TicketBox.Application.Features.CQRS.Categories.Results.GetCategoryQueryResult>
+@{
+    ViewData["Title"] = "CategoryList";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="view active" data-filter-scope="categories">
+    <div class="view-head">
+        <div>
+            <h2>Kategoriler</h2>
+            <p>Etkinlik kategorilerini yönet.</p>
+        </div>
+        <div class="head-actions">
+            <a class="btn btn-primary" href="@Url.Action("CategoryCreate", "AdminCategory")">+ Yeni Kategori</a>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-toolbar">
+            <div class="filter-chips">
+                <button class="f-chip active" data-filter="all">Tümü</button>
+                <button class="f-chip" data-filter="active">Aktif</button>
+                <button class="f-chip" data-filter="passive">Pasif</button>
+            </div>
+            <div class="search-box" style="width:220px;"><span>🔍</span><input placeholder="Kategori ara..."></div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Kategori</th>
+                    <th>Açıklama</th>
+                    <th>Durum</th>
+                    <th style="text-align:right;">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr data-status="@(item.IsActive ? "active" : "passive")">
+                            <td>
+                                <div class="cell-main">
+                                    @if (!string.IsNullOrEmpty(item.IconUrl))
+                                    {
+                                        <img src="@item.IconUrl" style="width:34px;height:34px;border-radius:10px;object-fit:cover;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="cell-avatar"></div>
+                                    }
+                                    <div class="cell-title">@item.CategoryName</div>
+                                </div>
+                            </td>
+                            <td>@item.Description</td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge green">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="badge gray">Pasif</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="row-actions">
+                                    <a class="btn-icon-only" title="Düzenle" href="@Url.Action("CategoryUpdate", "AdminCategory", new { id = item.CategoryId })">✎</a>
+                                    <form method="post" action="@Url.Action("CategoryDelete", "AdminCategory")" style="display:inline;" onsubmit="return confirm('Bu kategoriyi silmek istediğinize emin misiniz?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.CategoryId" />
+                                        <button type="submit" class="btn-icon-only" title="Sil" style="color:var(--danger);">🗑</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="empty-hint">Henüz kategori eklenmemiş.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="table-foot">
+            <span>@(Model?.Count ?? 0) kayıt gösteriliyor</span>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Bu view'e özel filtreleme (sayfa bazlı scope)
+    (function () {
+        const view = document.querySelector('[data-filter-scope="categories"]');
+        if (!view) return;
+        const chipGroup = view.querySelector('.filter-chips');
+        const tbody = view.querySelector('tbody');
+        if (!chipGroup || !tbody) return;
+
+        chipGroup.querySelectorAll('.f-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                chipGroup.querySelectorAll('.f-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                const filter = chip.dataset.filter;
+                tbody.querySelectorAll('tr[data-status]').forEach(row => {
+                    row.style.display = (filter === 'all' || row.dataset.status === filter) ? '' : 'none';
+                });
+            });
+        });
+    })();
+</script>

@@ -1,0 +1,2145 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketBox Admin — Yönetim Paneli</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <style>
+
+        /* ============ DESIGN TOKENS (same system as main site) ============ */
+        :root {
+            --bg: #0F1117;
+            --bg2: #171A22;
+            --card: #1D2130;
+            --card2: #242939;
+            --border: rgba(255,255,255,.06);
+            --border-strong: rgba(255,255,255,.12);
+            --primary: #7C5CFF;
+            --secondary: #4F8CFF;
+            --accent: #00D4A4;
+            --danger: #FF4D6D;
+            --warn: #FFB454;
+            --text: #F5F7FA;
+            --subtitle: #B8C1D1;
+            --primary-rgb: 124,92,255;
+            --secondary-rgb: 79,140,255;
+            --accent-rgb: 0,212,164;
+            --danger-rgb: 255,77,109;
+            --warn-rgb: 255,180,84;
+            --grad-brand: linear-gradient(135deg,var(--primary),var(--secondary));
+            --shadow-lift: 0 20px 60px -15px rgba(0,0,0,.55);
+            --radius-xl: 24px;
+            --radius-lg: 18px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --sidebar-w: 260px;
+        }
+
+        [data-theme="aurora"] {
+            --bg: #0B1420;
+            --bg2: #10192A;
+            --card: #142033;
+            --card2: #1B2A42;
+            --border: rgba(255,255,255,.07);
+            --border-strong: rgba(255,255,255,.14);
+            --primary: #34D8C7;
+            --secondary: #6C5CE7;
+            --accent: #7CF29C;
+            --danger: #FF6B6B;
+            --text: #F2FBFA;
+            --subtitle: #A9C6C0;
+            --primary-rgb: 52,216,199;
+            --secondary-rgb: 108,92,231;
+            --accent-rgb: 124,242,156;
+        }
+
+        [data-theme="purple"] {
+            --bg: #120B1F;
+            --bg2: #1A1029;
+            --card: #221733;
+            --card2: #2B1F40;
+            --border: rgba(255,255,255,.07);
+            --border-strong: rgba(255,255,255,.14);
+            --primary: #A855F7;
+            --secondary: #EC4899;
+            --accent: #C084FC;
+            --danger: #FB7185;
+            --text: #F6F3FC;
+            --subtitle: #C4B5D6;
+            --primary-rgb: 168,85,247;
+            --secondary-rgb: 236,72,153;
+            --accent-rgb: 192,132,252;
+        }
+
+        [data-theme="ocean"] {
+            --bg: #081420;
+            --bg2: #0D1E2E;
+            --card: #12293C;
+            --card2: #183651;
+            --border: rgba(255,255,255,.06);
+            --border-strong: rgba(255,255,255,.13);
+            --primary: #2DA8FF;
+            --secondary: #00C2D1;
+            --accent: #4CE0B3;
+            --danger: #FF5D73;
+            --text: #EFF7FB;
+            --subtitle: #9FC0D1;
+            --primary-rgb: 45,168,255;
+            --secondary-rgb: 0,194,209;
+            --accent-rgb: 76,224,179;
+        }
+
+        [data-theme="graphite"] {
+            --bg: #15161A;
+            --bg2: #1B1D22;
+            --card: #212328;
+            --card2: #282B32;
+            --border: rgba(255,255,255,.06);
+            --border-strong: rgba(255,255,255,.12);
+            --primary: #9CA3AF;
+            --secondary: #6B7280;
+            --accent: #34D399;
+            --danger: #F87171;
+            --text: #F3F4F6;
+            --subtitle: #A1A6AD;
+            --primary-rgb: 156,163,175;
+            --secondary-rgb: 107,114,128;
+            --accent-rgb: 52,211,153;
+        }
+
+        [data-theme="light"] {
+            --bg: #F3F4F8;
+            --bg2: #FFFFFF;
+            --card: #FFFFFF;
+            --card2: #F1F2F8;
+            --border: rgba(15,17,23,.08);
+            --border-strong: rgba(15,17,23,.16);
+            --primary: #7C5CFF;
+            --secondary: #4F8CFF;
+            --accent: #00B894;
+            --danger: #E0455A;
+            --text: #14161C;
+            --subtitle: #5B6472;
+            --primary-rgb: 124,92,255;
+            --secondary-rgb: 79,140,255;
+            --accent-rgb: 0,184,148;
+            --shadow-lift: 0 20px 60px -15px rgba(20,22,28,.15);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            -webkit-font-smoothing: antialiased;
+            transition: background .3s ease,color .3s ease;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-display);
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+        }
+
+        input, select, textarea {
+            font-family: inherit;
+            color: var(--text);
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .glass {
+            background: rgba(255,255,255,.03);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+        }
+
+        [data-theme="light"] .glass {
+            background: rgba(255,255,255,.7);
+        }
+
+        /* ============ LAYOUT ============ */
+        .admin-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ---- sidebar ---- */
+        .sidebar {
+            width: var(--sidebar-w);
+            flex-shrink: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 50;
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: transform .35s cubic-bezier(.2,.8,.2,1), width .3s ease;
+        }
+
+        .sidebar-head {
+            padding: 22px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-mark {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: var(--grad-brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 15px;
+            flex-shrink: 0;
+            box-shadow: 0 6px 18px -4px rgba(var(--primary-rgb),.6);
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 16.5px;
+        }
+
+            .logo-text span {
+                display: block;
+                font-family: var(--font-mono);
+                font-size: 10px;
+                font-weight: 400;
+                color: var(--subtitle);
+                letter-spacing: .08em;
+            }
+
+        .nav-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 12px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+            .nav-scroll::-webkit-scrollbar {
+                display: none;
+            }
+
+        .nav-group {
+            margin-bottom: 22px;
+        }
+
+        .nav-group-label {
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--subtitle);
+            padding: 0 12px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--subtitle);
+            margin-bottom: 2px;
+            position: relative;
+            transition: .2s;
+            width: 100%;
+            text-align: left;
+        }
+
+            .nav-item .ic {
+                width: 20px;
+                text-align: center;
+                font-size: 15px;
+                flex-shrink: 0;
+            }
+
+            .nav-item .badge {
+                margin-left: auto;
+                font-size: 10.5px;
+                font-family: var(--font-mono);
+                background: rgba(var(--danger-rgb),.15);
+                color: var(--danger);
+                padding: 2px 7px;
+                border-radius: 100px;
+            }
+
+            .nav-item:hover {
+                background: rgba(255,255,255,.05);
+                color: var(--text);
+            }
+
+            .nav-item.active {
+                background: linear-gradient(90deg,rgba(var(--primary-rgb),.16),rgba(var(--primary-rgb),.02));
+                color: var(--text);
+            }
+
+                .nav-item.active::before {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: 8px;
+                    bottom: 8px;
+                    width: 3px;
+                    border-radius: 100px;
+                    background: var(--grad-brand);
+                }
+
+        .sidebar-foot {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .admin-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.03);
+        }
+
+            .admin-mini .av {
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                background: var(--grad-brand);
+                flex-shrink: 0;
+            }
+
+            .admin-mini b {
+                font-size: 13px;
+                display: block;
+            }
+
+            .admin-mini span {
+                font-size: 11px;
+                color: var(--subtitle);
+            }
+
+        /* ---- main ---- */
+        .main {
+            flex: 1;
+            margin-left: var(--sidebar-w);
+            min-width: 0;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 28px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(15,17,23,.7);
+            backdrop-filter: blur(16px);
+        }
+
+        [data-theme="light"] .topbar {
+            background: rgba(255,255,255,.75);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .menu-toggle {
+            display: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid var(--border-strong);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-title {
+            font-size: 19px;
+        }
+
+        .page-sub {
+            font-size: 12.5px;
+            color: var(--subtitle);
+            margin-top: 1px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 16px;
+            border-radius: 100px;
+            border: 1px solid var(--border-strong);
+            background: rgba(255,255,255,.03);
+            width: 280px;
+        }
+
+            .search-box input {
+                background: none;
+                border: none;
+                outline: none;
+                font-size: 13.5px;
+                width: 100%;
+                color: var(--text);
+            }
+
+                .search-box input::placeholder {
+                    color: var(--subtitle);
+                }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid var(--border-strong);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: .2s;
+        }
+
+            .icon-btn:hover {
+                background: rgba(255,255,255,.06);
+            }
+
+            .icon-btn .dot {
+                position: absolute;
+                top: 7px;
+                right: 7px;
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: var(--danger);
+            }
+
+        .theme-switch {
+            position: relative;
+        }
+
+        .theme-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 100px;
+            border: 1px solid var(--border-strong);
+            background: rgba(255,255,255,.03);
+            font-size: 13px;
+        }
+
+        .theme-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--grad-brand);
+        }
+
+        .theme-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 190px;
+            padding: 8px;
+            border-radius: var(--radius-md);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px) scale(.97);
+            transition: .25s cubic-bezier(.2,.8,.2,1);
+            box-shadow: var(--shadow-lift);
+            background: rgba(20,22,30,.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-strong);
+            z-index: 60;
+        }
+
+        [data-theme="light"] .theme-menu {
+            background: rgba(255,255,255,.95);
+        }
+
+        .theme-switch.open .theme-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .theme-opt {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            width: 100%;
+            padding: 9px 11px;
+            border-radius: 9px;
+            font-size: 13px;
+        }
+
+            .theme-opt:hover {
+                background: rgba(255,255,255,.06);
+            }
+
+            .theme-opt.active {
+                background: rgba(var(--primary-rgb),.12);
+                color: var(--primary);
+            }
+
+            .theme-opt .sw {
+                width: 14px;
+                height: 14px;
+                border-radius: 5px;
+                flex-shrink: 0;
+            }
+
+        .content {
+            padding: 28px;
+        }
+
+        .view {
+            display: none;
+        }
+
+            .view.active {
+                display: block;
+                animation: fadein .35s ease;
+            }
+
+        @@keyframes fadein {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes pulseGlow {
+            0%, 100% {
+                opacity: .5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @@keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @@keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============ SHARED COMPONENTS ============ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 10px 18px;
+            border-radius: 11px;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: .2s;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--grad-brand);
+            color: #fff;
+            box-shadow: 0 8px 22px -8px rgba(var(--primary-rgb),.55);
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 28px -8px rgba(var(--primary-rgb),.7);
+            }
+
+        .btn-ghost {
+            background: rgba(255,255,255,.03);
+            border: 1px solid var(--border-strong);
+        }
+
+            .btn-ghost:hover {
+                background: rgba(255,255,255,.07);
+            }
+
+        .btn-danger {
+            background: rgba(var(--danger-rgb),.12);
+            color: var(--danger);
+            border: 1px solid rgba(var(--danger-rgb),.3);
+        }
+
+            .btn-danger:hover {
+                background: rgba(var(--danger-rgb),.2);
+            }
+
+        .btn-sm {
+            padding: 7px 13px;
+            font-size: 12.5px;
+            border-radius: 9px;
+        }
+
+        .btn-icon-only {
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            border-radius: 9px;
+            border: 1px solid var(--border-strong);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .btn-icon-only:hover {
+                background: rgba(255,255,255,.06);
+            }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+        }
+
+        .view-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+            .view-head h2 {
+                font-size: 24px;
+                margin-bottom: 4px;
+            }
+
+            .view-head p {
+                color: var(--subtitle);
+                font-size: 13.5px;
+            }
+
+        .head-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* stat cards */
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .stat-card .top {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 14px;
+            }
+
+        .stat-ic {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+        }
+
+        .stat-card b {
+            font-family: var(--font-display);
+            font-size: 26px;
+            display: block;
+        }
+
+        .stat-card .lbl {
+            font-size: 12.5px;
+            color: var(--subtitle);
+            margin-top: 2px;
+        }
+
+        .trend {
+            font-size: 11.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            padding: 4px 8px;
+            border-radius: 100px;
+        }
+
+            .trend.up {
+                color: var(--accent);
+                background: rgba(var(--accent-rgb),.12);
+            }
+
+            .trend.down {
+                color: var(--danger);
+                background: rgba(var(--danger-rgb),.12);
+            }
+
+        /* charts row */
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card h3 {
+            font-size: 15.5px;
+            margin-bottom: 2px;
+        }
+
+        .chart-card .sub {
+            font-size: 12px;
+            color: var(--subtitle);
+            margin-bottom: 16px;
+        }
+
+        .legend-row {
+            display: flex;
+            gap: 16px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--subtitle);
+        }
+
+            .legend-item i {
+                width: 9px;
+                height: 9px;
+                border-radius: 3px;
+                display: inline-block;
+            }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 18px;
+        }
+
+        /* table */
+        .table-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .f-chip {
+            padding: 7px 14px;
+            border-radius: 100px;
+            font-size: 12.5px;
+            border: 1px solid var(--border-strong);
+            color: var(--subtitle);
+        }
+
+            .f-chip.active {
+                background: var(--grad-brand);
+                color: #fff;
+                border-color: transparent;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            text-align: left;
+            font-size: 11.5px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--subtitle);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 14px 20px;
+            font-size: 13.5px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr {
+            transition: background .15s;
+        }
+
+            tbody tr:hover {
+                background: rgba(255,255,255,.02);
+            }
+
+        .cell-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cell-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: var(--grad-brand);
+            flex-shrink: 0;
+        }
+
+            .cell-avatar.round {
+                border-radius: 50%;
+            }
+
+        .cell-title {
+            font-weight: 600;
+            font-size: 13.5px;
+        }
+
+        .cell-sub {
+            font-size: 11.5px;
+            color: var(--subtitle);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 11px;
+            border-radius: 100px;
+            font-size: 11.5px;
+            font-weight: 600;
+        }
+
+            .badge.green {
+                background: rgba(var(--accent-rgb),.14);
+                color: var(--accent);
+            }
+
+            .badge.blue {
+                background: rgba(var(--secondary-rgb),.16);
+                color: var(--secondary);
+            }
+
+            .badge.orange {
+                background: rgba(255,180,84,.16);
+                color: var(--warn);
+            }
+
+            .badge.red {
+                background: rgba(var(--danger-rgb),.14);
+                color: var(--danger);
+            }
+
+            .badge.gray {
+                background: rgba(255,255,255,.08);
+                color: var(--subtitle);
+            }
+
+        .row-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+        }
+
+        .table-foot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            font-size: 12.5px;
+            color: var(--subtitle);
+        }
+
+        .pager {
+            display: flex;
+            gap: 6px;
+        }
+
+            .pager button {
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                border: 1px solid var(--border-strong);
+                font-size: 12.5px;
+            }
+
+                .pager button.active {
+                    background: var(--grad-brand);
+                    color: #fff;
+                    border-color: transparent;
+                }
+
+        /* progress mini bar (capacity) */
+        .mini-bar {
+            width: 70px;
+            height: 5px;
+            border-radius: 100px;
+            background: var(--card2);
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+            .mini-bar i {
+                display: block;
+                height: 100%;
+                background: var(--grad-brand);
+            }
+
+        /* activity feed */
+        .feed-item {
+            display: flex;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+            .feed-item:last-child {
+                border-bottom: none;
+            }
+
+        .feed-ic {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .feed-item p {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .feed-item span {
+            font-size: 11.5px;
+            color: var(--subtitle);
+        }
+
+        .feed-item b {
+            font-weight: 600;
+        }
+
+        /* pending approval card */
+        .approve-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            margin-bottom: 10px;
+        }
+
+            .approve-card:last-child {
+                margin-bottom: 0;
+            }
+
+            .approve-card .info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .approve-card h4 {
+                font-size: 13.5px;
+                margin-bottom: 3px;
+            }
+
+            .approve-card span {
+                font-size: 11.5px;
+                color: var(--subtitle);
+            }
+
+        .approve-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* simple grid manage (categories/cities/sponsors) */
+        .manage-grid {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 14px;
+        }
+
+        .manage-tile {
+            padding: 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--card);
+            position: relative;
+            text-align: center;
+        }
+
+            .manage-tile .ic {
+                width: 44px;
+                height: 44px;
+                border-radius: 13px;
+                background: var(--grad-brand);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 19px;
+                color: #fff;
+                margin: 0 auto 10px;
+            }
+
+            .manage-tile h4 {
+                font-size: 14px;
+                margin-bottom: 3px;
+            }
+
+            .manage-tile span {
+                font-size: 11.5px;
+                color: var(--subtitle);
+            }
+
+            .manage-tile .tile-menu {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                font-size: 14px;
+                color: var(--subtitle);
+            }
+
+            .manage-tile.add-tile {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                border-style: dashed;
+                color: var(--subtitle);
+                cursor: pointer;
+            }
+
+                .manage-tile.add-tile:hover {
+                    border-color: var(--primary);
+                    color: var(--primary);
+                }
+
+        /* toggle switch */
+        .switch {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .switch .track {
+                position: absolute;
+                inset: 0;
+                background: var(--card2);
+                border-radius: 100px;
+                transition: .25s;
+                border: 1px solid var(--border-strong);
+            }
+
+                .switch .track::before {
+                    content: '';
+                    position: absolute;
+                    width: 16px;
+                    height: 16px;
+                    left: 2px;
+                    top: 2px;
+                    background: var(--subtitle);
+                    border-radius: 50%;
+                    transition: .25s;
+                }
+
+            .switch input:checked + .track {
+                background: var(--grad-brand);
+                border-color: transparent;
+            }
+
+                .switch input:checked + .track::before {
+                    transform: translateX(18px);
+                    background: #fff;
+                }
+
+        /* review moderation */
+        .review-item {
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            margin-bottom: 12px;
+        }
+
+            .review-item:last-child {
+                margin-bottom: 0;
+            }
+
+        .review-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+            .review-top .av {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background: var(--grad-brand);
+            }
+
+            .review-top b {
+                font-size: 13px;
+            }
+
+            .review-top span {
+                font-size: 11px;
+                color: var(--subtitle);
+            }
+
+        .review-stars {
+            color: var(--accent);
+            font-size: 12px;
+            margin-left: auto;
+        }
+
+        .review-item p {
+            font-size: 13px;
+            color: var(--subtitle);
+            margin-bottom: 10px;
+        }
+
+        .review-flag {
+            font-size: 11px;
+            color: var(--danger);
+            background: rgba(var(--danger-rgb),.1);
+            padding: 3px 9px;
+            border-radius: 100px;
+            margin-left: 8px;
+        }
+
+        /* settings form */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 0;
+        }
+
+        .settings-nav {
+            border-right: 1px solid var(--border);
+            padding-right: 20px;
+        }
+
+            .settings-nav button {
+                display: block;
+                width: 100%;
+                text-align: left;
+                padding: 10px 14px;
+                border-radius: 10px;
+                font-size: 13.5px;
+                color: var(--subtitle);
+                margin-bottom: 2px;
+            }
+
+                .settings-nav button.active {
+                    background: rgba(var(--primary-rgb),.12);
+                    color: var(--primary);
+                }
+
+        .settings-panel {
+            padding-left: 26px;
+        }
+
+        .f-row {
+            margin-bottom: 18px;
+        }
+
+            .f-row label {
+                display: block;
+                font-size: 12.5px;
+                color: var(--subtitle);
+                margin-bottom: 7px;
+                font-weight: 500;
+            }
+
+            .f-row input[type=text], .f-row input[type=email], .f-row input[type=number], .f-row select, .f-row textarea {
+                width: 100%;
+                padding: 11px 14px;
+                border-radius: 10px;
+                border: 1px solid var(--border-strong);
+                background: rgba(255,255,255,.03);
+                font-size: 13.5px;
+                outline: none;
+            }
+
+            .f-row textarea {
+                resize: vertical;
+                min-height: 80px;
+            }
+
+        .role-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+            .role-row:last-child {
+                border-bottom: none;
+            }
+
+            .role-row h4 {
+                font-size: 13.5px;
+                margin-bottom: 2px;
+            }
+
+            .role-row span {
+                font-size: 11.5px;
+                color: var(--subtitle);
+            }
+
+        /* modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.55);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+            .modal-overlay.open {
+                display: flex;
+            }
+
+        .modal {
+            width: 100%;
+            max-width: 520px;
+            background: var(--bg2);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lift);
+            animation: slideUp .3s cubic-bezier(.2,.8,.2,1);
+            max-height: 86vh;
+            overflow-y: auto;
+        }
+
+        .modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 22px;
+            border-bottom: 1px solid var(--border);
+        }
+
+            .modal-head h3 {
+                font-size: 16.5px;
+            }
+
+        .modal-body {
+            padding: 22px;
+        }
+
+        .modal-foot {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 18px 22px;
+            border-top: 1px solid var(--border);
+        }
+
+        .toast-wrap {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            background: var(--card);
+            border: 1px solid var(--border-strong);
+            box-shadow: var(--shadow-lift);
+            font-size: 13.5px;
+            animation: slideUp .3s ease;
+        }
+
+            .toast .ic {
+                color: var(--accent);
+            }
+
+        .empty-hint {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--subtitle);
+            font-size: 13.5px;
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @@media (max-width:1180px) {
+            .stat-row {
+                grid-template-columns: repeat(2,1fr);
+            }
+
+            .chart-row, .two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .manage-grid {
+                grid-template-columns: repeat(2,1fr);
+            }
+        }
+
+        @@media (max-width:900px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .search-box {
+                display: none;
+            }
+
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-nav {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding-right: 0;
+                padding-bottom: 16px;
+                margin-bottom: 16px;
+                display: flex;
+                gap: 6px;
+                overflow-x: auto;
+            }
+
+            .settings-panel {
+                padding-left: 0;
+            }
+        }
+
+        @@media (max-width:640px) {
+            .stat-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .manage-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .topbar {
+                padding: 14px 16px;
+            }
+
+            table {
+                font-size: 12.5px;
+            }
+
+            thead th, tbody td {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body data-theme="midnight">
+
+    <div class="admin-shell">
+
+        <!-- ================= SIDEBAR ================= -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-head">
+                <div class="logo-mark">TB</div>
+                <div class="logo-text">TicketBox<span>ADMIN PANEL</span></div>
+            </div>
+            <nav class="nav-scroll">
+                <div class="nav-group">
+                    <div class="nav-group-label">Genel</div>
+                    <button class="nav-item active" data-view="dashboard"><span class="ic">◧</span> Genel Bakış</button>
+                    <button class="nav-item" data-view="notifications"><span class="ic">🔔</span> Bildirimler <span class="badge">6</span></button>
+                </div>
+                <div class="nav-group">
+                    <div class="nav-group-label">İçerik Yönetimi</div>
+                    <button class="nav-item" data-view="events"><span class="ic">🎟️</span> Etkinlikler</button>
+                    <button class="nav-item" data-view="categories"><span class="ic">🔷</span> Kategoriler</button>
+                    <button class="nav-item" data-view="cities"><span class="ic">📍</span> Şehirler</button>
+                    <button class="nav-item" data-view="blog"><span class="ic">📝</span> Blog</button>
+                    <button class="nav-item" data-view="sponsors"><span class="ic">🤝</span> Sponsorlar</button>
+                    <button class="nav-item" data-view="reviews"><span class="ic">⭐</span> Yorum Moderasyonu <span class="badge">4</span></button>
+                </div>
+                <div class="nav-group">
+                    <div class="nav-group-label">Kullanıcılar</div>
+                    <button class="nav-item" data-view="users"><span class="ic">👤</span> Kullanıcılar</button>
+                    <button class="nav-item" data-view="organizers"><span class="ic">🏷️</span> Organizatörler <span class="badge">3</span></button>
+                </div>
+                <div class="nav-group">
+                    <div class="nav-group-label">Ticaret</div>
+                    <button class="nav-item" data-view="orders"><span class="ic">🧾</span> Siparişler / Biletler</button>
+                    <button class="nav-item" data-view="finance"><span class="ic">💳</span> Ödemeler / Finans</button>
+                </div>
+                <div class="nav-group">
+                    <div class="nav-group-label">Sistem</div>
+                    <button class="nav-item" data-view="settings"><span class="ic">⚙️</span> Ayarlar & Roller</button>
+                </div>
+            </nav>
+            <div class="sidebar-foot">
+                <div class="admin-mini">
+                    <div class="av"></div>
+                    <div><b>Merve Aydın</b><span>Süper Yönetici</span></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ================= MAIN ================= -->
+        <div class="main">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menuToggle">☰</button>
+                    <div>
+                        <div class="page-title" id="pageTitle">Genel Bakış</div>
+                        <div class="page-sub" id="pageSub">Platformun anlık durumu ve performans özeti</div>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <div class="search-box"><span>🔍</span><input placeholder="Etkinlik, kullanıcı, sipariş ara..."></div>
+                    <button class="icon-btn">🔔<span class="dot"></span></button>
+                    <div class="theme-switch" id="themeSwitch">
+                        <button class="theme-btn" id="themeBtn"><span class="theme-dot" id="themeDot"></span> Tema ▾</button>
+                        <div class="theme-menu" id="themeMenu">
+                            <button class="theme-opt active" data-theme="midnight"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#4F8CFF)"></span> 🌙 Midnight</button>
+                            <button class="theme-opt" data-theme="aurora"><span class="sw" style="background:linear-gradient(135deg,#34D8C7,#6C5CE7)"></span> 🌌 Aurora</button>
+                            <button class="theme-opt" data-theme="purple"><span class="sw" style="background:linear-gradient(135deg,#A855F7,#EC4899)"></span> 💜 Purple</button>
+                            <button class="theme-opt" data-theme="ocean"><span class="sw" style="background:linear-gradient(135deg,#2DA8FF,#00C2D1)"></span> 💙 Ocean</button>
+                            <button class="theme-opt" data-theme="graphite"><span class="sw" style="background:linear-gradient(135deg,#9CA3AF,#6B7280)"></span> 🩶 Graphite</button>
+                            <button class="theme-opt" data-theme="light"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#00B894)"></span> 🤍 Light</button>
+                        </div>
+                    </div>
+                    <div class="admin-mini" style="padding:6px 10px;"><div class="av" style="width:30px;height:30px;"></div></div>
+                </div>
+            </div>
+
+            <div class="content">
+
+                <!-- ============ DASHBOARD ============ -->
+                <section class="view active" id="view-dashboard">
+                    <div class="stat-row">
+                        <div class="stat-card"><div class="top"><div class="stat-ic" style="background:rgba(var(--primary-rgb),.14);color:var(--primary);">💰</div><span class="trend up">▲ 12.4%</span></div><b class="counter" data-target="4820000" data-prefix="₺">₺0</b><div class="lbl">Bu Ay Toplam Gelir</div></div>
+                        <div class="stat-card"><div class="top"><div class="stat-ic" style="background:rgba(var(--secondary-rgb),.16);color:var(--secondary);">🎟️</div><span class="trend up">▲ 8.1%</span></div><b class="counter" data-target="18240">0</b><div class="lbl">Satılan Bilet</div></div>
+                        <div class="stat-card"><div class="top"><div class="stat-ic" style="background:rgba(var(--accent-rgb),.14);color:var(--accent);">📅</div><span class="trend up">▲ 3.2%</span></div><b class="counter" data-target="642">0</b><div class="lbl">Aktif Etkinlik</div></div>
+                        <div class="stat-card"><div class="top"><div class="stat-ic" style="background:rgba(255,180,84,.16);color:var(--warn);">👤</div><span class="trend down">▼ 1.6%</span></div><b class="counter" data-target="9380">0</b><div class="lbl">Yeni Kullanıcı</div></div>
+                    </div>
+
+                    <div class="chart-row">
+                        <div class="card chart-card">
+                            <h3>Gelir Trendi</h3><div class="sub">Son 12 ay — bilet satışı ve komisyon geliri</div>
+                            <canvas id="revenueChart" height="110"></canvas>
+                        </div>
+                        <div class="card chart-card">
+                            <h3>Kategori Dağılımı</h3><div class="sub">Satılan bilete göre</div>
+                            <canvas id="categoryChart" height="150"></canvas>
+                            <div class="legend-row" id="catLegend"></div>
+                        </div>
+                    </div>
+
+                    <div class="two-col">
+                        <div class="card">
+                            <h3 style="font-size:15.5px;margin-bottom:14px;">En Çok Satan Etkinlikler</h3>
+                            <table>
+                                <thead><tr><th>Etkinlik</th><th>Şehir</th><th>Satış</th><th>Doluluk</th><th>Gelir</th></tr></thead>
+                                <tbody id="topEventsBody"></tbody>
+                            </table>
+                        </div>
+                        <div class="card">
+                            <h3 style="font-size:15.5px;margin-bottom:6px;">Son Aktiviteler</h3>
+                            <div id="activityFeed"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ EVENTS ============ -->
+                <section class="view" id="view-events">
+                    <div class="view-head">
+                        <div><h2>Etkinlik Yönetimi</h2><p>Tüm etkinlikleri görüntüle, onayla, düzenle veya kaldır.</p></div>
+                        <div class="head-actions"><button class="btn btn-primary" onclick="openModal('eventModal')">+ Yeni Etkinlik</button></div>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-toolbar">
+                            <div class="filter-chips">
+                                <button class="f-chip active">Tümü (642)</button>
+                                <button class="f-chip">Yayında</button>
+                                <button class="f-chip">Onay Bekliyor</button>
+                                <button class="f-chip">Taslak</button>
+                                <button class="f-chip">Sona Erdi</button>
+                            </div>
+                            <div class="search-box" style="width:220px;"><span>🔍</span><input placeholder="Etkinlik ara..."></div>
+                        </div>
+                        <table>
+                            <thead><tr><th>Etkinlik</th><th>Kategori</th><th>Tarih</th><th>Organizatör</th><th>Doluluk</th><th>Durum</th><th style="text-align:right;">İşlem</th></tr></thead>
+                            <tbody id="eventsBody"></tbody>
+                        </table>
+                        <div class="table-foot"><span>6 / 642 kayıt gösteriliyor</span><div class="pager"><button class="active">1</button><button>2</button><button>3</button><button>›</button></div></div>
+                    </div>
+                </section>
+
+                <!-- ============ CATEGORIES ============ -->
+                <section class="view" id="view-categories">
+                    <div class="view-head">
+                        <div><h2>Kategoriler</h2><p>Etkinlik kategorilerini yönet.</p></div>
+                        <div class="head-actions"><button class="btn btn-primary" onclick="openModal('simpleModal','Yeni Kategori')">+ Yeni Kategori</button></div>
+                    </div>
+                    <div class="manage-grid" id="categoriesGrid"></div>
+                </section>
+
+                <!-- ============ CITIES ============ -->
+                <section class="view" id="view-cities">
+                    <div class="view-head">
+                        <div><h2>Şehirler</h2><p>Platformda hizmet verilen şehirleri yönet.</p></div>
+                        <div class="head-actions"><button class="btn btn-primary" onclick="openModal('simpleModal','Yeni Şehir')">+ Yeni Şehir</button></div>
+                    </div>
+                    <div class="manage-grid" id="citiesGrid"></div>
+                </section>
+
+                <!-- ============ BLOG ============ -->
+                <section class="view" id="view-blog">
+                    <div class="view-head">
+                        <div><h2>Blog Yönetimi</h2><p>Blog yazılarını oluştur, düzenle ve yayınla.</p></div>
+                        <div class="head-actions"><button class="btn btn-primary" onclick="openModal('simpleModal','Yeni Blog Yazısı')">+ Yeni Yazı</button></div>
+                    </div>
+                    <div class="table-card">
+                        <table>
+                            <thead><tr><th>Başlık</th><th>Etiket</th><th>Yazar</th><th>Tarih</th><th>Durum</th><th style="text-align:right;">İşlem</th></tr></thead>
+                            <tbody id="blogBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ============ SPONSORS ============ -->
+                <section class="view" id="view-sponsors">
+                    <div class="view-head">
+                        <div><h2>Sponsorlar</h2><p>İş ortaklarını ve sponsor logolarını yönet.</p></div>
+                        <div class="head-actions"><button class="btn btn-primary" onclick="openModal('simpleModal','Yeni Sponsor')">+ Yeni Sponsor</button></div>
+                    </div>
+                    <div class="manage-grid" id="sponsorsGrid"></div>
+                </section>
+
+                <!-- ============ REVIEWS ============ -->
+                <section class="view" id="view-reviews">
+                    <div class="view-head"><div><h2>Yorum Moderasyonu</h2><p>Kullanıcı yorumlarını incele, onayla veya kaldır.</p></div></div>
+                    <div class="two-col">
+                        <div class="card">
+                            <h3 style="font-size:15px;margin-bottom:14px;">Onay Bekleyen / Şikayet Edilen</h3>
+                            <div id="reviewList"></div>
+                        </div>
+                        <div class="card">
+                            <h3 style="font-size:15px;margin-bottom:14px;">Moderasyon Özeti</h3>
+                            <div class="feed-item"><div class="feed-ic" style="background:rgba(var(--accent-rgb),.14);color:var(--accent);">✓</div><div><p>Bu hafta <b>184</b> yorum onaylandı</p><span>Otomatik + manuel</span></div></div>
+                            <div class="feed-item"><div class="feed-ic" style="background:rgba(var(--danger-rgb),.14);color:var(--danger);">✕</div><div><p><b>12</b> yorum kaldırıldı</p><span>Spam / uygunsuz içerik</span></div></div>
+                            <div class="feed-item"><div class="feed-ic" style="background:rgba(255,180,84,.14);color:var(--warn);">⚑</div><div><p><b>4</b> yorum inceleme bekliyor</p><span>Şikayet üzerine</span></div></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ USERS ============ -->
+                <section class="view" id="view-users">
+                    <div class="view-head">
+                        <div><h2>Kullanıcılar</h2><p>Platformdaki tüm kullanıcı hesaplarını yönet.</p></div>
+                        <div class="head-actions"><button class="btn btn-ghost">Dışa Aktar</button><button class="btn btn-primary" onclick="openModal('simpleModal','Yeni Kullanıcı')">+ Kullanıcı Ekle</button></div>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-toolbar">
+                            <div class="filter-chips">
+                                <button class="f-chip active">Tümü</button><button class="f-chip">Aktif</button><button class="f-chip">Askıda</button><button class="f-chip">Yasaklı</button>
+                            </div>
+                            <div class="search-box" style="width:220px;"><span>🔍</span><input placeholder="Kullanıcı ara..."></div>
+                        </div>
+                        <table>
+                            <thead><tr><th>Kullanıcı</th><th>Rol</th><th>Kayıt Tarihi</th><th>Sipariş</th><th>Durum</th><th style="text-align:right;">İşlem</th></tr></thead>
+                            <tbody id="usersBody"></tbody>
+                        </table>
+                        <div class="table-foot"><span>7 / 9.380 kayıt gösteriliyor</span><div class="pager"><button class="active">1</button><button>2</button><button>3</button><button>›</button></div></div>
+                    </div>
+                </section>
+
+                <!-- ============ ORGANIZERS ============ -->
+                <section class="view" id="view-organizers">
+                    <div class="view-head"><div><h2>Organizatörler</h2><p>Organizatör hesaplarını ve onay başvurularını yönet.</p></div></div>
+                    <div class="two-col">
+                        <div class="card">
+                            <h3 style="font-size:15px;margin-bottom:14px;">Onay Bekleyen Başvurular</h3>
+                            <div id="approveList"></div>
+                        </div>
+                        <div class="card">
+                            <h3 style="font-size:15px;margin-bottom:14px;">Aktif Organizatörler</h3>
+                            <div id="orgMiniList"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ ORDERS ============ -->
+                <section class="view" id="view-orders">
+                    <div class="view-head">
+                        <div><h2>Siparişler / Biletler</h2><p>Tüm bilet siparişlerini görüntüle ve yönet.</p></div>
+                        <div class="head-actions"><button class="btn btn-ghost">Dışa Aktar (CSV)</button></div>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-toolbar">
+                            <div class="filter-chips">
+                                <button class="f-chip active">Tümü</button><button class="f-chip">Ödendi</button><button class="f-chip">İade Edildi</button><button class="f-chip">İptal</button>
+                            </div>
+                        </div>
+                        <table>
+                            <thead><tr><th>Sipariş No</th><th>Kullanıcı</th><th>Etkinlik</th><th>Tutar</th><th>Tarih</th><th>Durum</th><th style="text-align:right;">İşlem</th></tr></thead>
+                            <tbody id="ordersBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ============ FINANCE ============ -->
+                <section class="view" id="view-finance">
+                    <div class="view-head"><div><h2>Ödemeler / Finans</h2><p>Platform geliri, komisyonlar ve organizatör ödemeleri.</p></div></div>
+                    <div class="stat-row">
+                        <div class="stat-card"><div class="top"><div class="stat-ic" style="background:rgba(var(--primary-rgb),.14);color:var(--primary);">💵</div></div><b>₺4.82M</b><div class="lbl">Toplam Ciro (Ay)</div></div>
+                        <div class="stat-card"><div class="top"><div class="stat-ic" style="background:rgba(var(--accent-rgb),.14);color:var(--accent);">🧮</div></div><b>₺482K</b><div class="lbl">Platform Komisyonu</div></div>
+                        <div class="stat-card"><div class="top"><div class="stat-ic" style="background:rgba(255,180,84,.14);color:var(--warn);">⏳</div></div><b>₺1.1M</b><div class="lbl">Bekleyen Ödeme</div></div>
+                        <div class="stat-card"><div class="top"><div class="stat-ic" style="background:rgba(var(--danger-rgb),.14);color:var(--danger);">↩️</div></div><b>₺64K</b><div class="lbl">İade Tutarı</div></div>
+                    </div>
+                    <div class="table-card">
+                        <div class="table-toolbar"><h3 style="font-size:15px;">Organizatör Ödeme Kuyruğu</h3></div>
+                        <table>
+                            <thead><tr><th>Organizatör</th><th>Dönem</th><th>Brüt Satış</th><th>Komisyon</th><th>Net Ödeme</th><th>Durum</th><th style="text-align:right;">İşlem</th></tr></thead>
+                            <tbody id="payoutBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ============ NOTIFICATIONS ============ -->
+                <section class="view" id="view-notifications">
+                    <div class="view-head"><div><h2>Bildirimler</h2><p>Sistem ve kullanıcı bildirimleri.</p></div><div class="head-actions"><button class="btn btn-ghost">Tümünü Okundu İşaretle</button></div></div>
+                    <div class="card"><div id="notifList"></div></div>
+                </section>
+
+                <!-- ============ SETTINGS ============ -->
+                <section class="view" id="view-settings">
+                    <div class="view-head"><div><h2>Ayarlar & Roller</h2><p>Platform ayarları ve yönetici izinleri.</p></div></div>
+                    <div class="card settings-grid">
+                        <div class="settings-nav">
+                            <button class="active" data-panel="general">Genel</button>
+                            <button data-panel="roles">Roller & İzinler</button>
+                            <button data-panel="payments">Ödeme Ayarları</button>
+                            <button data-panel="notif-settings">Bildirim Ayarları</button>
+                        </div>
+                        <div class="settings-panel">
+                            <div class="settings-panel-view active" id="panel-general">
+                                <div class="f-row"><label>Platform Adı</label><input type="text" value="TicketBox"></div>
+                                <div class="f-row"><label>Destek E-postası</label><input type="email" value="destek@ticketbox.com.tr"></div>
+                                <div class="f-row"><label>Varsayılan Komisyon Oranı (%)</label><input type="number" value="10"></div>
+                                <div class="f-row"><label>Platform Açıklaması</label><textarea>Türkiye'nin yeni nesil etkinlik ve bilet platformu.</textarea></div>
+                                <button class="btn btn-primary">Değişiklikleri Kaydet</button>
+                            </div>
+                            <div class="settings-panel-view" id="panel-roles" style="display:none;">
+                                <div class="role-row"><div><h4>Süper Yönetici</h4><span>Tüm sisteme tam erişim</span></div><label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+                                <div class="role-row"><div><h4>İçerik Editörü</h4><span>Etkinlik, blog ve kategori yönetimi</span></div><label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+                                <div class="role-row"><div><h4>Finans Yöneticisi</h4><span>Ödeme ve komisyon işlemleri</span></div><label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+                                <div class="role-row"><div><h4>Destek Ekibi</h4><span>Kullanıcı ve sipariş görüntüleme</span></div><label class="switch"><input type="checkbox"><span class="track"></span></label></div>
+                                <div class="role-row"><div><h4>Moderatör</h4><span>Yorum ve organizatör onayları</span></div><label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+                            </div>
+                            <div class="settings-panel-view" id="panel-payments" style="display:none;">
+                                <div class="f-row"><label>Ödeme Sağlayıcı</label><select><option>iyzico</option><option>PayTR</option><option>Stripe</option></select></div>
+                                <div class="f-row"><label>Otomatik Ödeme Periyodu</label><select><option>Haftalık</option><option>Aylık</option><option>Manuel</option></select></div>
+                                <button class="btn btn-primary">Kaydet</button>
+                            </div>
+                            <div class="settings-panel-view" id="panel-notif-settings" style="display:none;">
+                                <div class="role-row"><div><h4>Yeni sipariş bildirimi</h4><span>E-posta ile bildir</span></div><label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+                                <div class="role-row"><div><h4>Organizatör başvurusu</h4><span>Anlık bildirim gönder</span></div><label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+                                <div class="role-row"><div><h4>Yorum şikayeti</h4><span>Moderasyon ekibine ilet</span></div><label class="switch"><input type="checkbox"><span class="track"></span></label></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ MODALS ============ -->
+    <div class="modal-overlay" id="eventModal">
+        <div class="modal">
+            <div class="modal-head"><h3>Yeni Etkinlik Ekle</h3><button class="btn-icon-only" onclick="closeModal('eventModal')">✕</button></div>
+            <div class="modal-body">
+                <div class="f-row"><label>Etkinlik Adı</label><input type="text" placeholder="örn. Aurora Fest 2026"></div>
+                <div class="f-row"><label>Kategori</label><select><option>Konser</option><option>Tiyatro</option><option>Spor</option><option>Festival</option></select></div>
+                <div class="f-row"><label>Şehir / Mekan</label><input type="text" placeholder="İstanbul · KüçükÇiftlik Park"></div>
+                <div class="f-row"><label>Tarih & Saat</label><input type="text" placeholder="18.08.2026 20:00"></div>
+                <div class="f-row"><label>Bilet Fiyatı (₺)</label><input type="number" placeholder="450"></div>
+            </div>
+            <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('eventModal')">Vazgeç</button><button class="btn btn-primary" onclick="saveAndToast('eventModal','Etkinlik başarıyla eklendi')">Kaydet</button></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="simpleModal">
+        <div class="modal">
+            <div class="modal-head"><h3 id="simpleModalTitle">Yeni Kayıt</h3><button class="btn-icon-only" onclick="closeModal('simpleModal')">✕</button></div>
+            <div class="modal-body">
+                <div class="f-row"><label>Ad / Başlık</label><input type="text" placeholder="Değer girin"></div>
+                <div class="f-row"><label>Açıklama</label><textarea placeholder="Kısa açıklama..."></textarea></div>
+            </div>
+            <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('simpleModal')">Vazgeç</button><button class="btn btn-primary" onclick="saveAndToast('simpleModal','Kayıt başarıyla oluşturuldu')">Kaydet</button></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal" style="max-width:400px;">
+            <div class="modal-head"><h3>Emin misiniz?</h3><button class="btn-icon-only" onclick="closeModal('confirmModal')">✕</button></div>
+            <div class="modal-body"><p style="font-size:13.5px;color:var(--subtitle);line-height:1.6;">Bu işlem geri alınamaz. Devam etmek istediğinize emin misiniz?</p></div>
+            <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('confirmModal')">Vazgeç</button><button class="btn btn-danger" onclick="saveAndToast('confirmModal','Kayıt silindi')">Evet, Sil</button></div>
+        </div>
+    </div>
+
+    <div class="toast-wrap" id="toastWrap"></div>
+
+    <script>
+        /* ============ NAV / VIEW SWITCHING ============ */
+        const titles = {
+          dashboard:['Genel Bakış','Platformun anlık durumu ve performans özeti'],
+          events:['Etkinlik Yönetimi','Tüm etkinlikleri görüntüle, onayla, düzenle veya kaldır'],
+          categories:['Kategoriler','Etkinlik kategorilerini yönet'],
+          cities:['Şehirler','Platformda hizmet verilen şehirleri yönet'],
+          blog:['Blog Yönetimi','Blog yazılarını oluştur, düzenle ve yayınla'],
+          sponsors:['Sponsorlar','İş ortaklarını ve sponsor logolarını yönet'],
+          reviews:['Yorum Moderasyonu','Kullanıcı yorumlarını incele, onayla veya kaldır'],
+          users:['Kullanıcılar','Platformdaki tüm kullanıcı hesaplarını yönet'],
+          organizers:['Organizatörler','Organizatör hesaplarını ve onay başvurularını yönet'],
+          orders:['Siparişler / Biletler','Tüm bilet siparişlerini görüntüle ve yönet'],
+          finance:['Ödemeler / Finans','Platform geliri, komisyonlar ve organizatör ödemeleri'],
+          notifications:['Bildirimler','Sistem ve kullanıcı bildirimleri'],
+          settings:['Ayarlar & Roller','Platform ayarları ve yönetici izinleri'],
+        };
+        document.querySelectorAll('.nav-item[data-view]').forEach(item=>{
+          item.addEventListener('click',()=>{
+            document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+            item.classList.add('active');
+            const v = item.dataset.view;
+            document.querySelectorAll('.view').forEach(sec=>sec.classList.remove('active'));
+            document.getElementById('view-'+v).classList.add('active');
+            document.getElementById('pageTitle').textContent = titles[v][0];
+            document.getElementById('pageSub').textContent = titles[v][1];
+            if(window.innerWidth<=900) document.getElementById('sidebar').classList.remove('open');
+          });
+        });
+        document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+
+        /* ============ THEME SWITCH ============ */
+        const themeSwitch=document.getElementById('themeSwitch'), themeBtn=document.getElementById('themeBtn'), themeMenu=document.getElementById('themeMenu'), themeDot=document.getElementById('themeDot');
+        themeBtn.addEventListener('click',e=>{e.stopPropagation();themeSwitch.classList.toggle('open');});
+        document.addEventListener('click',()=>themeSwitch.classList.remove('open'));
+        document.querySelectorAll('.theme-opt').forEach(opt=>{
+          opt.addEventListener('click',()=>{
+            document.body.setAttribute('data-theme', opt.dataset.theme);
+            document.querySelectorAll('.theme-opt').forEach(o=>o.classList.remove('active'));
+            opt.classList.add('active');
+            themeDot.style.background = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+            refreshCharts();
+          });
+        });
+
+        /* ============ SETTINGS TABS ============ */
+        document.querySelectorAll('.settings-nav button').forEach(btn=>{
+          btn.addEventListener('click',()=>{
+            document.querySelectorAll('.settings-nav button').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.settings-panel-view').forEach(p=>p.style.display='none');
+            document.getElementById('panel-'+btn.dataset.panel).style.display='block';
+          });
+        });
+
+        /* ============ FILTER CHIPS ============ */
+        document.querySelectorAll('.filter-chips').forEach(group=>{
+          group.querySelectorAll('.f-chip').forEach(chip=>{
+            chip.addEventListener('click',()=>{
+              group.querySelectorAll('.f-chip').forEach(c=>c.classList.remove('active'));
+              chip.classList.add('active');
+            });
+          });
+        });
+
+        /* ============ MODALS ============ */
+        function openModal(id,title){
+          if(title) document.getElementById('simpleModalTitle').textContent = title;
+          document.getElementById(id).classList.add('open');
+        }
+        function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+        function saveAndToast(id,msg){
+          closeModal(id);
+          const wrap=document.getElementById('toastWrap');
+          const t=document.createElement('div');
+          t.className='toast';
+          t.innerHTML = '<span class="ic">✓</span> '+msg;
+          wrap.appendChild(t);
+          setTimeout(()=>t.remove(),3400);
+        }
+        document.querySelectorAll('.modal-overlay').forEach(ov=>{
+          ov.addEventListener('click',e=>{ if(e.target===ov) ov.classList.remove('open'); });
+        });
+
+        /* ============ DATA ============ */
+        const events = [
+          {title:'Aurora Fest 2026',cat:'Konser',city:'İstanbul',date:'18 Ağu 2026',org:'NovaEvents',fill:82,status:'live'},
+          {title:'Şampiyonlar Ligi Finali',cat:'Spor',city:'İstanbul',date:'02 Eyl 2026',org:'ArenaLive',fill:96,status:'live'},
+          {title:'Gölgede Kalan Şehir',cat:'Tiyatro',city:'Ankara',date:'24 Ağu 2026',org:'Sahne7',fill:45,status:'pending'},
+          {title:'Kıyı Elektronik Festival',cat:'Festival',city:'İzmir',date:'12 Eyl 2026',org:'PulseCollective',fill:70,status:'live'},
+          {title:'Gece Yarısı Kahkaha',cat:'Stand-up',city:'İstanbul',date:'05 Eyl 2026',org:'GülBir',fill:58,status:'draft'},
+          {title:'Akustik Gece: Bosphorus',cat:'Konser',city:'İstanbul',date:'29 Ağu 2026',org:'Meridyen Prod.',fill:38,status:'ended'},
+        ];
+        const statusMap = {live:['Yayında','green'],pending:['Onay Bekliyor','orange'],draft:['Taslak','gray'],ended:['Sona Erdi','red']};
+
+        function fillBar(pct){ return `<span class="mini-bar"><i style="width:${pct}%"></i></span>${pct}%`; }
+        function statusBadge(s){ const [label,color]=statusMap[s]; return `<span class="badge ${color}">${label}</span>`; }
+
+        document.getElementById('eventsBody').innerHTML = events.map(e=>`
+          <tr>
+            <td><div class="cell-main"><div class="cell-avatar"></div><div><div class="cell-title">${e.title}</div><div class="cell-sub">${e.date}</div></div></div></td>
+            <td>${e.cat}</td>
+            <td>${e.city}</td>
+            <td>${e.org}</td>
+            <td>${fillBar(e.fill)}</td>
+            <td>${statusBadge(e.status)}</td>
+            <td><div class="row-actions"><button class="btn-icon-only" title="Görüntüle">👁</button><button class="btn-icon-only" title="Düzenle" onclick="openModal('eventModal')">✎</button><button class="btn-icon-only" title="Sil" onclick="openModal('confirmModal')" style="color:var(--danger);">🗑</button></div></td>
+          </tr>`).join('');
+
+        document.getElementById('topEventsBody').innerHTML = events.slice(0,5).map(e=>`
+          <tr>
+            <td><div class="cell-main"><div class="cell-avatar"></div><div class="cell-title">${e.title}</div></div></td>
+            <td>${e.city}</td>
+            <td>${Math.floor(e.fill*38)}</td>
+            <td>${fillBar(e.fill)}</td>
+            <td><b style="font-family:var(--font-mono);font-size:12.5px;">₺${(e.fill*4210).toLocaleString('tr-TR')}</b></td>
+          </tr>`).join('');
+
+        const categories = [
+          {ic:'🎵',name:'Konser',count:'1.240 etkinlik'},{ic:'🎭',name:'Tiyatro',count:'560 etkinlik'},
+          {ic:'⚽',name:'Spor',count:'890 etkinlik'},{ic:'🎪',name:'Festival',count:'320 etkinlik'},
+          {ic:'🎤',name:'Stand-up',count:'410 etkinlik'},{ic:'👨‍👩‍👧',name:'Aile',count:'275 etkinlik'},
+          {ic:'🎬',name:'Sinema',count:'190 etkinlik'},{ic:'🎨',name:'Sanat',count:'140 etkinlik'},
+        ];
+        document.getElementById('categoriesGrid').innerHTML = categories.map(c=>`
+          <div class="manage-tile"><span class="tile-menu">⋮</span><div class="ic">${c.ic}</div><h4>${c.name}</h4><span>${c.count}</span></div>`).join('')
+          + `<div class="manage-tile add-tile" onclick="openModal('simpleModal','Yeni Kategori')"><div style="font-size:22px;">+</div><span>Yeni Kategori</span></div>`;
+
+        const cities = [
+          {ic:'🏙️',name:'İstanbul',count:'4.200+ etkinlik'},{ic:'🏛️',name:'Ankara',count:'1.100+ etkinlik'},
+          {ic:'🌊',name:'İzmir',count:'890+ etkinlik'},{ic:'🏖️',name:'Antalya',count:'640+ etkinlik'},
+          {ic:'🌳',name:'Bursa',count:'510+ etkinlik'},{ic:'🌶️',name:'Adana',count:'330+ etkinlik'},
+        ];
+        document.getElementById('citiesGrid').innerHTML = cities.map(c=>`
+          <div class="manage-tile"><span class="tile-menu">⋮</span><div class="ic">${c.ic}</div><h4>${c.name}</h4><span>${c.count}</span></div>`).join('')
+          + `<div class="manage-tile add-tile" onclick="openModal('simpleModal','Yeni Şehir')"><div style="font-size:22px;">+</div><span>Yeni Şehir</span></div>`;
+
+        const sponsors = [
+          {n:'NovaWave'},{n:'Orbitel'},{n:'Kentro'},{n:'Fluxbank'},{n:'Solace'},{n:'Meridyen'},
+        ];
+        document.getElementById('sponsorsGrid').innerHTML = sponsors.map(s=>`
+          <div class="manage-tile"><span class="tile-menu">⋮</span><div class="ic" style="border-radius:50%;">${s.n.slice(0,2).toUpperCase()}</div><h4>${s.n}</h4><span>Aktif sponsor</span></div>`).join('')
+          + `<div class="manage-tile add-tile" onclick="openModal('simpleModal','Yeni Sponsor')"><div style="font-size:22px;">+</div><span>Yeni Sponsor</span></div>`;
+
+        const blogs = [
+          {t:'2026 sonbaharının en çok konuşulan 10 festivali',tag:'Rehber',author:'Ece Yıldız',date:'12 Tem 2026',status:'live'},
+          {t:'Bir konser nasıl sahneleniyor? Perde arkası',tag:'Kulis',author:'Onur Kaya',date:'04 Tem 2026',status:'live'},
+          {t:'En uygun bilet fiyatını yakalamanın 5 yolu',tag:'İpucu',author:'Ece Yıldız',date:'28 Haz 2026',status:'draft'},
+        ];
+        document.getElementById('blogBody').innerHTML = blogs.map(b=>`
+          <tr><td><div class="cell-title">${b.t}</div></td><td>${b.tag}</td><td>${b.author}</td><td>${b.date}</td><td>${statusBadge(b.status==='live'?'live':'draft')}</td>
+          <td><div class="row-actions"><button class="btn-icon-only">✎</button><button class="btn-icon-only" style="color:var(--danger);" onclick="openModal('confirmModal')">🗑</button></div></td></tr>`).join('');
+
+        const reviews = [
+          {name:'Kerem S.',city:'İstanbul',stars:2,text:'Etkinlik iptal oldu ama iade süreci çok yavaş işledi.',flag:true},
+          {name:'Aslı D.',city:'İzmir',stars:5,text:'Muhteşem bir organizasyondu, her şey zamanında ilerledi.',flag:false},
+          {name:'Uğur B.',city:'Ankara',stars:1,text:'Bu yorum uygunsuz içerik nedeniyle şikayet edildi.',flag:true},
+          {name:'Nazlı P.',city:'Bursa',stars:4,text:'Bilet alma deneyimi çok akıcıydı, tavsiye ederim.',flag:false},
+        ];
+        document.getElementById('reviewList').innerHTML = reviews.map(r=>`
+          <div class="review-item">
+            <div class="review-top"><div class="av"></div><div><b>${r.name}</b> <span>· ${r.city}</span></div><div class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>${r.flag?'<span class="review-flag">Şikayet</span>':''}</div>
+            <p>${r.text}</p>
+            <div class="row-actions" style="justify-content:flex-start;"><button class="btn btn-sm btn-ghost">Onayla</button><button class="btn btn-sm btn-danger" onclick="openModal('confirmModal')">Kaldır</button></div>
+          </div>`).join('');
+
+        const orgApprovals = [
+          {n:'StageWorks Prod.',c:'İstanbul',t:'3 gün önce başvurdu'},
+          {n:'Anadolu Etkinlik',c:'Ankara',t:'1 gün önce başvurdu'},
+          {n:'Ege Sahne',c:'İzmir',t:'5 saat önce başvurdu'},
+        ];
+        document.getElementById('approveList').innerHTML = orgApprovals.map(o=>`
+          <div class="approve-card"><div class="cell-avatar"></div><div class="info"><h4>${o.n}</h4><span>${o.c} · ${o.t}</span></div>
+          <div class="approve-actions"><button class="btn btn-sm btn-primary">Onayla</button><button class="btn btn-sm btn-danger" onclick="openModal('confirmModal')">Reddet</button></div></div>`).join('');
+
+        const orgsMini = [
+          {n:'NovaEvents',c:'1.2K etkinlik',v:true},{n:'ArenaLive',c:'860 etkinlik',v:true},
+          {n:'Sahne7',c:'410 etkinlik',v:false},{n:'PulseCollective',c:'320 etkinlik',v:true},
+        ];
+        document.getElementById('orgMiniList').innerHTML = orgsMini.map(o=>`
+          <div class="approve-card"><div class="cell-avatar"></div><div class="info"><h4>${o.n} ${o.v?'<span style="color:var(--accent);">✓</span>':''}</h4><span>${o.c}</span></div>
+          <label class="switch"><input type="checkbox" ${o.v?'checked':''}><span class="track"></span></label></div>`).join('');
+
+        const users = [
+          {n:'Elif Kaya',e:'elif.kaya@mail.com',role:'Kullanıcı',date:'12 Oca 2026',orders:14,status:'active'},
+          {n:'Baran Turan',e:'baran.t@mail.com',role:'Kullanıcı',date:'03 Mar 2026',orders:6,status:'active'},
+          {n:'Deniz Arslan',e:'deniz.a@mail.com',role:'Organizatör',date:'22 Şub 2026',orders:0,status:'active'},
+          {n:'Kerem Sancak',e:'kerem.s@mail.com',role:'Kullanıcı',date:'15 Nis 2026',orders:2,status:'suspended'},
+          {n:'Aslı Demir',e:'asli.d@mail.com',role:'Kullanıcı',date:'29 May 2026',orders:9,status:'active'},
+          {n:'Uğur Baş',e:'ugur.b@mail.com',role:'Kullanıcı',date:'07 Haz 2026',orders:1,status:'banned'},
+          {n:'Nazlı Polat',e:'nazli.p@mail.com',role:'Editör',date:'19 Tem 2026',orders:0,status:'active'},
+        ];
+        const userStatusMap = {active:['Aktif','green'],suspended:['Askıda','orange'],banned:['Yasaklı','red']};
+        document.getElementById('usersBody').innerHTML = users.map(u=>{
+          const [label,color]=userStatusMap[u.status];
+          return `<tr><td><div class="cell-main"><div class="cell-avatar round"></div><div><div class="cell-title">${u.n}</div><div class="cell-sub">${u.e}</div></div></div></td>
+          <td><span class="badge blue">${u.role}</span></td><td>${u.date}</td><td>${u.orders}</td><td><span class="badge ${color}">${label}</span></td>
+          <td><div class="row-actions"><button class="btn-icon-only">👁</button><button class="btn-icon-only">✎</button><button class="btn-icon-only" style="color:var(--danger);" onclick="openModal('confirmModal')">⛔</button></div></td></tr>`;
+        }).join('');
+
+        const orders = [
+          {no:'#TB-88213',user:'Elif Kaya',event:'Aurora Fest 2026',amount:'₺900',date:'21 Tem 2026',status:'paid'},
+          {no:'#TB-88214',user:'Baran Turan',event:'Şampiyonlar Ligi Finali',amount:'₺1.960',date:'21 Tem 2026',status:'paid'},
+          {no:'#TB-88190',user:'Kerem Sancak',event:'Gölgede Kalan Şehir',amount:'₺440',date:'19 Tem 2026',status:'refunded'},
+          {no:'#TB-88175',user:'Nazlı Polat',event:'Kıyı Elektronik Festival',amount:'₺650',date:'18 Tem 2026',status:'cancelled'},
+          {no:'#TB-88160',user:'Aslı Demir',event:'Gece Yarısı Kahkaha',amount:'₺310',date:'17 Tem 2026',status:'paid'},
+        ];
+        const orderStatusMap = {paid:['Ödendi','green'],refunded:['İade Edildi','orange'],cancelled:['İptal','red']};
+        document.getElementById('ordersBody').innerHTML = orders.map(o=>{
+          const [label,color]=orderStatusMap[o.status];
+          return `<tr><td style="font-family:var(--font-mono);">${o.no}</td><td>${o.user}</td><td>${o.event}</td><td><b>${o.amount}</b></td><td>${o.date}</td><td><span class="badge ${color}">${label}</span></td>
+          <td><div class="row-actions"><button class="btn-icon-only">👁</button><button class="btn-icon-only" title="İade" onclick="openModal('confirmModal')">↩</button></div></td></tr>`;
+        }).join('');
+
+        const payouts = [
+          {n:'NovaEvents',period:'Temmuz 2026',gross:'₺820.000',fee:'₺82.000',net:'₺738.000',status:'pending'},
+          {n:'ArenaLive',period:'Temmuz 2026',gross:'₺1.240.000',fee:'₺124.000',net:'₺1.116.000',status:'paid'},
+          {n:'PulseCollective',period:'Temmuz 2026',gross:'₺410.000',fee:'₺41.000',net:'₺369.000',status:'pending'},
+        ];
+        document.getElementById('payoutBody').innerHTML = payouts.map(p=>`
+          <tr><td><div class="cell-main"><div class="cell-avatar"></div>${p.n}</div></td><td>${p.period}</td><td>${p.gross}</td><td>${p.fee}</td><td><b>${p.net}</b></td>
+          <td>${p.status==='paid'?'<span class="badge green">Ödendi</span>':'<span class="badge orange">Bekliyor</span>'}</td>
+          <td><div class="row-actions">${p.status==='pending'?'<button class="btn btn-sm btn-primary">Ödemeyi Onayla</button>':'<button class="btn-icon-only">👁</button>'}</div></td></tr>`).join('');
+
+        const notifs = [
+          {ic:'🎟️',c:'primary',t:'Yeni etkinlik onay bekliyor',s:'"Gölgede Kalan Şehir" incelemenizi bekliyor',time:'5 dk önce'},
+          {ic:'🏷️',c:'accent',t:'Yeni organizatör başvurusu',s:'Ege Sahne platforma katılmak için başvurdu',time:'2 saat önce'},
+          {ic:'⚑',c:'danger',t:'Yorum şikayeti alındı',s:'Bir kullanıcı yorumu uygunsuz içerik olarak işaretledi',time:'4 saat önce'},
+          {ic:'💳',c:'warn',t:'Ödeme kuyruğunda bekleyen tutar',s:'2 organizatör ödemesi onay bekliyor',time:'1 gün önce'},
+          {ic:'👤',c:'secondary',t:'Kullanıcı şikayeti',s:'Bir sipariş için iade talebi oluşturuldu',time:'1 gün önce'},
+          {ic:'📈',c:'accent',t:'Haftalık rapor hazır',s:'Bu haftaki performans özeti oluşturuldu',time:'2 gün önce'},
+        ];
+        document.getElementById('notifList').innerHTML = notifs.map(n=>`
+          <div class="feed-item"><div class="feed-ic" style="background:rgba(var(--${n.c}-rgb,124,92,255),.14);color:var(--${n.c==='warn'?'warn':n.c});">${n.ic}</div>
+          <div><p><b>${n.t}</b></p><p>${n.s}</p><span>${n.time}</span></div></div>`).join('');
+
+        document.getElementById('activityFeed').innerHTML = [
+          {ic:'🎟️',c:'primary',txt:'<b>Aurora Fest 2026</b> için 42 yeni bilet satıldı',time:'12 dk önce'},
+          {ic:'✓',c:'accent',txt:'<b>StageWorks Prod.</b> organizatör onayı verildi',time:'38 dk önce'},
+          {ic:'💳',c:'secondary',txt:'<b>ArenaLive</b> ödemesi başarıyla gerçekleşti',time:'1 saat önce'},
+          {ic:'⚑',c:'danger',txt:'Bir yorum şikayet nedeniyle incelemeye alındı',time:'3 saat önce'},
+          {ic:'📝',c:'warn',txt:'Yeni blog yazısı yayınlandı: "En uygun bilet fiyatı"',time:'6 saat önce'},
+        ].map(a=>`<div class="feed-item"><div class="feed-ic" style="background:rgba(var(--${a.c}-rgb),.14);color:var(--${a.c});">${a.ic}</div><div><p>${a.txt}</p><span>${a.time}</span></div></div>`).join('');
+
+        /* ============ COUNTERS ============ */
+        function animateCounter(el,target,prefix){
+          let start=performance.now(), dur=1400;
+          function tick(now){
+            const p=Math.min((now-start)/dur,1), eased=1-Math.pow(1-p,3);
+            const cur=Math.floor(eased*target);
+            el.textContent=(prefix||'')+cur.toLocaleString('tr-TR');
+            if(p<1) requestAnimationFrame(tick); else el.textContent=(prefix||'')+target.toLocaleString('tr-TR');
+          }
+          requestAnimationFrame(tick);
+        }
+        document.querySelectorAll('.counter').forEach(el=>animateCounter(el,+el.dataset.target,el.dataset.prefix));
+
+        /* ============ CHARTS ============ */
+        function cssVar(name){ return getComputedStyle(document.body).getPropertyValue(name).trim(); }
+        let revenueChart, categoryChart;
+        function buildCharts(){
+          const ctx1=document.getElementById('revenueChart').getContext('2d');
+          const grad=ctx1.createLinearGradient(0,0,0,220);
+          grad.addColorStop(0, 'rgba('+cssVar('--primary-rgb')+',.35)');
+          grad.addColorStop(1, 'rgba('+cssVar('--primary-rgb')+',0)');
+          revenueChart = new Chart(ctx1,{
+            type:'line',
+            data:{labels:['Ağu','Eyl','Eki','Kas','Ara','Oca','Şub','Mar','Nis','May','Haz','Tem'],
+              datasets:[{label:'Gelir',data:[2.1,2.4,2.2,2.8,3.4,3.1,3.6,3.9,4.0,4.3,4.5,4.82],borderColor:cssVar('--primary'),backgroundColor:grad,fill:true,tension:.4,pointRadius:0,borderWidth:2.5}]},
+            options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:cssVar('--subtitle'),font:{size:11}}},y:{grid:{color:cssVar('--border')},ticks:{color:cssVar('--subtitle'),font:{size:11},callback:v=>'₺'+v+'M'}}}}
+          });
+          const ctx2=document.getElementById('categoryChart').getContext('2d');
+          const catColors=[cssVar('--primary'),cssVar('--secondary'),cssVar('--accent'),cssVar('--warn') || '#FFB454', cssVar('--danger')];
+          categoryChart = new Chart(ctx2,{
+            type:'doughnut',
+            data:{labels:['Konser','Spor','Festival','Tiyatro','Diğer'],datasets:[{data:[38,24,18,12,8],backgroundColor:catColors,borderWidth:0}]},
+            options:{cutout:'68%',plugins:{legend:{display:false}}}
+          });
+          document.getElementById('catLegend').innerHTML = ['Konser','Spor','Festival','Tiyatro','Diğer'].map((l,i)=>`<div class="legend-item"><i style="background:${catColors[i]}"></i>${l}</div>`).join('');
+        }
+        function refreshCharts(){
+          if(!revenueChart) return;
+          const grad=revenueChart.ctx.createLinearGradient(0,0,0,220);
+          grad.addColorStop(0,'rgba('+cssVar('--primary-rgb')+',.35)'); grad.addColorStop(1,'rgba('+cssVar('--primary-rgb')+',0)');
+          revenueChart.data.datasets[0].borderColor=cssVar('--primary'); revenueChart.data.datasets[0].backgroundColor=grad;
+          revenueChart.options.scales.x.ticks.color=cssVar('--subtitle'); revenueChart.options.scales.y.ticks.color=cssVar('--subtitle'); revenueChart.options.scales.y.grid.color=cssVar('--border');
+          revenueChart.update();
+          categoryChart.data.datasets[0].backgroundColor=[cssVar('--primary'),cssVar('--secondary'),cssVar('--accent'),cssVar('--warn'),cssVar('--danger')];
+          categoryChart.update();
+          document.getElementById('catLegend').innerHTML = ['Konser','Spor','Festival','Tiyatro','Diğer'].map((l,i)=>`<div class="legend-item"><i style="background:${categoryChart.data.datasets[0].backgroundColor[i]}"></i>${l}</div>`).join('');
+        }
+        window.addEventListener('load', buildCharts);
+    </script>
+</body>
+</html>

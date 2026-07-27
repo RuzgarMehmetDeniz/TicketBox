@@ -1,0 +1,74 @@
+﻿
+<script>
+    /* ============ NAV / VIEW SWITCHING ============ */
+    const titles = {
+      events:['Etkinlik Yönetimi','Tüm etkinlikleri görüntüle, onayla, düzenle veya kaldır'],
+      // yeni entity eklerken buraya key ekle: yenientity:['Başlık','Alt açıklama']
+    };
+    document.querySelectorAll('.nav-item[data-view]').forEach(item=>{
+      item.addEventListener('click',()=>{
+        document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+        item.classList.add('active');
+        const v = item.dataset.view;
+        document.querySelectorAll('.view').forEach(sec=>sec.classList.remove('active'));
+        document.getElementById('view-'+v).classList.add('active');
+        document.getElementById('pageTitle').textContent = titles[v][0];
+        document.getElementById('pageSub').textContent = titles[v][1];
+        if(window.innerWidth<=900) document.getElementById('sidebar').classList.remove('open');
+      });
+    });
+    document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+
+    /* ============ THEME SWITCH ============ */
+    const themeSwitch=document.getElementById('themeSwitch'), themeBtn=document.getElementById('themeBtn'), themeDot=document.getElementById('themeDot');
+    themeBtn.addEventListener('click',e=>{e.stopPropagation();themeSwitch.classList.toggle('open');});
+    document.addEventListener('click',()=>themeSwitch.classList.remove('open'));
+    document.querySelectorAll('.theme-opt').forEach(opt=>{
+      opt.addEventListener('click',()=>{
+        document.body.setAttribute('data-theme', opt.dataset.theme);
+        document.querySelectorAll('.theme-opt').forEach(o=>o.classList.remove('active'));
+        opt.classList.add('active');
+        themeDot.style.background = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+      });
+    });
+
+    /* ============ FILTER CHIPS (her .view kendi tablosunu filtreler) ============ */
+    // Her sayfa (.view) kendi filter-chips + tbody çiftine sahip.
+    // Bir sayfadaki filtre butonuna basmak sadece o sayfanın tablosunu etkiler,
+    // diğer entity sayfalarına hiç dokunmaz.
+    document.querySelectorAll('.view').forEach(view=>{
+      const chipGroup = view.querySelector('.filter-chips');
+      const tbody = view.querySelector('tbody');
+      if(!chipGroup || !tbody) return;
+
+      chipGroup.querySelectorAll('.f-chip').forEach(chip=>{
+        chip.addEventListener('click',()=>{
+          chipGroup.querySelectorAll('.f-chip').forEach(c=>c.classList.remove('active'));
+          chip.classList.add('active');
+
+          const filter = chip.dataset.filter; // "all" | "live" | "pending" | "draft" | "ended"
+          let visibleCount = 0;
+
+          tbody.querySelectorAll('tr').forEach(row=>{
+            const match = filter === 'all' || row.dataset.status === filter;
+            row.style.display = match ? '' : 'none';
+            if(match) visibleCount++;
+          });
+
+          // Hiç satır kalmadıysa boş durum mesajı göster (opsiyonel)
+          let emptyRow = tbody.querySelector('.empty-row');
+          if(visibleCount === 0){
+            if(!emptyRow){
+              emptyRow = document.createElement('tr');
+              emptyRow.className = 'empty-row';
+              const colCount = view.querySelectorAll('thead th').length || 7;
+              emptyRow.innerHTML = `<td colspan="${colCount}" class="empty-hint">Bu filtreye uyan kayıt bulunamadı.</td>`;
+              tbody.appendChild(emptyRow);
+            }
+          } else if(emptyRow){
+            emptyRow.remove();
+          }
+        });
+      });
+    });
+</script>

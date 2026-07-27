@@ -1,0 +1,74 @@
+﻿@model TicketBox.Application.Features.CQRS.Categories.Commands.CreateCategoryCommand
+
+@{
+    ViewData["Title"] = "Yeni Kategori";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="view active">
+    <div class="view-head">
+        <div>
+            <h2>Yeni Kategori</h2>
+            <p>Yeni bir etkinlik kategorisi ekleyin.</p>
+        </div>
+
+        <div class="head-actions">
+            <a class="btn btn-ghost" href="@Url.Action("CategoryList", "AdminCategory")">
+                ← Listeye Dön
+            </a>
+        </div>
+    </div>
+
+    <div class="card" style="max-width:700px;">
+
+        <form asp-action="CategoryCreate" asp-controller="AdminCategory" method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly"></div>
+
+            <div class="f-row">
+                <label>Kategori Adı</label>
+                <input asp-for="CategoryName" placeholder="Kategori adını giriniz..." />
+                <span asp-validation-for="CategoryName"></span>
+            </div>
+
+            <div class="f-row">
+                <label>İkon Url</label>
+                <input asp-for="IconUrl" placeholder="https://..." />
+                <span asp-validation-for="IconUrl"></span>
+            </div>
+
+            <div class="f-row">
+                <label>Açıklama</label>
+                <textarea asp-for="Description" rows="5" placeholder="Kategori açıklaması..."></textarea>
+                <span asp-validation-for="Description"></span>
+            </div>
+
+            <div class="f-row" style="flex-direction:row;align-items:center;gap:12px;">
+                <label class="switch">
+                    <input asp-for="IsActive" />
+                    <span class="track"></span>
+                </label>
+
+                <span>Aktif</span>
+            </div>
+
+            <div class="modal-foot">
+                <button type="submit" class="btn btn-primary">
+                    Kaydet
+                </button>
+
+                <a href="@Url.Action("CategoryList", "AdminCategory")" class="btn btn-ghost">
+                    Vazgeç
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
