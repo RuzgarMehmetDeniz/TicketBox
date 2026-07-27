@@ -1,0 +1,908 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TicketBox — Etkinlik biletleri, yeniden tasarlandı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============ DESIGN TOKENS ============ */
+  :root{
+    --indigo: #4338CA;
+    --indigo-ink: #2E2A85;
+    --purple: #7C3AED;
+    --emerald: #10B981;
+    --cyan: #06B6D4;
+    --bg: #FCFCFD;
+    --bg-alt: #F3F4F8;
+    --card: #FFFFFF;
+    --ink: #1B1D24;
+    --ink-soft: #5B5F6B;
+    --ink-faint: #90939C;
+    --border: #E7E8EF;
+    --success: #16A34A;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+
+    --font-display: 'Plus Jakarta Sans', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+
+    --radius-lg: 20px;
+    --radius-md: 16px;
+    --radius-sm: 10px;
+    --shadow-sm: 0 1px 2px rgba(27,29,36,0.05), 0 1px 1px rgba(27,29,36,0.03);
+    --shadow-md: 0 10px 30px rgba(46,42,133,0.10);
+    --shadow-lg: 0 30px 70px rgba(46,42,133,0.18);
+    --container: 1220px;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family: var(--font-body);
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+  ul{list-style:none;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none;}
+  .container{max-width: var(--container); margin: 0 auto; padding: 0 32px; position:relative; z-index:2;}
+  section{padding: 108px 0; position:relative; overflow:hidden;}
+  h1,h2,h3,h4{font-family: var(--font-display); letter-spacing: -0.02em; color: var(--ink);}
+  .mono{font-family: var(--font-mono); letter-spacing: 0.02em;}
+
+  /* noise texture, applied globally at very low opacity */
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    opacity:.035; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size: 12.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--indigo);
+    display:flex; align-items:center; gap:8px; margin-bottom: 16px;
+  }
+  .eyebrow::before{ content:""; width:16px; height:2px; background: var(--emerald); border-radius:2px; }
+
+  /* ============ SECTION BACKGROUND SYSTEM ============ */
+  .bg-white{ background: var(--card); }
+  .bg-soft{ background: var(--bg-alt); position:relative; }
+  .bg-soft::before{
+    content:""; position:absolute; inset:0; z-index:0;
+    background: radial-gradient(600px 400px at 15% 10%, rgba(67,56,202,0.06), transparent 60%),
+                radial-gradient(500px 380px at 90% 80%, rgba(124,58,237,0.06), transparent 60%);
+  }
+  .bg-dark-gradient{
+    background: linear-gradient(135deg, #211F5B, #3730A9 45%, #6D28D9 100%);
+    color:white; position:relative;
+  }
+  .bg-dark-gradient::before{
+    content:""; position:absolute; inset:0; z-index:0;
+    background: radial-gradient(700px 500px at 85% 15%, rgba(6,182,212,0.35), transparent 55%),
+                radial-gradient(500px 400px at 10% 90%, rgba(16,185,129,0.2), transparent 55%);
+  }
+  .bg-dark-gradient h2, .bg-dark-gradient .section-head p{ color:white; }
+
+  .divider-wave{ display:block; width:100%; height:64px; margin-top:-1px; position:relative; z-index:2;}
+  .divider-wave path{ fill: var(--bg-alt); }
+  .divider-wave.to-white path{ fill: var(--card); }
+  .divider-wave.to-dark path{ fill: #2E2A85; }
+
+  /* ============ BUTTONS ============ */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding: 14px 26px; border-radius: 999px; font-weight: 600; font-size: 15px;
+    transition: transform .22s cubic-bezier(.2,.9,.3,1.3), box-shadow .22s ease, background .22s ease, filter .22s ease;
+    white-space: nowrap; position:relative;
+  }
+  .btn-primary{
+    background: linear-gradient(135deg, var(--indigo), var(--purple));
+    color: white; box-shadow: 0 12px 26px rgba(67,56,202,0.32);
+  }
+  .btn-primary:hover{ transform: translateY(-3px) scale(1.015); box-shadow: 0 18px 36px rgba(67,56,202,0.42); filter:brightness(1.06); }
+  .btn-ghost{ background: var(--card); border: 1px solid var(--border); color: var(--ink); }
+  .btn-ghost:hover{ border-color: var(--indigo); color: var(--indigo); transform: translateY(-2px); }
+  .btn-emerald{ background: linear-gradient(135deg, var(--emerald), #0D9668); color:white; box-shadow: 0 12px 26px rgba(16,185,129,0.32); }
+  .btn-emerald:hover{ transform: translateY(-3px) scale(1.02); box-shadow: 0 18px 34px rgba(16,185,129,0.42); }
+  .btn-sm{ padding: 10px 18px; font-size: 13.5px; }
+  .btn-icon{
+    width:44px; height:44px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+    background: var(--bg-alt); border:1px solid var(--border); transition: all .22s ease;
+  }
+  .btn-icon:hover{ background: #FDECEC; border-color: #F7C7C7; transform: scale(1.08) rotate(-6deg); }
+  .btn-icon svg{ width:18px; height:18px; }
+
+  /* ============ NAV ============ */
+  header.nav{
+    position: sticky; top:0; z-index: 100;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: all .3s ease;
+  }
+  header.nav.scrolled{
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 8px 24px rgba(27,29,36,0.05);
+  }
+  .nav-inner{ display:flex; align-items:center; justify-content:space-between; padding: 18px 0; }
+  .logo{ font-family: var(--font-display); font-weight: 800; font-size: 21px; display:flex; align-items:center; gap:10px; }
+  .logo-mark{
+    width:34px; height:34px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--indigo), var(--purple));
+    position:relative; box-shadow: 0 6px 14px rgba(67,56,202,0.35);
+    transition: transform .3s ease;
+  }
+  .logo:hover .logo-mark{ transform: rotate(-8deg) scale(1.05); }
+  .logo-mark::after{ content:""; position:absolute; inset:9px 6px; border: 2px dashed rgba(255,255,255,0.7); border-radius: 4px; }
+  .nav-links{ display:flex; gap:36px; align-items:center; }
+  .nav-links a{ font-size: 14.5px; font-weight: 500; color: var(--ink-soft); transition: color .15s; position:relative; }
+  .nav-links a::after{ content:""; position:absolute; left:0; bottom:-6px; width:0; height:2px; background: var(--indigo); transition: width .22s ease; }
+  .nav-links a:hover{ color: var(--indigo); }
+  .nav-links a:hover::after{ width:100%; }
+  .nav-actions{ display:flex; align-items:center; gap:14px; }
+  @@media (max-width: 900px){ .nav-links{display:none;} }
+
+  /* ============ HERO ============ */
+  .hero{ padding: 88px 0 60px; }
+  .hero::before{
+    content:"";
+    position:absolute; top:-220px; right:-200px; width:760px; height:760px; border-radius:50%; z-index:0;
+    background: radial-gradient(circle at 30% 30%, rgba(124,58,237,0.22), rgba(6,182,212,0.16) 55%, transparent 72%);
+    filter: blur(20px);
+  }
+  .hero::after{
+    content:"";
+    position:absolute; bottom:-200px; left:-160px; width:520px; height:520px; border-radius:50%; z-index:0;
+    background: radial-gradient(circle, rgba(16,185,129,0.14), transparent 70%);
+    filter: blur(30px);
+  }
+  .hero-grid{ display:grid; grid-template-columns: 1.05fr 0.95fr; gap: 40px; align-items:center; }
+  .hero-inner h1{
+    font-size: clamp(38px, 4.8vw, 60px); line-height: 1.06; font-weight: 800; margin-bottom: 20px;
+  }
+  .hero-inner h1 em{
+    font-style: normal;
+    background: linear-gradient(100deg, var(--indigo), var(--purple) 60%, var(--cyan));
+    -webkit-background-clip: text; background-clip:text; color:transparent;
+  }
+  .hero-inner p.lead{ font-size: 17.5px; color: var(--ink-soft); max-width: 500px; margin-bottom: 36px; }
+
+  .search-bar{
+    display:flex; align-items:stretch; background: var(--card); border: 1px solid var(--border);
+    border-radius: 999px; padding: 8px; box-shadow: var(--shadow-lg); max-width: 620px; position:relative;
+  }
+  .search-field{ flex:1; display:flex; align-items:center; gap:10px; padding: 12px 20px; border-right: 1px dashed var(--border); }
+  .search-field:last-of-type{ border-right:none; }
+  .search-field svg{ width:18px; height:18px; color: var(--ink-faint); flex-shrink:0; }
+  .search-field input{ border:none; outline:none; font-family:inherit; font-size:14.5px; width:100%; background:transparent; color: var(--ink); }
+  .search-field span.field-label{ font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.06em; display:block; margin-bottom:2px;}
+  .search-bar .btn{ margin-left:4px; flex-shrink:0; }
+
+  .hero-highlight{
+    margin-top: 38px; display:inline-flex; align-items:center; gap:14px;
+    padding: 10px 10px 10px 18px; background: var(--card); border:1px solid var(--border);
+    border-radius: 999px; box-shadow: var(--shadow-sm); font-size: 13.5px;
+  }
+  .pulse-dot{ width:8px; height:8px; border-radius:50%; background: var(--emerald); animation: pulse 2s infinite; }
+  @@keyframes pulse{
+    0%{ box-shadow: 0 0 0 0 rgba(16,185,129,0.45); }
+    70%{ box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+    100%{ box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+  }
+  .hero-highlight strong{ font-family: var(--font-mono); font-weight:600; }
+  .hero-highlight .chip-badge{ background: var(--bg-alt); padding:5px 10px; border-radius:999px; font-family: var(--font-mono); font-size:11.5px; color:var(--indigo); font-weight:600;}
+
+  /* ------ HERO VISUAL SCENE ------ */
+  .hero-visual{ position:relative; height: 560px; }
+  @@keyframes floatY{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-14px);} }
+  @@keyframes floatY2{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(12px);} }
+
+  .phone-mockup{
+    position:absolute; left:50%; top:20px; transform: translateX(-50%);
+    width: 250px; height: 500px; border-radius: 38px;
+    background: linear-gradient(160deg, #1B1D24, #34364A);
+    box-shadow: 0 40px 80px rgba(46,42,133,0.35);
+    padding: 14px; animation: floatY 6s ease-in-out infinite;
+  }
+  .phone-screen{
+    width:100%; height:100%; border-radius: 26px; overflow:hidden; position:relative;
+    background: linear-gradient(165deg, #4338CA, #7C3AED 55%, #06B6D4);
+  }
+  .phone-screen .notch{ position:absolute; top:0; left:50%; transform:translateX(-50%); width:90px; height:20px; background:#1B1D24; border-radius:0 0 14px 14px; }
+  .phone-ticket{
+    position:absolute; left:16px; right:16px; top:70px; background: rgba(255,255,255,0.96);
+    border-radius: 16px; padding:16px; backdrop-filter: blur(6px);
+  }
+  .phone-ticket .qr{
+    width:72px; height:72px; margin: 10px auto 8px; border-radius:10px;
+    background-image: repeating-conic-gradient(#1B1D24 0% 25%, transparent 0% 50%);
+    background-size: 8px 8px;
+  }
+  .phone-ticket .pnr{ text-align:center; font-family: var(--font-mono); font-size:11px; color:var(--ink-faint); letter-spacing:.08em; }
+  .phone-ticket h5{ font-size:13px; font-weight:700; text-align:center; margin-bottom:2px;}
+  .phone-ticket span{ display:block; text-align:center; font-size:10.5px; color:var(--ink-faint); margin-bottom:6px;}
+
+  .float-card{
+    position:absolute; background: var(--card); border-radius: 16px; box-shadow: var(--shadow-lg);
+    padding: 14px 16px; display:flex; align-items:center; gap:12px; z-index:3;
+  }
+  .float-card.notif{ top: 26px; left: -12px; width: 208px; animation: floatY2 5s ease-in-out infinite; }
+  .float-card.notif .ic{ width:36px; height:36px; border-radius:10px; background:#ECFDF5; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;}
+  .float-card.notif h6{ font-size:12.5px; font-weight:700; }
+  .float-card.notif p{ font-size:11px; color:var(--ink-faint); }
+
+  .float-card.mini-event{ bottom: 130px; left: -30px; width: 210px; animation: floatY 7s ease-in-out infinite; }
+  .float-card.mini-event img{ width:44px; height:44px; border-radius:10px; object-fit:cover; flex-shrink:0; }
+  .float-card.mini-event h6{ font-size:12px; font-weight:700; margin-bottom:2px; }
+  .float-card.mini-event span{ font-size:10.5px; color:var(--ink-faint); font-family:var(--font-mono); }
+
+  .float-card.rating{
+    top: 300px; right: -18px; width:150px; flex-direction:column; align-items:flex-start; gap:4px;
+    animation: floatY2 6.5s ease-in-out infinite;
+  }
+  .float-card.rating .stars{ color:var(--warning); font-size:13px; letter-spacing:1px; }
+  .float-card.rating strong{ font-size: 20px; font-family: var(--font-display); }
+  .float-card.rating span{ font-size: 10.5px; color: var(--ink-faint); }
+
+  .map-pin-card{
+    position:absolute; bottom: 12px; right: -10px; width: 190px; height:120px;
+    background: linear-gradient(160deg, #EEF2FF, #F5F3FF);
+    border-radius: 16px; box-shadow: var(--shadow-lg); overflow:hidden;
+    animation: floatY 8s ease-in-out infinite;
+  }
+  .map-pin-card svg{ position:absolute; inset:0; width:100%; height:100%; opacity:.5; }
+  .pin{
+    position:absolute; width:22px; height:22px; border-radius:50% 50% 50% 0; transform: rotate(-45deg);
+    background: var(--indigo); box-shadow: 0 4px 10px rgba(67,56,202,0.4);
+  }
+  .pin.p2{ background: var(--emerald); box-shadow: 0 4px 10px rgba(16,185,129,0.4); }
+  .pin.p3{ background: var(--purple); box-shadow: 0 4px 10px rgba(124,58,237,0.4); }
+
+  @@media (max-width: 1050px){
+    .hero-grid{ grid-template-columns: 1fr; }
+    .hero-visual{ height: 480px; max-width:360px; margin:0 auto; }
+  }
+
+  /* ============ SECTION HEAD ============ */
+  .section-head{ display:flex; align-items:flex-end; justify-content:space-between; margin-bottom: 48px; gap: 24px; flex-wrap:wrap; }
+  .section-head h2{ font-size: clamp(28px,3.2vw,40px); font-weight:800; }
+  .section-head p{ color: var(--ink-soft); font-size:15.5px; max-width:460px; margin-top:8px;}
+  .view-all{ font-size:14px; font-weight:600; color:var(--indigo); display:flex; align-items:center; gap:6px; white-space:nowrap; transition: gap .2s ease;}
+  .view-all:hover{ gap:10px; }
+
+  /* ============ CATEGORIES ============ */
+  .cat-grid{ display:grid; grid-template-columns: repeat(4,1fr); gap:18px; }
+  .cat-card{
+    background: var(--card); border:1px solid var(--border); border-radius: var(--radius-md);
+    padding: 26px 22px; transition: all .28s cubic-bezier(.2,.9,.3,1.2); position:relative; overflow:hidden;
+  }
+  .cat-card::before{ content:""; position:absolute; inset:0; opacity:0; transition:opacity .3s ease;
+    background: linear-gradient(135deg, rgba(67,56,202,0.06), rgba(124,58,237,0.05)); }
+  .cat-card:hover{ transform: translateY(-6px); box-shadow: var(--shadow-md); border-color:transparent; }
+  .cat-card:hover::before{ opacity:1; }
+  .cat-icon{ width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; font-size:20px; transition: transform .3s ease; position:relative; z-index:1;}
+  .cat-card:hover .cat-icon{ transform: scale(1.12) rotate(-6deg); }
+  .cat-card h4{ font-size:15.5px; font-weight:700; margin-bottom:4px; position:relative; z-index:1;}
+  .cat-card span{ font-size:13px; color: var(--ink-faint); font-family: var(--font-mono); position:relative; z-index:1;}
+  @@media (max-width: 980px){ .cat-grid{grid-template-columns: repeat(2,1fr);} }
+
+  /* ============ EVENT CARD ============ */
+  .event-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap: 28px; }
+  .ticket-card{
+    background: var(--card); border-radius: var(--radius-lg); border: 1px solid var(--border);
+    overflow: visible; position: relative; transition: transform .3s cubic-bezier(.2,.9,.3,1.15), box-shadow .3s ease;
+  }
+  .ticket-card:hover{ transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+  .ticket-media{ position:relative; height: 200px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow:hidden; background: linear-gradient(135deg, var(--indigo), var(--purple)); }
+  .ticket-media img{ width:100%; height:100%; object-fit:cover; transition: transform .5s ease; }
+  .ticket-card:hover .ticket-media img{ transform: scale(1.09); }
+  .ticket-media::after{ content:""; position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%); }
+  .badge-row{ position:absolute; top:14px; left:14px; display:flex; gap:6px; z-index:2; }
+  .badge{ padding:5px 10px; border-radius:999px; font-size:10.5px; font-weight:700; font-family: var(--font-mono); text-transform:uppercase; letter-spacing:.03em;}
+  .badge.new{ background: var(--cyan); color:white; }
+  .badge.best{ background: var(--warning); color:white; }
+  .badge.trend{ background: linear-gradient(135deg,var(--purple),var(--indigo)); color:white; }
+  .ticket-media .fav{
+    position:absolute; top:14px; right:14px; width:36px; height:36px; border-radius:50%; z-index:2;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(6px); display:flex; align-items:center; justify-content:center;
+    transition: transform .25s cubic-bezier(.3,1.4,.5,1);
+  }
+  .ticket-card:hover .fav{ transform: scale(1.15); }
+  .ticket-media .organizer{
+    position:absolute; bottom:12px; left:14px; z-index:2; display:flex; align-items:center; gap:8px;
+  }
+  .organizer img{ width:30px; height:30px; border-radius:50%; border:2px solid white; object-fit:cover; }
+  .organizer span{ color:white; font-size:12px; font-weight:600; text-shadow:0 1px 3px rgba(0,0,0,0.4); }
+
+  .stub-line{ position:relative; height:0; border-top:2px dashed var(--border); margin: 0 22px; }
+  .stub-line::before, .stub-line::after{ content:""; position:absolute; top:-11px; width:22px; height:22px; border-radius:50%; background: var(--bg); }
+  .stub-line::before{ left:-33px; } .stub-line::after{ right:-33px; }
+
+  .ticket-body{ padding: 18px 22px 22px; }
+  .ticket-body h3{ font-size:17.5px; font-weight:700; margin-bottom:10px; line-height:1.3; }
+  .ticket-meta{ display:flex; flex-direction:column; gap:7px; margin-bottom:14px; }
+  .ticket-meta-row{ display:flex; align-items:center; gap:8px; font-size:13.5px; color: var(--ink-soft); }
+  .ticket-meta-row svg{ width:15px; height:15px; color: var(--ink-faint); flex-shrink:0; }
+
+  .capacity-row{ display:flex; align-items:center; gap:8px; margin-bottom:16px; }
+  .capacity-bar{ flex:1; height:5px; background: var(--bg-alt); border-radius:999px; overflow:hidden; }
+  .capacity-bar span{ display:block; height:100%; background: linear-gradient(90deg, var(--emerald), var(--cyan)); border-radius:999px; }
+  .capacity-row small{ font-size:11px; color: var(--ink-faint); font-family: var(--font-mono); white-space:nowrap; }
+
+  .ticket-stats{ display:flex; align-items:center; gap:14px; margin-bottom:16px; font-size:12.5px; color: var(--ink-faint); }
+  .ticket-stats span{ display:flex; align-items:center; gap:4px; }
+  .ticket-stats .stars{ color: var(--warning); }
+
+  .ticket-foot{ display:flex; align-items:center; justify-content:space-between; }
+  .price{ font-family: var(--font-mono); font-weight:600; font-size:17px; color: var(--ink); }
+  .price span{ font-size:12px; color: var(--ink-faint); font-weight:500; }
+  @@media (max-width: 980px){ .event-grid{grid-template-columns: repeat(2,1fr);} }
+  @@media (max-width: 640px){ .event-grid{grid-template-columns: 1fr;} }
+
+  /* ============ UPCOMING TIMELINE ============ */
+  .timeline{ display:flex; gap:20px; overflow-x:auto; padding-bottom:16px; scrollbar-width:none;}
+  .timeline::-webkit-scrollbar{ display:none; }
+  .tl-card{
+    flex: 0 0 300px; background: var(--card); border:1px solid var(--border); border-radius: var(--radius-md);
+    padding: 20px; display:flex; gap:16px; position:relative; transition: all .25s ease;
+  }
+  .tl-card:hover{ transform: translateY(-5px); box-shadow: var(--shadow-md); border-color:transparent; }
+  .tl-date{ flex-shrink:0; width:58px; height:58px; border-radius: 12px; background: var(--bg-alt); display:flex; flex-direction:column; align-items:center; justify-content:center; font-family: var(--font-mono); transition: background .25s ease;}
+  .tl-card:hover .tl-date{ background: linear-gradient(135deg, var(--indigo), var(--purple)); }
+  .tl-card:hover .tl-date .d, .tl-card:hover .tl-date .m{ color:white; }
+  .tl-date .d{ font-size:19px; font-weight:700; color: var(--indigo); line-height:1;}
+  .tl-date .m{ font-size:10.5px; color: var(--ink-faint); text-transform:uppercase; margin-top:2px;}
+  .tl-card h4{ font-size:14.5px; font-weight:700; margin-bottom:6px; }
+  .tl-card p{ font-size:12.5px; color: var(--ink-faint); }
+
+  /* ============ WHY / FEATURES ============ */
+  .feat-grid{ display:grid; grid-template-columns: repeat(5,1fr); gap:16px; }
+  .feat-card{ background: var(--card); border:1px solid var(--border); border-radius: var(--radius-md); padding: 26px 18px; text-align:left; transition: all .28s ease; }
+  .feat-card:hover{ transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: transparent; }
+  .feat-icon{ width:44px; height:44px; border-radius:12px; margin-bottom:16px; display:flex; align-items:center; justify-content:center; font-size:19px; background: var(--bg-alt); transition: transform .3s ease;}
+  .feat-card:hover .feat-icon{ transform: rotate(10deg) scale(1.1); }
+  .feat-card h4{ font-size:14.5px; font-weight:700; margin-bottom:6px; }
+  .feat-card p{ font-size:12.8px; color: var(--ink-faint); line-height:1.5;}
+  @@media (max-width: 980px){ .feat-grid{grid-template-columns: repeat(2,1fr);} }
+
+  /* ============ STATS ============ */
+  .stats-grid{ display:grid; grid-template-columns: repeat(4,1fr); gap:20px; position:relative; z-index:1; }
+  .stat-glass{
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.16);
+    border-radius: var(--radius-md); padding: 30px 24px; backdrop-filter: blur(10px);
+    transition: all .3s ease;
+  }
+  .stat-glass:hover{ background: rgba(255,255,255,0.13); transform: translateY(-6px); }
+  .stat-glass .ic{ width:42px; height:42px; border-radius:12px; background: rgba(255,255,255,0.14); display:flex; align-items:center; justify-content:center; font-size:19px; margin-bottom:18px;}
+  .stat-glass .num{ font-family: var(--font-display); font-size: 34px; font-weight:800; letter-spacing:-0.02em; color:white;}
+  .stat-glass .lbl{ font-size:13px; opacity:.82; margin-top:4px; color:white; }
+  .stat-glass .sub{ font-size:11.5px; opacity:.6; margin-top:8px; color:white; font-family: var(--font-mono);}
+  @@media (max-width: 900px){ .stats-grid{grid-template-columns: repeat(2,1fr);} }
+
+  /* ============ REVIEWS ============ */
+  .review-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap:22px; }
+  .review-card{ background: var(--card); border:1px solid var(--border); border-radius: var(--radius-md); padding: 26px; transition: all .28s ease; }
+  .review-card:hover{ transform: translateY(-6px); box-shadow: var(--shadow-md); }
+  .stars{ color: var(--warning); font-size:14px; margin-bottom:14px; letter-spacing:2px;}
+  .review-card p.quote{ font-size:14.5px; color: var(--ink-soft); line-height:1.6; margin-bottom:20px;}
+  .reviewer{ display:flex; align-items:center; gap:12px; }
+  .avatar{ width:38px; height:38px; border-radius:50%; object-fit:cover; flex-shrink:0;}
+  .reviewer h5{ font-size:13.5px; font-weight:700; }
+  .reviewer span{ font-size:12px; color: var(--ink-faint); }
+  @@media (max-width: 980px){ .review-grid{grid-template-columns: 1fr;} }
+
+  /* ============ FAQ ============ */
+  .faq-list{ max-width: 760px; margin:0 auto; }
+  .faq-item{ border-bottom:1px solid var(--border); }
+  .faq-q{ display:flex; align-items:center; justify-content:space-between; padding: 22px 4px; font-weight:600; font-size:15.5px; width:100%; text-align:left;}
+  .faq-q .icon{ font-size:20px; color: var(--indigo); transition: transform .25s ease; flex-shrink:0; margin-left:16px;}
+  .faq-item.open .faq-q .icon{ transform: rotate(45deg); }
+  .faq-a{ max-height:0; overflow:hidden; transition: max-height .3s ease; }
+  .faq-a p{ padding: 0 4px 22px; color: var(--ink-soft); font-size:14.5px; line-height:1.6; max-width:640px;}
+  .faq-item.open .faq-a{ max-height:220px; }
+
+  /* ============ NEWSLETTER ============ */
+  .newsletter-wrap{
+    border-radius: 28px; padding: 68px 60px; text-align:center; position:relative; overflow:hidden;
+    background: linear-gradient(135deg, #2E2A85, #4338CA 45%, #06B6D4);
+    color:white;
+  }
+  .newsletter-wrap::before{
+    content:""; position:absolute; top:-120px; left:-80px; width:340px; height:340px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.16), transparent 70%); filter: blur(6px);
+  }
+  .newsletter-wrap::after{
+    content:""; position:absolute; bottom:-140px; right:-100px; width:380px; height:380px; border-radius:50%;
+    background: radial-gradient(circle, rgba(16,185,129,0.25), transparent 70%); filter: blur(6px);
+  }
+  .nl-icon{
+    width:64px; height:64px; border-radius:18px; margin:0 auto 22px; display:flex; align-items:center; justify-content:center;
+    background: rgba(255,255,255,0.14); backdrop-filter: blur(6px); font-size:26px; position:relative; z-index:1;
+    animation: floatY 4.5s ease-in-out infinite;
+  }
+  .newsletter-wrap h2{ color:white; font-size:32px; margin-bottom:12px; position:relative; z-index:1;}
+  .newsletter-wrap p{ color: rgba(255,255,255,0.82); margin-bottom:30px; position:relative; z-index:1;}
+  .newsletter-wrap form{ display:flex; gap:10px; max-width:440px; margin:0 auto; position:relative; z-index:1;}
+  .newsletter-wrap input{
+    flex:1; padding:15px 20px; border-radius:999px; border:1px solid rgba(255,255,255,0.3);
+    font-family:inherit; outline:none; background: rgba(255,255,255,0.12); color:white;
+  }
+  .newsletter-wrap input::placeholder{ color: rgba(255,255,255,0.65); }
+  .nl-float-ticket{
+    position:absolute; top:32px; right:60px; width:70px; height:44px; border-radius:8px;
+    background: rgba(255,255,255,0.16); border:1px dashed rgba(255,255,255,0.4);
+    animation: floatY2 5.5s ease-in-out infinite; z-index:1;
+  }
+  @@media (max-width: 700px){ .newsletter-wrap{ padding:48px 24px; } .newsletter-wrap form{ flex-direction:column; } .nl-float-ticket{ display:none; } }
+
+  /* ============ FOOTER ============ */
+  footer{ background: #14151B; color: #C4C6CE; padding: 80px 0 32px; position:relative; }
+  .footer-top{ display:grid; grid-template-columns: 1.3fr 1fr 1fr 1fr 1fr; gap:36px; margin-bottom:48px; }
+  footer .logo{ color:white; margin-bottom:16px; }
+  footer p.desc{ font-size:13.5px; color:#8C8F99; max-width:260px; line-height:1.6; margin-bottom:20px;}
+  .social-row{ display:flex; gap:10px; }
+  .social-row a{
+    width:36px; height:36px; border-radius:10px; background:#212330; display:flex; align-items:center; justify-content:center;
+    font-size:14px; transition: all .25s ease;
+  }
+  .social-row a:hover{ background: linear-gradient(135deg, var(--indigo), var(--purple)); transform: translateY(-3px); }
+  footer h5{ color:white; font-size:12.5px; text-transform:uppercase; letter-spacing:.07em; margin-bottom:18px; font-family: var(--font-mono);}
+  footer ul li{ margin-bottom:11px; }
+  footer ul a{ font-size:13.6px; color:#A8AAB4; transition: all .18s;}
+  footer ul a:hover{ color:white; padding-left:4px; }
+
+  .footer-mid{ display:grid; grid-template-columns: 1fr 1fr; gap: 30px; padding: 32px 0; border-top:1px solid #24262F; border-bottom:1px solid #24262F; margin-bottom:28px; }
+  .footer-mid-block h6{ color:white; font-size:12px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; font-family:var(--font-mono); }
+  .chip-list{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip-list span{ background:#1E2029; padding:7px 13px; border-radius:999px; font-size:12px; color:#B7B9C3; transition: all .2s ease; cursor:pointer;}
+  .chip-list span:hover{ background: linear-gradient(135deg, var(--indigo), var(--purple)); color:white; }
+
+  .app-badges{ display:flex; gap:10px; margin-top:14px; }
+  .app-badge{ display:flex; align-items:center; gap:8px; background:#1E2029; padding:9px 14px; border-radius:10px; font-size:11.5px; transition:all .2s ease;}
+  .app-badge:hover{ background:#272A38; transform: translateY(-2px); }
+
+  .footer-bottom{ display:flex; justify-content:space-between; font-size:12.8px; color:#71737D; flex-wrap:wrap; gap:12px; }
+  @@media (max-width:1000px){ .footer-top{grid-template-columns: repeat(2,1fr);} .footer-mid{grid-template-columns:1fr;} }
+
+  /* fade-in on scroll */
+  .reveal{ opacity:0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in{ opacity:1; transform: translateY(0); }
+
+  @@media (max-width: 760px){
+    section{ padding: 72px 0; }
+    .search-bar{ flex-direction:column; border-radius: 20px; gap:4px; }
+    .search-field{ border-right:none; border-bottom:1px dashed var(--border); }
+    .search-field:last-of-type{ border-bottom:none; }
+    .search-bar .btn{ margin:6px 4px 4px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="siteNav">
+  <div class="container nav-inner">
+    <div class="logo"><span class="logo-mark"></span>TicketBox</div>
+    <nav class="nav-links">
+      <a href="#">Etkinlikler</a>
+      <a href="#categories">Kategoriler</a>
+      <a href="#why">Neden TicketBox</a>
+      <a href="#reviews">Yorumlar</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="#" class="btn btn-ghost btn-sm">Giriş yap</a>
+      <a href="#" class="btn btn-primary btn-sm">Kayıt ol</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero bg-white">
+  <div class="container hero-grid">
+    <div class="hero-inner">
+      <div class="eyebrow">TB · 2026 Sürümü</div>
+      <h1>Bir sonraki <em>unutulmaz anını</em><br>tek biletle yakala.</h1>
+      <p class="lead">Konserden konferansa, festivalden tiyatroya — şehrindeki etkinlikleri keşfet, saniyeler içinde bilet al, kapıda telefonunu göster.</p>
+
+      <div class="search-bar">
+        <div class="search-field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <div style="width:100%">
+            <span class="field-label">Ne arıyorsun?</span>
+            <input type="text" placeholder="Konser, tiyatro, konferans...">
+          </div>
+        </div>
+        <div class="search-field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div style="width:100%">
+            <span class="field-label">Şehir</span>
+            <input type="text" placeholder="İstanbul">
+          </div>
+        </div>
+        <button class="btn btn-primary">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          Ara
+        </button>
+      </div>
+
+      <div class="hero-highlight">
+        <span class="pulse-dot"></span>
+        <span>Bu hafta öne çıkan: <strong>Boğaziçi Gece Konseri</strong></span>
+        <span class="chip-badge">%40 tükendi</span>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="float-card notif">
+        <div class="ic">🎟️</div>
+        <div><h6>Bilet onaylandı</h6><p>PNR: TB-8F2AK1</p></div>
+      </div>
+
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="phone-ticket">
+            <h5>Boğaziçi Konseri</h5>
+            <span>14 Eylül · 20:00</span>
+            <div class="qr"></div>
+            <div class="pnr">PNR · TB-8F2AK1</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="float-card mini-event">
+        <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&w=120&q=60" alt="" onerror="this.style.display='none'">
+        <div><h6>NEXT.26 Konferansı</h6><span>22 Eki · Zorlu PSM</span></div>
+      </div>
+
+      <div class="float-card rating">
+        <div class="stars">★★★★★</div>
+        <strong>4.9</strong>
+        <span>2,340 değerlendirme</span>
+      </div>
+
+      <div class="map-pin-card">
+        <svg viewBox="0 0 200 120"><path d="M0 60 Q50 20 100 60 T200 60" stroke="#4338CA" stroke-width="1.5" fill="none" opacity="0.5"/><path d="M0 90 Q60 50 120 90 T200 80" stroke="#7C3AED" stroke-width="1.5" fill="none" opacity="0.4"/></svg>
+        <span class="pin" style="top:30px; left:40px;"></span>
+        <span class="pin p2" style="top:55px; left:100px;"></span>
+        <span class="pin p3" style="top:35px; left:150px;"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CATEGORIES ============ -->
+<section id="categories" class="bg-soft reveal">
+  <div class="container">
+    <div class="section-head">
+      <div><h2>Kategoriye göre keşfet</h2><p>İlgi alanına en yakın etkinlikleri tek tıkla filtrele.</p></div>
+      <a href="#" class="view-all">Tümünü gör →</a>
+    </div>
+    <div class="cat-grid">
+      <div class="cat-card"><div class="cat-icon" style="background:#EEF2FF;">🎵</div><h4>Müzik</h4><span>248 etkinlik</span></div>
+      <div class="cat-card"><div class="cat-icon" style="background:#F0FDFA;">💻</div><h4>Teknoloji</h4><span>132 etkinlik</span></div>
+      <div class="cat-card"><div class="cat-icon" style="background:#FEF2F2;">🏟️</div><h4>Spor</h4><span>96 etkinlik</span></div>
+      <div class="cat-card"><div class="cat-icon" style="background:#FAF5FF;">🎪</div><h4>Festival</h4><span>57 etkinlik</span></div>
+      <div class="cat-card"><div class="cat-icon" style="background:#ECFDF5;">📊</div><h4>Konferans</h4><span>84 etkinlik</span></div>
+      <div class="cat-card"><div class="cat-icon" style="background:#FFF7ED;">🎓</div><h4>Workshop</h4><span>63 etkinlik</span></div>
+      <div class="cat-card"><div class="cat-icon" style="background:#EFF6FF;">🎭</div><h4>Tiyatro</h4><span>71 etkinlik</span></div>
+      <div class="cat-card"><div class="cat-icon" style="background:#FDF4FF;">🎨</div><h4>Sanat</h4><span>45 etkinlik</span></div>
+    </div>
+  </div>
+</section>
+<svg class="divider-wave to-white" viewBox="0 0 1440 64" preserveAspectRatio="none"><path d="M0,32 C360,80 1080,-16 1440,32 L1440,64 L0,64 Z"></path></svg>
+
+<!-- ============ POPULAR EVENTS ============ -->
+<section class="bg-white reveal">
+  <div class="container">
+    <div class="section-head">
+      <div><h2>Popüler etkinlikler</h2><p>Bu hafta en çok bilet satan etkinlikler.</p></div>
+      <a href="#" class="view-all">Tümünü gör →</a>
+    </div>
+    <div class="event-grid">
+
+      <div class="ticket-card">
+        <div class="ticket-media">
+          <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=600&q=70" alt="Konser" onerror="this.style.display='none'">
+          <div class="badge-row"><span class="badge trend">Trend</span></div>
+          <div class="fav">♡</div>
+          <div class="organizer">
+            <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&w=60&q=60" alt="" onerror="this.style.display='none'">
+            <span>Live Nation TR</span>
+          </div>
+        </div>
+        <div class="stub-line"></div>
+        <div class="ticket-body">
+          <h3>Boğaziçi Gece Konseri</h3>
+          <div class="ticket-meta">
+            <div class="ticket-meta-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Kuruçeşme, İstanbul</div>
+            <div class="ticket-meta-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>14 Eylül 2026 · 20:00</div>
+          </div>
+          <div class="capacity-row">
+            <div class="capacity-bar"><span style="width:78%;"></span></div>
+            <small>78% dolu</small>
+          </div>
+          <div class="ticket-stats">
+            <span class="stars">★★★★★ 4.9</span>
+            <span>♡ 312 favori</span>
+          </div>
+          <div class="ticket-foot">
+            <div class="price">₺450 <span>/ kişi</span></div>
+            <a href="#" class="btn btn-emerald btn-sm">Bilet al</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="ticket-card">
+        <div class="ticket-media">
+          <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=70" alt="Konferans" onerror="this.style.display='none'">
+          <div class="badge-row"><span class="badge best">Çok satan</span></div>
+          <div class="fav">♡</div>
+          <div class="organizer">
+            <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=60&q=60" alt="" onerror="this.style.display='none'">
+            <span>NEXT Events</span>
+          </div>
+        </div>
+        <div class="stub-line"></div>
+        <div class="ticket-body">
+          <h3>NEXT.26 Yazılım Konferansı</h3>
+          <div class="ticket-meta">
+            <div class="ticket-meta-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Zorlu PSM, İstanbul</div>
+            <div class="ticket-meta-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>22 Ekim 2026 · 09:30</div>
+          </div>
+          <div class="capacity-row">
+            <div class="capacity-bar"><span style="width:52%;"></span></div>
+            <small>52% dolu</small>
+          </div>
+          <div class="ticket-stats">
+            <span class="stars">★★★★★ 4.8</span>
+            <span>♡ 205 favori</span>
+          </div>
+          <div class="ticket-foot">
+            <div class="price">₺920 <span>/ kişi</span></div>
+            <a href="#" class="btn btn-emerald btn-sm">Bilet al</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="ticket-card">
+        <div class="ticket-media">
+          <img src="https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=600&q=70" alt="Tiyatro" onerror="this.style.display='none'">
+          <div class="badge-row"><span class="badge new">Yeni</span></div>
+          <div class="fav">♡</div>
+          <div class="organizer">
+            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=60&q=60" alt="" onerror="this.style.display='none'">
+            <span>Devlet Tiyatroları</span>
+          </div>
+        </div>
+        <div class="stub-line"></div>
+        <div class="ticket-body">
+          <h3>Bir Kış Masalı — Sahne Uyarlaması</h3>
+          <div class="ticket-meta">
+            <div class="ticket-meta-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Ankara Devlet Tiyatrosu</div>
+            <div class="ticket-meta-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>3 Kasım 2026 · 19:30</div>
+          </div>
+          <div class="capacity-row">
+            <div class="capacity-bar"><span style="width:31%;"></span></div>
+            <small>31% dolu</small>
+          </div>
+          <div class="ticket-stats">
+            <span class="stars">★★★★★ 4.7</span>
+            <span>♡ 88 favori</span>
+          </div>
+          <div class="ticket-foot">
+            <div class="price">₺280 <span>/ kişi</span></div>
+            <a href="#" class="btn btn-emerald btn-sm">Bilet al</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ UPCOMING (TIMELINE) ============ -->
+<section class="bg-soft reveal">
+  <div class="container">
+    <div class="section-head">
+      <div><h2>Yaklaşan etkinlikler</h2><p>Takvimindeki boşlukları doldur, sırayla göz at.</p></div>
+      <a href="#" class="view-all">Takvimi gör →</a>
+    </div>
+    <div class="timeline">
+      <div class="tl-card"><div class="tl-date"><span class="d">04</span><span class="m">Eyl</span></div><div><h4>Yaz Sonu Festivali</h4><p>Maçka Parkı · 18:00</p></div></div>
+      <div class="tl-card"><div class="tl-date"><span class="d">09</span><span class="m">Eyl</span></div><div><h4>Caz Gecesi: Trio Live</h4><p>Nardis Jazz Club · 21:00</p></div></div>
+      <div class="tl-card"><div class="tl-date"><span class="d">17</span><span class="m">Eyl</span></div><div><h4>Girişim Zirvesi '26</h4><p>Lütfi Kırdar · 10:00</p></div></div>
+      <div class="tl-card"><div class="tl-date"><span class="d">25</span><span class="m">Eyl</span></div><div><h4>Stand-up: Gece Turu</h4><p>Cemal Reşit Rey · 20:30</p></div></div>
+      <div class="tl-card"><div class="tl-date"><span class="d">02</span><span class="m">Eki</span></div><div><h4>Modern Sanat Sergisi</h4><p>Istanbul Modern · 11:00</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY TICKETBOX ============ -->
+<section id="why" class="bg-white reveal">
+  <div class="container">
+    <div class="section-head">
+      <div><h2>Neden TicketBox?</h2><p>Bilet almak, endişe etmeden olması gerektiği gibi.</p></div>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-icon">🔒</div><h4>Güvenli ödeme</h4><p>256-bit şifreleme ile korunan işlemler.</p></div>
+      <div class="feat-card"><div class="feat-icon">⚡</div><h4>Anında bilet</h4><p>Satın al, saniyeler içinde biletin hazır.</p></div>
+      <div class="feat-card"><div class="feat-icon">📱</div><h4>QR biletleme</h4><p>Kapıda sadece telefonunu göster, yeter.</p></div>
+      <div class="feat-card"><div class="feat-icon">↩️</div><h4>İade desteği</h4><p>Planın değişirse, kolay iade süreci.</p></div>
+      <div class="feat-card"><div class="feat-icon">💬</div><h4>7/24 destek</h4><p>Her an ulaşabileceğin gerçek bir ekip.</p></div>
+    </div>
+  </div>
+</section>
+<svg class="divider-wave to-dark" viewBox="0 0 1440 64" preserveAspectRatio="none"><path d="M0,32 C360,-16 1080,80 1440,32 L1440,64 L0,64 Z"></path></svg>
+
+<!-- ============ STATS ============ -->
+<section class="bg-dark-gradient reveal">
+  <div class="container">
+    <div class="section-head" style="border:none;">
+      <div><h2>Rakamlarla TicketBox</h2><p style="color:rgba(255,255,255,0.75);">Her gün büyüyen bir topluluk.</p></div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-glass"><div class="ic">🎫</div><div class="num">12.4K+</div><div class="lbl">Etkinlik</div><div class="sub">+18% bu ay</div></div>
+      <div class="stat-glass"><div class="ic">👥</div><div class="num">380K+</div><div class="lbl">Kullanıcı</div><div class="sub">64 şehirde</div></div>
+      <div class="stat-glass"><div class="ic">🎟️</div><div class="num">1.1M+</div><div class="lbl">Satılan bilet</div><div class="sub">%99.2 memnuniyet</div></div>
+      <div class="stat-glass"><div class="ic">📍</div><div class="num">64</div><div class="lbl">Şehir</div><div class="sub">7 ülke</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REVIEWS ============ -->
+<section id="reviews" class="bg-soft reveal">
+  <div class="container">
+    <div class="section-head">
+      <div><h2>Kullanıcılarımız ne diyor?</h2><p>Gerçek deneyimler, gerçek yorumlar.</p></div>
+    </div>
+    <div class="review-grid">
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p class="quote">"Bilet alma süreci gerçekten çok akıcıydı, QR kodla kapıda hiç beklemedim."</p>
+        <div class="reviewer"><img class="avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=80&q=60" onerror="this.style.background='#EEF2FF'; this.src='';"><div><h5>Elif Kaya</h5><span>İstanbul</span></div></div>
+      </div>
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p class="quote">"Etkinlik önerileri tam da o an aradığım şeyleri buluyor. Arayüz de çok sade."</p>
+        <div class="reviewer"><img class="avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&q=60" onerror="this.style.background='#F5F3FF'; this.src='';"><div><h5>Mert Doğan</h5><span>Ankara</span></div></div>
+      </div>
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p class="quote">"Bir etkinliği iptal etmem gerekti, destek ekibi aynı gün içinde iademi hallettti."</p>
+        <div class="reviewer"><img class="avatar" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=80&q=60" onerror="this.style.background='#ECFDF5'; this.src='';"><div><h5>Zeynep Arslan</h5><span>İzmir</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="bg-white reveal">
+  <div class="container">
+    <div class="section-head" style="justify-content:center; text-align:center; flex-direction:column; align-items:center;">
+      <h2>Sıkça sorulan sorular</h2>
+      <p>Aklına takılanlar burada olmayabilir — 7/24 destek ekibimize her zaman ulaşabilirsin.</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item open">
+        <button class="faq-q">Bilet aldıktan sonra ne oluyor? <span class="icon">+</span></button>
+        <div class="faq-a"><p>Satın alma onaylandığı anda PNR kodlu, görsel bilet e-posta adresine ve profilindeki "Biletlerim" sayfasına düşer.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Biletimi iade edebilir miyim? <span class="icon">+</span></button>
+        <div class="faq-a"><p>Etkinlik organizatörünün iade politikasına bağlı olarak, etkinlik tarihinden önce iade talebi oluşturabilirsin.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Kontenjan dolarsa ne olur? <span class="icon">+</span></button>
+        <div class="faq-a"><p>Kontenjan dolduğunda bilet satışı otomatik olarak durur, bekleme listesine katılabilirsin.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Ödeme bilgilerim güvende mi? <span class="icon">+</span></button>
+        <div class="faq-a"><p>Tüm ödemeler uçtan uca şifrelenir, kart bilgilerin hiçbir zaman sunucularımızda saklanmaz.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEWSLETTER ============ -->
+<section class="bg-soft reveal">
+  <div class="container">
+    <div class="newsletter-wrap">
+      <div class="nl-float-ticket"></div>
+      <div class="nl-icon">✉️</div>
+      <h2>Kaçırma, haberdar ol.</h2>
+      <p>Şehrindeki yeni etkinlikleri, öne çıkan biletleri ve özel fırsatları haftalık özetle al.</p>
+      <form onsubmit="return false;">
+        <input type="email" placeholder="E-posta adresin">
+        <button class="btn btn-emerald">Abone ol</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <div class="logo"><span class="logo-mark"></span>TicketBox</div>
+        <p class="desc">Etkinlik keşfetmenin ve bilet almanın en sade yolu. 2026'da yeniden tasarlandı.</p>
+        <div class="social-row">
+          <a href="#">𝕏</a><a href="#">in</a><a href="#">ig</a><a href="#">yt</a>
+        </div>
+      </div>
+      <div><h5>Keşfet</h5><ul><li><a href="#">Etkinlikler</a></li><li><a href="#">Kategoriler</a></li><li><a href="#">Şehirler</a></li><li><a href="#">Organizatörler</a></li></ul></div>
+      <div><h5>Şirket</h5><ul><li><a href="#">Hakkımızda</a></li><li><a href="#">Kariyer</a></li><li><a href="#">Blog</a></li><li><a href="#">İletişim</a></li></ul></div>
+      <div><h5>Destek</h5><ul><li><a href="#">Yardım merkezi</a></li><li><a href="#">İade politikası</a></li><li><a href="#">Gizlilik</a></li><li><a href="#">Kullanım şartları</a></li></ul></div>
+      <div>
+        <h5>Uygulamayı indir</h5>
+        <div class="app-badges" style="flex-direction:column;">
+          <div class="app-badge">📱 App Store</div>
+          <div class="app-badge">▶️ Google Play</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-mid">
+      <div class="footer-mid-block">
+        <h6>Popüler şehirler</h6>
+        <div class="chip-list">
+          <span>İstanbul</span><span>Ankara</span><span>İzmir</span><span>Bursa</span><span>Antalya</span><span>Eskişehir</span>
+        </div>
+      </div>
+      <div class="footer-mid-block">
+        <h6>Çok satan kategoriler</h6>
+        <div class="chip-list">
+          <span>Konser</span><span>Konferans</span><span>Tiyatro</span><span>Festival</span><span>Workshop</span><span>Spor</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 TicketBox. Tüm hakları saklıdır.</span>
+      <span>📍 Levent, İstanbul · destek@ticketbox.com</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // navbar glass on scroll
+  const nav = document.getElementById('siteNav');
+  window.addEventListener('scroll', ()=>{
+    if(window.scrollY > 24) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  });
+
+  // faq accordion
+  document.querySelectorAll('.faq-q').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const item = btn.closest('.faq-item');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+      if(!wasOpen) item.classList.add('open');
+    });
+  });
+
+  // reveal on scroll
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>
