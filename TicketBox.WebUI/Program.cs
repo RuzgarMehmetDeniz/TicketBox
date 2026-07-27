@@ -1,7 +1,9 @@
 using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
+using TicketBox.Application.Features.Mediator;
 using TicketBox.Application.Features.Repository;
 using TicketBox.Application.Validation.CategoryValidation;
 using TicketBox.Domain.Entities;
@@ -33,19 +35,21 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(TicketBox.Application.AssemblyReference).Assembly);
 });
 
+// Validation Pipeline Behavior
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(TicketBox.Application.AssemblyReference).Assembly);
 
 // FluentValidation
 builder.Services.AddControllersWithViews(options =>
 {
-    // Non-nullable string alanlar için otomatik [Required] davranýþýný kapat
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
 })
     .AddFluentValidation(fv =>
     {
         fv.RegisterValidatorsFromAssemblyContaining<CreateCategoryValidator>();
-        fv.DisableDataAnnotationsValidation = true; // Sadece FluentValidation çalýþsýn
+        fv.DisableDataAnnotationsValidation = true;
     });
 
 var app = builder.Build();
