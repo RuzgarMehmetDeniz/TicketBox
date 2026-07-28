@@ -12,7 +12,7 @@ namespace TicketBox.Application.Validation.EventGalleryValidation
 
             RuleFor(x => x.ImageUrl)
                 .NotEmpty().WithMessage("Görsel URL boş bırakılamaz.")
-                .MaximumLength(500).WithMessage("Görsel URL en fazla 500 karakter olabilir.");
+                .MaximumLength(1000000).WithMessage("Görsel URL en fazla 1000000 karakter olabilir.");
         }
     }
 }

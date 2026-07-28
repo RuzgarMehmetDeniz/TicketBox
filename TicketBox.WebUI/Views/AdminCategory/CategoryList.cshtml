@@ -63,14 +63,7 @@
                             <tr data-status="@(item.IsActive ? "active" : "passive")">
                                 <td>
                                     <div class="cell-main">
-                                        @if (!string.IsNullOrEmpty(item.IconUrl))
-                                        {
-                                            <img src="@item.IconUrl" style="width:34px;height:34px;border-radius:10px;object-fit:cover;flex-shrink:0;" />
-                                        }
-                                        else
-                                        {
-                                            <div class="cell-avatar"></div>
-                                        }
+
                                         <div class="cell-title">@item.CategoryName</div>
                                     </div>
                                 </td>
