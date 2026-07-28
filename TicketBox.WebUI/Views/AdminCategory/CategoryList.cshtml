@@ -58,7 +58,6 @@
                 <tbody id="categoriesBody">
                     @if (Model != null && Model.Any())
                     {
-
                         @foreach (var item in Model)
                         {
                             <tr data-status="@(item.IsActive ? "active" : "passive")">
