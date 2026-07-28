@@ -1,4 +1,7 @@
-﻿
+﻿@{
+    // Şu an hangi controller'da olduğumuzu bul (nav item'ın "active" olup olmayacağını belirlemek için)
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+}
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-head">
         <div class="logo-mark">TB</div>
@@ -7,9 +10,20 @@
     <nav class="nav-scroll">
         <div class="nav-group">
             <div class="nav-group-label">İçerik Yönetimi</div>
-            <!-- ============ TEK ÖRNEK ENTITY: ETKİNLİKLER ============ -->
-            <!-- Yeni entity eklerken buraya aynı formatta bir <button> daha ekle -->
-            <button class="nav-item active" data-view="events"><span class="ic">🎟️</span> Etkinlikler</button>
+
+            <!-- Etkinlikler — kendi Controller/Action adını buraya yaz -->
+            <a class="nav-item @(currentController == "AdminEvent" ? "active" : "")"
+               href="@Url.Action("EventList", "AdminEvent")">
+                <span class="ic">🎟️</span> Etkinlikler
+            </a>
+
+            <!-- Kategoriler -->
+            <a class="nav-item @(currentController == "AdminCategory" ? "active" : "")"
+               href="@Url.Action("CategoryList", "AdminCategory")">
+                <span class="ic">🔷</span> Kategoriler
+            </a>
+
+            <!-- Yeni entity eklerken buraya aynı formatta bir <a> daha ekle -->
         </div>
     </nav>
     <div class="sidebar-foot">

@@ -72,3 +72,74 @@
       });
     });
 </script>
+<script>
+    /* ============ SIDEBAR TOGGLE (mobil) ============ */
+    const menuToggle = document.getElementById('menuToggle');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+    }
+
+    /* ============ TEMA DEĞİŞTİRİCİ ============ */
+    const themeSwitch = document.getElementById('themeSwitch');
+    const themeBtn = document.getElementById('themeBtn');
+    const themeDot = document.getElementById('themeDot');
+
+    if (themeSwitch && themeBtn) {
+        themeBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            themeSwitch.classList.toggle('open');
+        });
+        document.addEventListener('click', () => themeSwitch.classList.remove('open'));
+
+        document.querySelectorAll('.theme-opt').forEach(opt => {
+            opt.addEventListener('click', () => {
+                document.body.setAttribute('data-theme', opt.dataset.theme);
+                document.querySelectorAll('.theme-opt').forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
+                if (themeDot) {
+                    themeDot.style.background = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+                }
+            });
+        });
+    }
+
+    /* ============ FİLTRELEME (her sayfa kendi tablosunu filtreler) ============ */
+    // Bu artık gerçek sayfalarda çalışıyor: her .view kendi filter-chips + tbody çiftine sahip.
+    // Bir sayfadaki filtreye basmak sadece o sayfanın tablosunu etkiler.
+    document.querySelectorAll('.view').forEach(view => {
+        const chipGroup = view.querySelector('.filter-chips');
+        const tbody = view.querySelector('tbody');
+        if (!chipGroup || !tbody) return;
+
+        chipGroup.querySelectorAll('.f-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                chipGroup.querySelectorAll('.f-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+
+                const filter = chip.dataset.filter;
+                let visibleCount = 0;
+
+                tbody.querySelectorAll('tr[data-status]').forEach(row => {
+                    const match = filter === 'all' || row.dataset.status === filter;
+                    row.style.display = match ? '' : 'none';
+                    if (match) visibleCount++;
+                });
+
+                let emptyRow = tbody.querySelector('.empty-row');
+                if (visibleCount === 0) {
+                    if (!emptyRow) {
+                        emptyRow = document.createElement('tr');
+                        emptyRow.className = 'empty-row';
+                        const colCount = view.querySelectorAll('thead th').length || 4;
+                        emptyRow.innerHTML = `<td colspan="${colCount}" class="empty-hint">Bu filtreye uyan kayıt bulunamadı.</td>`;
+                        tbody.appendChild(emptyRow);
+                    }
+                } else if (emptyRow) {
+                    emptyRow.remove();
+                }
+            });
+        });
+    });
+</script>

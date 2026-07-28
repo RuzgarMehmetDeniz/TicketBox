@@ -1,76 +1,76 @@
 ﻿@model TicketBox.Application.Features.CQRS.Categories.Commands.UpdateCategoryCommand
-
 @{
-    ViewData["Title"] = "Kategori Güncelle";
+    ViewData["Title"] = "CategoryUpdate";
     Layout = "~/Views/AdminLayout/Index.cshtml";
 }
 
-<section class="view active">
-    <div class="view-head">
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
         <div>
-            <h2>Kategori Güncelle</h2>
-            <p>Kategori bilgilerini güncelleyin.</p>
-        </div>
-
-        <div class="head-actions">
-            <a class="btn btn-ghost" href="@Url.Action("CategoryList", "AdminCategory")">
-                ← Listeye Dön
-            </a>
+            <div class="page-title" id="pageTitle">Kategori Düzenle</div>
+            <div class="page-sub" id="pageSub">@Model.CategoryName kategorisini güncelle</div>
         </div>
     </div>
-
-    <div class="card" style="max-width:700px;">
-
-        <form asp-action="CategoryUpdate" asp-controller="AdminCategory" method="post">
-
-            @Html.AntiForgeryToken()
-
-            <input type="hidden" asp-for="CategoryId" />
-
-            <div asp-validation-summary="ModelOnly"></div>
-
-            <div class="f-row">
-                <label>Kategori Adı</label>
-                <input asp-for="CategoryName" />
-                <span asp-validation-for="CategoryName"></span>
+    <div class="topbar-right">
+        <div class="theme-switch" id="themeSwitch">
+            <button class="theme-btn" id="themeBtn"><span class="theme-dot" id="themeDot"></span> Tema ▾</button>
+            <div class="theme-menu" id="themeMenu">
+                <button class="theme-opt active" data-theme="midnight"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#4F8CFF)"></span> 🌙 Midnight</button>
+                <button class="theme-opt" data-theme="aurora"><span class="sw" style="background:linear-gradient(135deg,#34D8C7,#6C5CE7)"></span> 🌌 Aurora</button>
+                <button class="theme-opt" data-theme="purple"><span class="sw" style="background:linear-gradient(135deg,#A855F7,#EC4899)"></span> 💜 Purple</button>
+                <button class="theme-opt" data-theme="ocean"><span class="sw" style="background:linear-gradient(135deg,#2DA8FF,#00C2D1)"></span> 💙 Ocean</button>
+                <button class="theme-opt" data-theme="graphite"><span class="sw" style="background:linear-gradient(135deg,#9CA3AF,#6B7280)"></span> 🩶 Graphite</button>
+                <button class="theme-opt" data-theme="light"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#00B894)"></span> 🤍 Light</button>
             </div>
-
-            <div class="f-row">
-                <label>İkon Url</label>
-                <input asp-for="IconUrl" />
-                <span asp-validation-for="IconUrl"></span>
-            </div>
-
-            <div class="f-row">
-                <label>Açıklama</label>
-                <textarea asp-for="Description" rows="5"></textarea>
-                <span asp-validation-for="Description"></span>
-            </div>
-
-            <div class="f-row" style="flex-direction:row;align-items:center;gap:12px;">
-                <label class="switch">
-                    <input asp-for="IsActive" />
-                    <span class="track"></span>
-                </label>
-
-                <span>Aktif</span>
-            </div>
-
-            <div class="modal-foot">
-                <button type="submit" class="btn btn-primary">
-                    Güncelle
-                </button>
-
-                <a href="@Url.Action("CategoryList", "AdminCategory")" class="btn btn-ghost">
-                    Vazgeç
-                </a>
-            </div>
-
-        </form>
-
+        </div>
+        <div class="admin-mini" style="padding:6px 10px;"><div class="av" style="width:30px;height:30px;"></div></div>
     </div>
-</section>
+</div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+<div class="content">
+    <section class="view active">
+        <div class="view-head">
+            <div><h2>Kategori Düzenle</h2><p>@Model.CategoryName kategorisini güncelle.</p></div>
+            <div class="head-actions">
+                <a class="btn btn-ghost" href="@Url.Action("CategoryList", "AdminCategory")">← Listeye Dön</a>
+            </div>
+        </div>
+
+        <div class="card" style="max-width:520px;margin:0 auto;">
+            <form asp-controller="AdminCategory" asp-action="CategoryUpdate" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="CategoryId" />
+
+                <div class="f-row">
+                    <label>Kategori Adı</label>
+                    <input type="text" asp-for="CategoryName" />
+                    <span asp-validation-for="CategoryName" style="color:var(--danger);font-size:11.5px;"></span>
+                </div>
+
+                <div class="f-row">
+                    <label>İkon URL</label>
+                    <input type="text" asp-for="IconUrl" />
+                </div>
+
+                <div class="f-row">
+                    <label>Açıklama</label>
+                    <textarea asp-for="Description"></textarea>
+                </div>
+
+                <div class="f-row" style="display:flex;align-items:center;gap:10px;">
+                    <label class="switch">
+                        <input type="checkbox" asp-for="IsActive" />
+                        <span class="track"></span>
+                    </label>
+                    <label style="margin:0;">Aktif</label>
+                </div>
+
+                <div style="display:flex;gap:10px;margin-top:10px;">
+                    <button type="submit" class="btn btn-primary">Güncelle</button>
+                    <a class="btn btn-ghost" href="@Url.Action("CategoryList", "AdminCategory")">Vazgeç</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>

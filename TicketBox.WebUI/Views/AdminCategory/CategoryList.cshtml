@@ -4,96 +4,119 @@
     Layout = "~/Views/AdminLayout/Index.cshtml";
 }
 
-<section class="view active" data-filter-scope="categories">
-    <div class="view-head">
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
         <div>
-            <h2>Kategoriler</h2>
-            <p>Etkinlik kategorilerini yönet.</p>
-        </div>
-        <div class="head-actions">
-            <a class="btn btn-primary" href="@Url.Action("CategoryCreate", "AdminCategory")">+ Yeni Kategori</a>
+            <div class="page-title" id="pageTitle">Kategoriler</div>
+            <div class="page-sub" id="pageSub">Etkinlik kategorilerini yönet</div>
         </div>
     </div>
-
-    <div class="table-card">
-        <div class="table-toolbar">
-            <div class="filter-chips">
-                <button class="f-chip active" data-filter="all">Tümü</button>
-                <button class="f-chip" data-filter="active">Aktif</button>
-                <button class="f-chip" data-filter="passive">Pasif</button>
+    <div class="topbar-right">
+        <div class="search-box"><span>🔍</span><input placeholder="Kategori ara..."></div>
+        <button class="icon-btn">🔔<span class="dot"></span></button>
+        <div class="theme-switch" id="themeSwitch">
+            <button class="theme-btn" id="themeBtn"><span class="theme-dot" id="themeDot"></span> Tema ▾</button>
+            <div class="theme-menu" id="themeMenu">
+                <button class="theme-opt active" data-theme="midnight"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#4F8CFF)"></span> 🌙 Midnight</button>
+                <button class="theme-opt" data-theme="aurora"><span class="sw" style="background:linear-gradient(135deg,#34D8C7,#6C5CE7)"></span> 🌌 Aurora</button>
+                <button class="theme-opt" data-theme="purple"><span class="sw" style="background:linear-gradient(135deg,#A855F7,#EC4899)"></span> 💜 Purple</button>
+                <button class="theme-opt" data-theme="ocean"><span class="sw" style="background:linear-gradient(135deg,#2DA8FF,#00C2D1)"></span> 💙 Ocean</button>
+                <button class="theme-opt" data-theme="graphite"><span class="sw" style="background:linear-gradient(135deg,#9CA3AF,#6B7280)"></span> 🩶 Graphite</button>
+                <button class="theme-opt" data-theme="light"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#00B894)"></span> 🤍 Light</button>
             </div>
-            <div class="search-box" style="width:220px;"><span>🔍</span><input placeholder="Kategori ara..."></div>
         </div>
+        <div class="admin-mini" style="padding:6px 10px;"><div class="av" style="width:30px;height:30px;"></div></div>
+    </div>
+</div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Kategori</th>
-                    <th>Açıklama</th>
-                    <th>Durum</th>
-                    <th style="text-align:right;">İşlem</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    @foreach (var item in Model)
+<div class="content">
+    <section class="view active" id="view-categories" data-filter-scope="categories">
+        <div class="view-head">
+            <div><h2>Kategoriler</h2><p>Etkinlik kategorilerini yönet.</p></div>
+            <div class="head-actions">
+                <a class="btn btn-primary" href="@Url.Action("CategoryCreate", "AdminCategory")">+ Yeni Kategori</a>
+            </div>
+        </div>
+        <div class="table-card">
+            <div class="table-toolbar">
+                <div class="filter-chips">
+                    <button class="f-chip active" data-filter="all">Tümü (@(Model?.Count ?? 0))</button>
+                    <button class="f-chip" data-filter="active">Aktif</button>
+                    <button class="f-chip" data-filter="passive">Pasif</button>
+                </div>
+                <div class="search-box" style="width:220px;"><span>🔍</span><input placeholder="Kategori ara..."></div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:30%;">Kategori</th>
+                        <th style="width:40%;">Açıklama</th>
+                        <th style="width:15%;">Durum</th>
+                        <th style="width:15%;text-align:right;">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="categoriesBody">
+                    @if (Model != null && Model.Any())
                     {
-                        <tr data-status="@(item.IsActive ? "active" : "passive")">
-                            <td>
-                                <div class="cell-main">
-                                    @if (!string.IsNullOrEmpty(item.IconUrl))
+                        @foreach (var item in Model)
+                        {
+                            <tr data-status="@(item.IsActive ? "active" : "passive")">
+                                <td>
+                                    <div class="cell-main">
+                                        @if (!string.IsNullOrEmpty(item.IconUrl))
+                                        {
+                                            <img src="@item.IconUrl" style="width:34px;height:34px;border-radius:10px;object-fit:cover;flex-shrink:0;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="cell-avatar"></div>
+                                        }
+                                        <div class="cell-title">@item.CategoryName</div>
+                                    </div>
+                                </td>
+                                <td>@item.Description</td>
+                                <td>
+                                    @if (item.IsActive)
                                     {
-                                        <img src="@item.IconUrl" style="width:34px;height:34px;border-radius:10px;object-fit:cover;" />
+                                        <span class="badge green">Aktif</span>
                                     }
                                     else
                                     {
-                                        <div class="cell-avatar"></div>
+                                        <span class="badge gray">Pasif</span>
                                     }
-                                    <div class="cell-title">@item.CategoryName</div>
-                                </div>
-                            </td>
-                            <td>@item.Description</td>
-                            <td>
-                                @if (item.IsActive)
-                                {
-                                    <span class="badge green">Aktif</span>
-                                }
-                                else
-                                {
-                                    <span class="badge gray">Pasif</span>
-                                }
-                            </td>
-                            <td>
-                                <div class="row-actions">
-                                    <a class="btn-icon-only" title="Düzenle" href="@Url.Action("CategoryUpdate", "AdminCategory", new { id = item.CategoryId })">✎</a>
-                                    <form method="post" action="@Url.Action("CategoryDelete", "AdminCategory")" style="display:inline;" onsubmit="return confirm('Bu kategoriyi silmek istediğinize emin misiniz?');">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@item.CategoryId" />
-                                        <button type="submit" class="btn-icon-only" title="Sil" style="color:var(--danger);">🗑</button>
-                                    </form>
-                                </div>
-                            </td>
+                                </td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a class="btn-icon-only" title="Görüntüle" href="@Url.Action("CategoryUpdate", "AdminCategory", new { id = item.CategoryId })">👁</a>
+                                        <a class="btn-icon-only" title="Düzenle" href="@Url.Action("CategoryUpdate", "AdminCategory", new { id = item.CategoryId })">✎</a>
+                                        <form method="post" action="@Url.Action("CategoryDelete", "AdminCategory")" style="display:inline;" onsubmit="return confirm('Bu kategoriyi silmek istediğinize emin misiniz?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.CategoryId" />
+                                            <button type="submit" class="btn-icon-only" title="Sil" style="color:var(--danger);">🗑</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="empty-hint">Henüz kategori eklenmemiş.</td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="4" class="empty-hint">Henüz kategori eklenmemiş.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-
-        <div class="table-foot">
-            <span>@(Model?.Count ?? 0) kayıt gösteriliyor</span>
+                </tbody>
+            </table>
+            <div class="table-foot">
+                <span>@(Model?.Count ?? 0) kayıt gösteriliyor</span>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
+</div>
 
 <script>
-    // Bu view'e özel filtreleme (sayfa bazlı scope)
+    // Bu sayfaya özel filtreleme — sadece bu view içindeki tabloyu etkiler
     (function () {
         const view = document.querySelector('[data-filter-scope="categories"]');
         if (!view) return;
