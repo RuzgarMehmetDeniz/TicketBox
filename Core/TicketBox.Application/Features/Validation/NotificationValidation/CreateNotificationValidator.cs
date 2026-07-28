@@ -16,7 +16,7 @@ namespace TicketBox.Application.Validation.NotificationValidation
 
             RuleFor(x => x.Message)
                 .NotEmpty().WithMessage("Mesaj boş bırakılamaz.")
-                .MaximumLength(1000).WithMessage("Mesaj en fazla 1000 karakter olabilir.");
+                .MaximumLength(500).WithMessage("Mesaj en fazla 1000 karakter olabilir.");
         }
     }
 }

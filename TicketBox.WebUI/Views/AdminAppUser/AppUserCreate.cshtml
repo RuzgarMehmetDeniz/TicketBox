@@ -1,0 +1,102 @@
+﻿@model RegisterAppUserCommand
+@{
+    ViewData["Title"] = "AppUserCreate";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div>
+            <div class="page-title" id="pageTitle">Yeni Kullanıcı Kaydet</div>
+            <div class="page-sub" id="pageSub">Sisteme yeni bir üye tanımı yapın</div>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <div class="theme-switch" id="themeSwitch">
+            <button class="theme-btn" id="themeBtn"><span class="theme-dot" id="themeDot"></span> Tema ▾</button>
+            <div class="theme-menu" id="themeMenu">
+                <button class="theme-opt active" data-theme="midnight"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#4F8CFF)"></span> 🌙 Midnight</button>
+                <button class="theme-opt" data-theme="aurora"><span class="sw" style="background:linear-gradient(135deg,#34D8C7,#6C5CE7)"></span> 🌌 Aurora</button>
+                <button class="theme-opt" data-theme="purple"><span class="sw" style="background:linear-gradient(135deg,#A855F7,#EC4899)"></span> 💜 Purple</button>
+                <button class="theme-opt" data-theme="ocean"><span class="sw" style="background:linear-gradient(135deg,#2DA8FF,#00C2D1)"></span> 💙 Ocean</button>
+                <button class="theme-opt" data-theme="graphite"><span class="sw" style="background:linear-gradient(135deg,#9CA3AF,#6B7280)"></span> 🩶 Graphite</button>
+                <button class="theme-opt" data-theme="light"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#00B894)"></span> 🤍 Light</button>
+            </div>
+        </div>
+        <div class="admin-mini" style="padding:6px 10px;"><div class="av" style="width:30px;height:30px;"></div></div>
+    </div>
+</div>
+
+<div class="content">
+    <section class="view active">
+        <div class="view-head">
+            <div><h2>Yeni Kullanıcı</h2><p>Sistem kullanıcısı oluşturmak için aşağıdaki alanları doldurun.</p></div>
+            <div class="head-actions">
+                <a class="btn btn-ghost" href="@Url.Action("AppUserList", "AdminAppUser")">← Listeye Dön</a>
+            </div>
+        </div>
+
+        <div class="card" style="max-width:580px;margin:0 auto;">
+            <form asp-controller="AdminAppUser" asp-action="AppUserCreate" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" style="color:var(--danger);font-size:12px;margin-bottom:12px;"></div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="f-row">
+                        <label>Ad</label>
+                        <input type="text" asp-for="Name" placeholder="Adı" />
+                        <span asp-validation-for="Name" style="color:var(--danger);font-size:11.5px;"></span>
+                    </div>
+                    <div class="f-row">
+                        <label>Soyad</label>
+                        <input type="text" asp-for="Surname" placeholder="Soyadı" />
+                        <span asp-validation-for="Surname" style="color:var(--danger);font-size:11.5px;"></span>
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="f-row">
+                        <label>Kullanıcı Adı</label>
+                        <input type="text" asp-for="UserName" placeholder="kullaniciadi" />
+                        <span asp-validation-for="UserName" style="color:var(--danger);font-size:11.5px;"></span>
+                    </div>
+                    <div class="f-row">
+                        <label>E-Posta</label>
+                        <input type="email" asp-for="Email" placeholder="ornek@email.com" />
+                        <span asp-validation-for="Email" style="color:var(--danger);font-size:11.5px;"></span>
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                    <div class="f-row">
+                        <label>Yaş</label>
+                        <input type="number" asp-for="Age" placeholder="25" />
+                        <span asp-validation-for="Age" style="color:var(--danger);font-size:11.5px;"></span>
+                    </div>
+                    <div class="f-row">
+                        <label>Şehir</label>
+                        <input type="text" asp-for="City" placeholder="İstanbul" />
+                        <span asp-validation-for="City" style="color:var(--danger);font-size:11.5px;"></span>
+                    </div>
+                    <div class="f-row">
+                        <label>Ülke</label>
+                        <input type="text" asp-for="Country" placeholder="Türkiye" />
+                        <span asp-validation-for="Country" style="color:var(--danger);font-size:11.5px;"></span>
+                    </div>
+                </div>
+
+                <div class="f-row">
+                    <label>Şifre</label>
+                    <input type="password" asp-for="Password" placeholder="******" />
+                    <span asp-validation-for="Password" style="color:var(--danger);font-size:11.5px;"></span>
+                </div>
+
+                <div style="display:flex;gap:10px;margin-top:15px;">
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                    <a class="btn btn-ghost" href="@Url.Action("AppUserList", "AdminAppUser")">Vazgeç</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>

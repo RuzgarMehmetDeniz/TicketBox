@@ -1,5 +1,4 @@
 ﻿@{
-    // Şu an hangi controller'da olduğumuzu bul (nav item'ın "active" olup olmayacağını belirlemek için)
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }
 <aside class="sidebar" id="sidebar">
@@ -7,25 +6,106 @@
         <div class="logo-mark">TB</div>
         <div class="logo-text">TicketBox<span>ADMIN PANEL</span></div>
     </div>
+
     <nav class="nav-scroll">
+        <!-- İÇERİK MANTIĞI & ETKİNLİKLER -->
         <div class="nav-group">
             <div class="nav-group-label">İçerik Yönetimi</div>
 
-            <!-- Etkinlikler — kendi Controller/Action adını buraya yaz -->
             <a class="nav-item @(currentController == "AdminEvent" ? "active" : "")"
                href="@Url.Action("EventList", "AdminEvent")">
                 <span class="ic">🎟️</span> Etkinlikler
             </a>
 
-            <!-- Kategoriler -->
             <a class="nav-item @(currentController == "AdminCategory" ? "active" : "")"
                href="@Url.Action("CategoryList", "AdminCategory")">
                 <span class="ic">🔷</span> Kategoriler
             </a>
 
-            <!-- Yeni entity eklerken buraya aynı formatta bir <a> daha ekle -->
+            <a class="nav-item @(currentController == "AdminEventGallery" ? "active" : "")"
+               href="@Url.Action("EventGalleryList", "AdminEventGallery")">
+                <span class="ic">🖼️</span> Etkinlik Galerisi
+            </a>
+
+            <a class="nav-item @(currentController == "AdminFavorite" ? "active" : "")"
+               href="@Url.Action("FavoriteList", "AdminFavorite")">
+                <span class="ic">⭐</span> Favoriler
+            </a>
+
+            <a class="nav-item @(currentController == "AdminReview" ? "active" : "")"
+               href="@Url.Action("ReviewList", "AdminReview")">
+                <span class="ic">💬</span> Yorumlar & Değerlendirmeler
+            </a>
+        </div>
+
+        <!-- BİLET & FİNANS -->
+        <div class="nav-group">
+            <div class="nav-group-label">Bilet & Finans</div>
+
+            <a class="nav-item @(currentController == "AdminTicket" ? "active" : "")"
+               href="@Url.Action("TicketList", "AdminTicket")">
+                <span class="ic">🎫</span> Biletler
+            </a>
+
+            <a class="nav-item @(currentController == "AdminPayment" ? "active" : "")"
+               href="@Url.Action("PaymentList", "AdminPayment")">
+                <span class="ic">💳</span> Ödemeler
+            </a>
+
+            <a class="nav-item @(currentController == "AdminRefund" ? "active" : "")"
+               href="@Url.Action("RefundList", "AdminRefund")">
+                <span class="ic">↩️</span> İade Talepleri
+            </a>
+
+            <a class="nav-item @(currentController == "AdminCoupon" ? "active" : "")"
+               href="@Url.Action("CouponList", "AdminCoupon")">
+                <span class="ic">🏷️</span> Kuponlar
+            </a>
+        </div>
+
+        <!-- KULLANICI & İLETİŞİM -->
+        <div class="nav-group">
+            <div class="nav-group-label">Kullanıcı & İletişim</div>
+
+            <a class="nav-item @(currentController == "AdminAppUser" ? "active" : "")"
+               href="@Url.Action("AppUserList", "AdminAppUser")">
+                <span class="ic">👥</span> Kullanıcılar
+            </a>
+
+            <a class="nav-item @(currentController == "AdminNotification" ? "active" : "")"
+               href="@Url.Action("NotificationList", "AdminNotification")">
+                <span class="ic">🔔</span> Bildirimler
+            </a>
+
+            <a class="nav-item @(currentController == "AdminChatSession" ? "active" : "")"
+               href="@Url.Action("ChatSessionList", "AdminChatSession")">
+                <span class="ic">💬</span> Canlı Destek Oturumları
+            </a>
+
+            <a class="nav-item @(currentController == "AdminChatMessage" ? "active" : "")"
+               href="@Url.Action("ChatMessageList", "AdminChatMessage")">
+                <span class="ic">📩</span> Sohbet Mesajları
+            </a>
+        </div>
+
+        <!-- SİSTEM & LOG -->
+        <div class="nav-group">
+            <div class="nav-group-label">Sistem</div>
+
+            <a class="nav-item @(currentController == "AdminAuditLog" ? "active" : "")"
+               href="@Url.Action("AuditLogList", "AdminAuditLog")">
+                <span class="ic">📜</span> Sistem / Denetim Logları
+            </a>
+        </div>
+
+        <!-- SITE DÖNÜŞ (KULLANICI TARAFI) -->
+        <div class="nav-group" style="margin-top: 15px;">
+            <a class="nav-item" href="@Url.Action("Index3", "Discover", new { area = "" })" style="color: #4f8cff; font-weight: 600;">
+                <span class="ic">🌐</span> Ana Sayfaya Dön
+            </a>
         </div>
     </nav>
+
     <div class="sidebar-foot">
         <div class="admin-mini">
             <div class="av"></div>

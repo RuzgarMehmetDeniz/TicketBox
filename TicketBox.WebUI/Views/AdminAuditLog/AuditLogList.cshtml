@@ -1,0 +1,116 @@
+﻿@model List<GetAuditLogQueryResult>
+@{
+    ViewData["Title"] = "AuditLogList";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div>
+            <div class="page-title" id="pageTitle">İşlem Kayıtları</div>
+            <div class="page-sub" id="pageSub">Sistem üzerindeki kullanıcı işlemlerini görüntüle</div>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <div class="search-box"><span>🔍</span><input placeholder="Kayıt ara..."></div>
+        <button class="icon-btn">🔔<span class="dot"></span></button>
+        <div class="theme-switch" id="themeSwitch">
+            <button class="theme-btn" id="themeBtn"><span class="theme-dot" id="themeDot"></span> Tema ▾</button>
+            <div class="theme-menu" id="themeMenu">
+                <button class="theme-opt active" data-theme="midnight"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#4F8CFF)"></span> 🌙 Midnight</button>
+                <button class="theme-opt" data-theme="aurora"><span class="sw" style="background:linear-gradient(135deg,#34D8C7,#6C5CE7)"></span> 🌌 Aurora</button>
+                <button class="theme-opt" data-theme="purple"><span class="sw" style="background:linear-gradient(135deg,#A855F7,#EC4899)"></span> 💜 Purple</button>
+                <button class="theme-opt" data-theme="ocean"><span class="sw" style="background:linear-gradient(135deg,#2DA8FF,#00C2D1)"></span> 💙 Ocean</button>
+                <button class="theme-opt" data-theme="graphite"><span class="sw" style="background:linear-gradient(135deg,#9CA3AF,#6B7280)"></span> 🩶 Graphite</button>
+                <button class="theme-opt" data-theme="light"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#00B894)"></span> 🤍 Light</button>
+            </div>
+        </div>
+        <div class="admin-mini" style="padding:6px 10px;"><div class="av" style="width:30px;height:30px;"></div></div>
+    </div>
+</div>
+
+<div class="content">
+    <section class="view active" id="view-auditlogs" data-filter-scope="auditlogs">
+        <div class="view-head">
+            <div><h2>İşlem Kayıtları</h2><p>Kullanıcı işlemlerinin tüm geçmişini görüntüle.</p></div>
+            <div class="head-actions">
+                <a class="btn btn-primary" href="@Url.Action("AuditLogCreate", "AdminAuditLog")">+ Yeni Kayıt</a>
+            </div>
+        </div>
+        <div class="table-card">
+            <div class="table-toolbar">
+                <div class="filter-chips">
+                    <button class="f-chip active" data-filter="all">Tümü (@(Model?.Count ?? 0))</button>
+                </div>
+                <div class="search-box" style="width:220px;"><span>🔍</span><input placeholder="Kayıt ara..."></div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:20%;">Kullanıcı</th>
+                        <th style="width:25%;">İşlem</th>
+                        <th style="width:30%;">Detay</th>
+                        <th style="width:15%;">Tarih</th>
+                        <th style="width:10%;text-align:right;">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="auditlogsBody">
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="cell-main">
+                                        <div class="cell-avatar"></div>
+                                        <div class="cell-title">@item.AppUserId</div>
+                                    </div>
+                                </td>
+                                <td>@item.Action</td>
+                                <td>@item.Details</td>
+                                <td>@item.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a class="btn-icon-only" title="Düzenle" href="@Url.Action("AuditLogUpdate", "AdminAuditLog", new { id = item.AuditLogId })">✎</a>
+                                        <form method="post" action="@Url.Action("AuditLogDelete", "AdminAuditLog")" style="display:inline;" onsubmit="return confirm('Bu kaydı silmek istediğinize emin misiniz?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.AuditLogId" />
+                                            <button type="submit" class="btn-icon-only" title="Sil" style="color:var(--danger);">🗑</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="empty-hint">Henüz kayıt eklenmemiş.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="table-foot">
+                <span>@(Model?.Count ?? 0) kayıt gösteriliyor</span>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    (function () {
+        const view = document.querySelector('[data-filter-scope="auditlogs"]');
+        if (!view) return;
+        const chipGroup = view.querySelector('.filter-chips');
+        const tbody = view.querySelector('tbody');
+        if (!chipGroup || !tbody) return;
+
+        chipGroup.querySelectorAll('.f-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                chipGroup.querySelectorAll('.f-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+            });
+        });
+    })();
+</script>

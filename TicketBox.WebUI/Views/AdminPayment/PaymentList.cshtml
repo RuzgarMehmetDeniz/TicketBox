@@ -1,0 +1,140 @@
+﻿@model List<GetPaymentQueryResult>
+@{
+    ViewData["Title"] = "PaymentList";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div>
+            <div class="page-title" id="pageTitle">Ödemeler</div>
+            <div class="page-sub" id="pageSub">Ödeme geçmişini ve durumlarını yönet</div>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <div class="search-box"><span>🔍</span><input placeholder="Ödeme veya PNR ara..."></div>
+        <button class="icon-btn">🔔<span class="dot"></span></button>
+        <div class="theme-switch" id="themeSwitch">
+            <button class="theme-btn" id="themeBtn"><span class="theme-dot" id="themeDot"></span> Tema ▾</button>
+            <div class="theme-menu" id="themeMenu">
+                <button class="theme-opt active" data-theme="midnight"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#4F8CFF)"></span> 🌙 Midnight</button>
+                <button class="theme-opt" data-theme="aurora"><span class="sw" style="background:linear-gradient(135deg,#34D8C7,#6C5CE7)"></span> 🌌 Aurora</button>
+                <button class="theme-opt" data-theme="purple"><span class="sw" style="background:linear-gradient(135deg,#A855F7,#EC4899)"></span> 💜 Purple</button>
+                <button class="theme-opt" data-theme="ocean"><span class="sw" style="background:linear-gradient(135deg,#2DA8FF,#00C2D1)"></span> 💙 Ocean</button>
+                <button class="theme-opt" data-theme="graphite"><span class="sw" style="background:linear-gradient(135deg,#9CA3AF,#6B7280)"></span> 🩶 Graphite</button>
+                <button class="theme-opt" data-theme="light"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#00B894)"></span> 🤍 Light</button>
+            </div>
+        </div>
+        <div class="admin-mini" style="padding:6px 10px;"><div class="av" style="width:30px;height:30px;"></div></div>
+    </div>
+</div>
+
+<div class="content">
+    <section class="view active" id="view-payments" data-filter-scope="payments">
+        <div class="view-head">
+            <div><h2>Ödemeler</h2><p>Sistemdeki tüm ödemeleri inceleyin ve güncelleyin.</p></div>
+            <div class="head-actions">
+                <a class="btn btn-primary" href="@Url.Action("PaymentCreate", "AdminPayment")">+ Yeni Ödeme</a>
+            </div>
+        </div>
+        <div class="table-card">
+            <div class="table-toolbar">
+                <div class="filter-chips">
+                    <button class="f-chip active" data-filter="all">Tümü (@(Model?.Count ?? 0))</button>
+                    <button class="f-chip" data-filter="success">Başarılı</button>
+                    <button class="f-chip" data-filter="pending">Beklemede</button>
+                    <button class="f-chip" data-filter="failed">Başarısız</button>
+                </div>
+                <div class="search-box" style="width:220px;"><span>🔍</span><input placeholder="PNR veya Ref No..."></div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:15%;">PNR Kodu</th>
+                        <th style="width:15%;">Tutar</th>
+                        <th style="width:15%;">Yöntem</th>
+                        <th style="width:15%;">Durum</th>
+                        <th style="width:15%;">Tarih</th>
+                        <th style="width:15%;">Ref No</th>
+                        <th style="width:10%;text-align:right;">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentsBody">
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            var statusGroup = item.Status == "Başarılı" ? "success" : (item.Status == "Beklemede" ? "pending" : "failed");
+                            <tr data-status="@statusGroup">
+                                <td>
+                                    <div class="cell-main">
+                                        <div class="cell-title" style="font-weight:600;color:var(--primary);">@item.PNRCode</div>
+                                    </div>
+                                </td>
+                                <td>@item.Amount.ToString("C2")</td>
+                                <td>@item.PaymentMethod</td>
+                                <td>
+                                    @if (item.Status == "Başarılı")
+                                    {
+                                        <span class="badge green">Başarılı</span>
+                                    }
+                                    else if (item.Status == "Beklemede")
+                                    {
+                                        <span class="badge yellow" style="background:rgba(234,179,8,0.15);color:#eab308;">Beklemede</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge red" style="background:rgba(239,68,68,0.15);color:#ef4444;">Başarısız</span>
+                                    }
+                                </td>
+                                <td>@item.PaymentDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@(string.IsNullOrEmpty(item.TransactionReference) ? "-" : item.TransactionReference)</td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a class="btn-icon-only" title="Düzenle" href="@Url.Action("PaymentUpdate", "AdminPayment", new { id = item.PaymentId })">✎</a>
+                                        <form method="post" action="@Url.Action("PaymentDelete", "AdminPayment")" style="display:inline;" onsubmit="return confirm('Bu ödeme kaydını silmek istediğinize emin misiniz?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.PaymentId" />
+                                            <button type="submit" class="btn-icon-only" title="Sil" style="color:var(--danger);">🗑</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="empty-hint">Henüz ödeme kaydı bulunamadı.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="table-foot">
+                <span>@(Model?.Count ?? 0) kayıt gösteriliyor</span>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    (function () {
+        const view = document.querySelector('[data-filter-scope="payments"]');
+        if (!view) return;
+        const chipGroup = view.querySelector('.filter-chips');
+        const tbody = view.querySelector('tbody');
+        if (!chipGroup || !tbody) return;
+
+        chipGroup.querySelectorAll('.f-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                chipGroup.querySelectorAll('.f-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                const filter = chip.dataset.filter;
+                tbody.querySelectorAll('tr[data-status]').forEach(row => {
+                    row.style.display = (filter === 'all' || row.dataset.status === filter) ? '' : 'none';
+                });
+            });
+        });
+    })();
+</script>

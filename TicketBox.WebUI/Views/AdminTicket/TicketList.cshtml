@@ -1,0 +1,163 @@
+﻿@model List<GetTicketQueryResult>
+@{
+    ViewData["Title"] = "TicketList";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div>
+            <div class="page-title" id="pageTitle">Biletler</div>
+            <div class="page-sub" id="pageSub">Sistemdeki tüm biletleri ve durumlarını yönetin</div>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <div class="search-box"><span>🔍</span><input placeholder="PNR veya etkinlik ara..."></div>
+        <button class="icon-btn">🔔<span class="dot"></span></button>
+        <div class="theme-switch" id="themeSwitch">
+            <button class="theme-btn" id="themeBtn"><span class="theme-dot" id="themeDot"></span> Tema ▾</button>
+            <div class="theme-menu" id="themeMenu">
+                <button class="theme-opt active" data-theme="midnight"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#4F8CFF)"></span> 🌙 Midnight</button>
+                <button class="theme-opt" data-theme="aurora"><span class="sw" style="background:linear-gradient(135deg,#34D8C7,#6C5CE7)"></span> 🌌 Aurora</button>
+                <button class="theme-opt" data-theme="purple"><span class="sw" style="background:linear-gradient(135deg,#A855F7,#EC4899)"></span> 💜 Purple</button>
+                <button class="theme-opt" data-theme="ocean"><span class="sw" style="background:linear-gradient(135deg,#2DA8FF,#00C2D1)"></span> 💙 Ocean</button>
+                <button class="theme-opt" data-theme="graphite"><span class="sw" style="background:linear-gradient(135deg,#9CA3AF,#6B7280)"></span> 🩶 Graphite</button>
+                <button class="theme-opt" data-theme="light"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#00B894)"></span> 🤍 Light</button>
+            </div>
+        </div>
+        <div class="admin-mini" style="padding:6px 10px;"><div class="av" style="width:30px;height:30px;"></div></div>
+    </div>
+</div>
+
+<div class="content">
+    <section class="view active" id="view-tickets" data-filter-scope="tickets">
+        <div class="view-head">
+            <div><h2>Bilet Yönetimi</h2><p>Satın alınan biletlerin detaylarını ve durumlarını görüntüleyin.</p></div>
+            <div class="head-actions">
+                <a class="btn btn-primary" href="@Url.Action("TicketCreate", "AdminTicket")">+ Manuel Bilet Oluştur</a>
+            </div>
+        </div>
+        <div class="table-card">
+            <div class="table-toolbar">
+                <div class="filter-chips">
+                    <button class="f-chip active" data-filter="all">Tümü (@(Model?.Count ?? 0))</button>
+                    <button class="f-chip" data-filter="Active">Aktif</button>
+                    <button class="f-chip" data-filter="Used">Kullanıldı</button>
+                    <button class="f-chip" data-filter="Cancelled">İptal</button>
+                    <button class="f-chip" data-filter="Refunded">İade Edildi</button>
+                </div>
+                <div class="search-box" style="width:220px;"><span>🔍</span><input placeholder="PNR Ara..."></div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:12%;">PNR Kodu</th>
+                        <th style="width:22%;">Etkinlik</th>
+                        <th style="width:16%;">Kullanıcı ID</th>
+                        <th style="width:12%;">Tutar</th>
+                        <th style="width:12%;">Durum</th>
+                        <th style="width:10%;">E-Posta</th>
+                        <th style="width:10%;">Tarih</th>
+                        <th style="width:6%;text-align:right;">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="ticketsBody">
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr data-status="@item.Status">
+                                <td>
+                                    <div class="cell-main">
+                                        <div class="cell-title" style="font-weight:700;color:var(--primary);letter-spacing:0.5px;">@item.PNRCode</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-main">
+                                        <div class="cell-title" style="font-weight:600;">@item.EventTitle</div>
+                                    </div>
+                                </td>
+                                <td><span style="font-size:12px;opacity:0.8;">@item.AppUserId</span></td>
+                                <td>@item.Price.ToString("C2")</td>
+                                <td>
+                                    @if (item.Status == "Active")
+                                    {
+                                        <span class="badge green">Aktif</span>
+                                    }
+                                    else if (item.Status == "Used")
+                                    {
+                                        <span class="badge gray">Kullanıldı</span>
+                                    }
+                                    else if (item.Status == "Cancelled")
+                                    {
+                                        <span class="badge red" style="background:rgba(239,68,68,0.15);color:#ef4444;">İptal</span>
+                                    }
+                                    else if (item.Status == "Refunded")
+                                    {
+                                        <span class="badge yellow" style="background:rgba(234,179,8,0.15);color:#eab308;">İade Edildi</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge gray">@item.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.IsEmailSent)
+                                    {
+                                        <span style="color:#10b981;font-weight:600;">Gönderildi</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="opacity:0.6;">Gönderilmedi</span>
+                                    }
+                                </td>
+                                <td>@item.PurchaseDate.ToString("dd.MM.yyyy")</td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a class="btn-icon-only" title="Düzenle" href="@Url.Action("TicketUpdate", "AdminTicket", new { id = item.TicketId })">✎</a>
+                                        <form method="post" action="@Url.Action("TicketDelete", "AdminTicket")" style="display:inline;" onsubmit="return confirm('Bu bileti silmek istediğinize emin misiniz?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.TicketId" />
+                                            <button type="submit" class="btn-icon-only" title="Sil" style="color:var(--danger);">🗑</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="empty-hint">Henüz bilet kaydı bulunamadı.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="table-foot">
+                <span>@(Model?.Count ?? 0) kayıt gösteriliyor</span>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    (function () {
+        const view = document.querySelector('[data-filter-scope="tickets"]');
+        if (!view) return;
+        const chipGroup = view.querySelector('.filter-chips');
+        const tbody = view.querySelector('tbody');
+        if (!chipGroup || !tbody) return;
+
+        chipGroup.querySelectorAll('.f-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                chipGroup.querySelectorAll('.f-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                const filter = chip.dataset.filter;
+                tbody.querySelectorAll('tr[data-status]').forEach(row => {
+                    row.style.display = (filter === 'all' || row.dataset.status === filter) ? '' : 'none';
+                });
+            });
+        });
+    })();
+</script>

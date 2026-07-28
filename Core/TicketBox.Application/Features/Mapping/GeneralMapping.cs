@@ -116,8 +116,8 @@ namespace TicketBox.Application.Features.Mapping
             //// ===== FAVORITE =====
             CreateMap<Favorite,CreateFavoriteCommand>().ReverseMap();
             CreateMap<Favorite, UpdateFavoriteCommand>().ReverseMap();
-            CreateMap<Favorite, GetFavoriteQueryResult>().ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title)).ReverseMap();
-            CreateMap<Favorite, GetFavoriteByIdQueryResult>().ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title)).ReverseMap();
+            CreateMap<Favorite, GetFavoriteQueryResult>().ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title));
+            CreateMap<Favorite, GetFavoriteByIdQueryResult>().ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title));
         }
     }
 }

@@ -1,0 +1,103 @@
+﻿@model List<GetAppUserQueryResult>
+@{
+    ViewData["Title"] = "AppUserList";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div>
+            <div class="page-title" id="pageTitle">Kullanıcılar</div>
+            <div class="page-sub" id="pageSub">Sistemdeki kayıtlı kullanıcıları ve profillerini yönetin</div>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <div class="search-box"><span>🔍</span><input placeholder="Kullanıcı veya e-posta ara..."></div>
+        <button class="icon-btn">🔔<span class="dot"></span></button>
+        <div class="theme-switch" id="themeSwitch">
+            <button class="theme-btn" id="themeBtn"><span class="theme-dot" id="themeDot"></span> Tema ▾</button>
+            <div class="theme-menu" id="themeMenu">
+                <button class="theme-opt active" data-theme="midnight"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#4F8CFF)"></span> 🌙 Midnight</button>
+                <button class="theme-opt" data-theme="aurora"><span class="sw" style="background:linear-gradient(135deg,#34D8C7,#6C5CE7)"></span> 🌌 Aurora</button>
+                <button class="theme-opt" data-theme="purple"><span class="sw" style="background:linear-gradient(135deg,#A855F7,#EC4899)"></span> 💜 Purple</button>
+                <button class="theme-opt" data-theme="ocean"><span class="sw" style="background:linear-gradient(135deg,#2DA8FF,#00C2D1)"></span> 💙 Ocean</button>
+                <button class="theme-opt" data-theme="graphite"><span class="sw" style="background:linear-gradient(135deg,#9CA3AF,#6B7280)"></span> 🩶 Graphite</button>
+                <button class="theme-opt" data-theme="light"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#00B894)"></span> 🤍 Light</button>
+            </div>
+        </div>
+        <div class="admin-mini" style="padding:6px 10px;"><div class="av" style="width:30px;height:30px;"></div></div>
+    </div>
+</div>
+
+<div class="content">
+    <section class="view active" id="view-users">
+        <div class="view-head">
+            <div><h2>Kullanıcı Yönetimi</h2><p>Sisteme kayıtlı tüm kullanıcıların listesi ve profil detayları.</p></div>
+            <div class="head-actions">
+                <a class="btn btn-primary" href="@Url.Action("AppUserCreate", "AdminAppUser")">+ Yeni Kullanıcı Kaydet</a>
+            </div>
+        </div>
+        <div class="table-card">
+            <div class="table-toolbar">
+                <div class="search-box" style="width:260px;"><span>🔍</span><input placeholder="Ad, soyad veya e-posta ara..."></div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:25%;">Kullanıcı</th>
+                        <th style="width:20%;">E-Posta</th>
+                        <th style="width:15%;">Konum</th>
+                        <th style="width:8%;">Yaş</th>
+                        <th style="width:17%;">İlgi Alanları</th>
+                        <th style="width:10%;">Kayıt Tarihi</th>
+                        <th style="width:5%;text-align:right;">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="appUsersBody">
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="cell-main" style="display:flex;align-items:center;gap:10px;">
+                                        <img src="@(string.IsNullOrEmpty(item.ProfileImageUrl) ? "https://ui-avatars.com/api/?name=" + item.Name + "+" + item.Surname : item.ProfileImageUrl)" style="width:34px;height:34px;border-radius:50%;object-fit:cover;" alt="Profil" />
+                                        <div>
+                                            <div class="cell-title" style="font-weight:600;">@item.Name @item.Surname</div>
+                                            <div style="font-size:11px;opacity:0.7;">@@item.UserName</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@item.Email</td>
+                                <td>@item.City, @item.Country</td>
+                                <td>@item.Age</td>
+                                <td><span title="@item.PreferredCategories">@(item.PreferredCategories?.Length > 20 ? item.PreferredCategories.Substring(0, 20) + "..." : (item.PreferredCategories ?? "-"))</span></td>
+                                <td>@item.CreatedDate.ToString("dd.MM.yyyy")</td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a class="btn-icon-only" title="Düzenle" href="@Url.Action("AppUserUpdate", "AdminAppUser", new { id = item.Id })">✎</a>
+                                        <form method="post" action="@Url.Action("AppUserDelete", "AdminAppUser")" style="display:inline;" onsubmit="return confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn-icon-only" title="Sil" style="color:var(--danger);">🗑</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="empty-hint">Henüz kullanıcı kaydı bulunamadı.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="table-foot">
+                <span>@(Model?.Count ?? 0) kayıt gösteriliyor</span>
+            </div>
+        </div>
+    </section>
+</div>

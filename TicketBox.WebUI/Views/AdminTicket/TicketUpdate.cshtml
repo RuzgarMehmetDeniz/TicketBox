@@ -1,0 +1,77 @@
+﻿@model UpdateTicketCommand
+@{
+    ViewData["Title"] = "TicketUpdate";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div>
+            <div class="page-title" id="pageTitle">Bilet Güncelle</div>
+            <div class="page-sub" id="pageSub">Bilet durumunu ve e-posta bildirim statüsünü yönetin</div>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <div class="theme-switch" id="themeSwitch">
+            <button class="theme-btn" id="themeBtn"><span class="theme-dot" id="themeDot"></span> Tema ▾</button>
+            <div class="theme-menu" id="themeMenu">
+                <button class="theme-opt active" data-theme="midnight"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#4F8CFF)"></span> 🌙 Midnight</button>
+                <button class="theme-opt" data-theme="aurora"><span class="sw" style="background:linear-gradient(135deg,#34D8C7,#6C5CE7)"></span> 🌌 Aurora</button>
+                <button class="theme-opt" data-theme="purple"><span class="sw" style="background:linear-gradient(135deg,#A855F7,#EC4899)"></span> 💜 Purple</button>
+                <button class="theme-opt" data-theme="ocean"><span class="sw" style="background:linear-gradient(135deg,#2DA8FF,#00C2D1)"></span> 💙 Ocean</button>
+                <button class="theme-opt" data-theme="graphite"><span class="sw" style="background:linear-gradient(135deg,#9CA3AF,#6B7280)"></span> 🩶 Graphite</button>
+                <button class="theme-opt" data-theme="light"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#00B894)"></span> 🤍 Light</button>
+            </div>
+        </div>
+        <div class="admin-mini" style="padding:6px 10px;"><div class="av" style="width:30px;height:30px;"></div></div>
+    </div>
+</div>
+
+<div class="content">
+    <section class="view active">
+        <div class="view-head">
+            <div><h2>Bilet Güncelle</h2><p>#@Model.TicketId numaralı bilet bilgilerini güncelleyin.</p></div>
+            <div class="head-actions">
+                <a class="btn btn-ghost" href="@Url.Action("TicketList", "AdminTicket")">← Listeye Dön</a>
+            </div>
+        </div>
+
+        <div class="card" style="max-width:520px;margin:0 auto;">
+            <form asp-controller="AdminTicket" asp-action="TicketUpdate" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="TicketId" />
+
+                <div class="f-row">
+                    <label>Bilet Görsel URL</label>
+                    <input type="text" asp-for="TicketImageUrl" placeholder="https://..." />
+                    <span asp-validation-for="TicketImageUrl" style="color:var(--danger);font-size:11.5px;"></span>
+                </div>
+
+                <div class="f-row">
+                    <label>Bilet Durumu</label>
+                    <select asp-for="Status" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-input);color:var(--text-main);">
+                        <option value="Active">Active (Aktif)</option>
+                        <option value="Used">Used (Kullanıldı)</option>
+                        <option value="Cancelled">Cancelled (İptal)</option>
+                        <option value="Refunded">Refunded (İade Edildi)</option>
+                    </select>
+                    <span asp-validation-for="Status" style="color:var(--danger);font-size:11.5px;"></span>
+                </div>
+
+                <div class="f-row" style="display:flex;align-items:center;gap:10px;margin-top:10px;">
+                    <label class="switch">
+                        <input type="checkbox" asp-for="IsEmailSent" />
+                        <span class="track"></span>
+                    </label>
+                    <label style="margin:0;">E-Posta Gönderildi Yap</label>
+                </div>
+
+                <div style="display:flex;gap:10px;margin-top:20px;">
+                    <button type="submit" class="btn btn-primary">Güncelle</button>
+                    <a class="btn btn-ghost" href="@Url.Action("TicketList", "AdminTicket")">Vazgeç</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
