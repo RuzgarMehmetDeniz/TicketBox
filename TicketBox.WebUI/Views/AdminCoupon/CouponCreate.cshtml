@@ -1,0 +1,83 @@
+﻿@model TicketBox.Application.Features.CQRS.Coupons.Commands.CreateCouponCommand
+@{
+    ViewData["Title"] = "CouponCreate";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div>
+            <div class="page-title" id="pageTitle">Yeni Kupon</div>
+            <div class="page-sub" id="pageSub">Yeni bir indirim kuponu oluştur</div>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <div class="theme-switch" id="themeSwitch">
+            <button class="theme-btn" id="themeBtn"><span class="theme-dot" id="themeDot"></span> Tema ▾</button>
+            <div class="theme-menu" id="themeMenu">
+                <button class="theme-opt active" data-theme="midnight"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#4F8CFF)"></span> 🌙 Midnight</button>
+                <button class="theme-opt" data-theme="aurora"><span class="sw" style="background:linear-gradient(135deg,#34D8C7,#6C5CE7)"></span> 🌌 Aurora</button>
+                <button class="theme-opt" data-theme="purple"><span class="sw" style="background:linear-gradient(135deg,#A855F7,#EC4899)"></span> 💜 Purple</button>
+                <button class="theme-opt" data-theme="ocean"><span class="sw" style="background:linear-gradient(135deg,#2DA8FF,#00C2D1)"></span> 💙 Ocean</button>
+                <button class="theme-opt" data-theme="graphite"><span class="sw" style="background:linear-gradient(135deg,#9CA3AF,#6B7280)"></span> 🩶 Graphite</button>
+                <button class="theme-opt" data-theme="light"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#00B894)"></span> 🤍 Light</button>
+            </div>
+        </div>
+        <div class="admin-mini" style="padding:6px 10px;"><div class="av" style="width:30px;height:30px;"></div></div>
+    </div>
+</div>
+
+<div class="content">
+    <section class="view active">
+        <div class="view-head">
+            <div><h2>Yeni Kupon</h2><p>Yeni bir indirim kuponu tanımla.</p></div>
+            <div class="head-actions">
+                <a class="btn btn-ghost" href="@Url.Action("CouponList", "AdminCoupon")">← Listeye Dön</a>
+            </div>
+        </div>
+
+        <div class="card" style="max-width:520px;margin:0 auto;">
+            <form asp-controller="AdminCoupon" asp-action="CouponCreate" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="f-row">
+                    <label>Kupon Kodu</label>
+                    <input type="text" asp-for="Code" placeholder="örn. YAZ2026" style="text-transform:uppercase;" />
+                    <span asp-validation-for="Code" style="color:var(--danger);font-size:11.5px;"></span>
+                </div>
+
+                <div class="f-row">
+                    <label>İndirim Yüzdesi (%)</label>
+                    <input type="number" asp-for="DiscountPercentage" step="0.01" min="1" max="100" placeholder="10" />
+                    <span asp-validation-for="DiscountPercentage" style="color:var(--danger);font-size:11.5px;"></span>
+                </div>
+
+                <div class="f-row">
+                    <label>Son Kullanma Tarihi</label>
+                    <input type="datetime-local" asp-for="ExpiryDate" />
+                    <span asp-validation-for="ExpiryDate" style="color:var(--danger);font-size:11.5px;"></span>
+                </div>
+
+                <div class="f-row">
+                    <label>Kullanım Limiti (Boş bırakılırsa sınırsız)</label>
+                    <input type="number" asp-for="UsageLimit" placeholder="örn. 100" />
+                    <span asp-validation-for="UsageLimit" style="color:var(--danger);font-size:11.5px;"></span>
+                </div>
+
+                <div class="f-row" style="display:flex;align-items:center;gap:10px;">
+                    <label class="switch">
+                        <input type="checkbox" asp-for="IsActive" />
+                        <span class="track"></span>
+                    </label>
+                    <label style="margin:0;">Aktif</label>
+                </div>
+
+                <div style="display:flex;gap:10px;margin-top:10px;">
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                    <a class="btn btn-ghost" href="@Url.Action("CouponList", "AdminCoupon")">Vazgeç</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
