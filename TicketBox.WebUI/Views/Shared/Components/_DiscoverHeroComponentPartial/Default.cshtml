@@ -1,0 +1,65 @@
+﻿<header class="hero">
+	<div class="wrap hero-grid">
+		<div class="reveal in" id="heroText">
+			<span class="eyebrow">● Türkiye'nin yeni nesil etkinlik platformu</span>
+			<h1>Anını yaşayacağın <span class="g">etkinliği</span> keşfet.</h1>
+			<p class="lead">Konserden konferansa, festivalden tiyatroya — binlerce etkinlik arasından sana en yakın ve en özel olanı saniyeler içinde bul, biletini güvenle al.</p>
+			<div class="hero-cta">
+				<a href="#events" class="btn btn-primary" id="ctaBtn">Etkinlikleri Keşfet →</a>
+				<a href="#" class="btn btn-ghost">▶ Nasıl çalışır?</a>
+			</div>
+			<div class="hero-stats">
+				<div class="hstat"><b id="statEvents">0</b><span>Aktif Etkinlik</span></div>
+				<div class="hstat"><b id="statUsers">0</b><span>Mutlu Kullanıcı</span></div>
+				<div class="hstat"><b id="statCities">0</b><span>Şehir</span></div>
+				<div class="hstat"><b>4.9<span style="color:var(--accent)">★</span></b><span>Ortalama Puan</span></div>
+			</div>
+		</div>
+
+		<div class="hero-visual">
+			<div class="orbit-blur"></div>
+
+			<div class="phone-mock">
+				<div class="screen">
+					<div class="top-label">TicketBox / e-Bilet</div>
+					<div class="price-tag">₺450</div>
+					<div class="qr"></div>
+				</div>
+			</div>
+
+			<div class="ticket-card" id="tiltTicket">
+				<svg viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg">
+					<defs>
+						<linearGradient id="tgrad" x1="0" y1="0" x2="1" y2="1">
+							<stop offset="0%" stop-color="var(--primary)" />
+							<stop offset="100%" stop-color="var(--secondary)" />
+						</linearGradient>
+					</defs>
+					<path d="M16,0 H304 A16,16 0 0 1 320,16 V70 a10,10 0 0 0 0,20 V154 A16,16 0 0 1 304,170 H16 A16,16 0 0 1 0,154 V90 a10,10 0 0 0 0,-20 V16 A16,16 0 0 1 16,0 Z" fill="url(#tgrad)" />
+					<line x1="215" y1="14" x2="215" y2="156" stroke="rgba(255,255,255,.35)" stroke-width="1.5" stroke-dasharray="5,5" />
+					<text x="26" y="42" fill="#fff" font-family="Space Grotesk, sans-serif" font-size="18" font-weight="700">Aurora Fest 2026</text>
+					<text x="26" y="66" fill="rgba(255,255,255,.8)" font-family="Inter, sans-serif" font-size="11">18 Ağustos · KüçükÇiftlik Park</text>
+					<text x="26" y="128" fill="rgba(255,255,255,.7)" font-family="JetBrains Mono, monospace" font-size="9">GATE A · SIRA 12</text>
+					<text x="26" y="146" fill="#fff" font-family="Space Grotesk, sans-serif" font-size="15" font-weight="700">KOLTUK 24</text>
+					<rect x="240" y="30" width="60" height="60" rx="6" fill="rgba(255,255,255,.9)" />
+					<text x="270" y="110" fill="#fff" font-family="JetBrains Mono, monospace" font-size="9" text-anchor="middle">SCAN ME</text>
+				</svg>
+			</div>
+
+			<div class="float-card fc-notif glass" style="border-radius:16px;">
+				<div class="ic">🔥</div>
+				<div><b>Son 8 bilet!</b><span>Aurora Fest 2026</span></div>
+			</div>
+
+			<div class="float-card fc-avatars glass" style="border-radius:16px;">
+				<div class="avatar-stack"><div class="av"></div><div class="av"></div><div class="av"></div></div>
+				<div><b>+2.4K</b><span>bu hafta katıldı</span></div>
+			</div>
+
+			<div class="float-card fc-map glass" style="border-radius:16px;">
+				<div class="map-dots"><i style="top:10px;left:20px;"></i><i style="top:30px;left:60px;"></i><i style="top:18px;left:100px;"></i></div>
+				<div><b style="font-size:12px;">Yakınındaki etkinlikler</b></div>
+			</div>
+		</div>
+	</div>
+</header>

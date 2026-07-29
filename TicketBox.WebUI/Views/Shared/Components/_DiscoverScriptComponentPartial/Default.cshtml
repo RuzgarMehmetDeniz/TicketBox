@@ -1,0 +1,254 @@
+﻿<script>
+	/* ============ DATA ============ */
+	const categories = [
+	  {icon:'🎵',name:'Konser',count:'1.240 etkinlik'},
+	  {icon:'🎭',name:'Tiyatro',count:'560 etkinlik'},
+	  {icon:'⚽',name:'Spor',count:'890 etkinlik'},
+	  {icon:'🎪',name:'Festival',count:'320 etkinlik'},
+	  {icon:'🎤',name:'Stand-up',count:'410 etkinlik'},
+	  {icon:'👨‍👩‍👧',name:'Aile',count:'275 etkinlik'},
+	];
+
+	const events = [
+	  {cat:'Konser',title:'Aurora Fest 2026',city:'İstanbul',venue:'KüçükÇiftlik Park',date:'18 AĞU',time:'20:00',price:'450',fill:82,org:'NovaEvents',rating:4.9,premium:true,live:true,attendees:'2.4K'},
+	  {cat:'Tiyatro',title:'Gölgede Kalan Şehir',city:'Ankara',venue:'CSO Ada Ankara',date:'24 AĞU',time:'19:30',price:'220',fill:45,org:'Sahne7',rating:4.7,premium:false,live:false,attendees:'640'},
+	  {cat:'Spor',title:'Şampiyonlar Ligi Finali',city:'İstanbul',venue:'Vodafone Park',date:'02 EYL',time:'22:00',price:'980',fill:96,org:'ArenaLive',rating:4.8,premium:true,live:true,attendees:'11K'},
+	  {cat:'Festival',title:'Kıyı Elektronik Festival',city:'İzmir',venue:'Kültürpark',date:'12 EYL',time:'16:00',price:'650',fill:70,org:'PulseCollective',rating:4.6,premium:false,live:false,attendees:'3.1K'},
+	  {cat:'Stand-up',title:'Gece Yarısı Kahkaha',city:'İstanbul',venue:'Zorlu PSM',date:'05 EYL',time:'21:00',price:'310',fill:58,org:'GülBir',rating:4.9,premium:false,live:false,attendees:'890'},
+	  {cat:'Konser',title:'Akustik Gece: Bosphorus Sessions',city:'İstanbul',venue:'Süreyya Operası',date:'29 AĞU',time:'20:30',price:'380',fill:38,org:'Meridyen Prod.',rating:4.8,premium:false,live:false,attendees:'420'},
+	];
+
+	const orgs = [
+	  {n:'NovaEvents',c:'1.2K etkinlik',v:true},
+	  {n:'ArenaLive',c:'860 etkinlik',v:true},
+	  {n:'Sahne7',c:'410 etkinlik',v:false},
+	  {n:'PulseCollective',c:'320 etkinlik',v:true},
+	  {n:'Meridyen Prod.',c:'290 etkinlik',v:false},
+	];
+
+	const cities = [
+	  {name:'İstanbul',count:'4.200+',top:'32%',left:'34%'},
+	  {name:'Ankara',count:'1.100+',top:'44%',left:'52%'},
+	  {name:'İzmir',count:'890+',top:'62%',left:'22%'},
+	  {name:'Antalya',count:'640+',top:'80%',left:'40%'},
+	  {name:'Bursa',count:'510+',top:'34%',left:'26%'},
+	  {name:'Adana',count:'330+',top:'70%',left:'66%'},
+	];
+
+	const testimonials = [
+	  {name:'Elif K.',city:'İstanbul',text:'Bilet alma sürecinin bu kadar akıcı olabileceğini düşünmemiştim. QR kod anında cüzdanıma düştü.'},
+	  {name:'Baran T.',city:'İzmir',text:'Festival biletimi son dakika aldım, koltuk seçimi ve ödeme bir dakikadan az sürdü.'},
+	  {name:'Deniz A.',city:'Ankara',text:'Organizatör takip özelliği sayesinde sevdiğim etkinlikleri kaçırmıyorum artık.'},
+	];
+
+	const blogs = [
+	  {tag:'Rehber',title:'2026 sonbaharının en çok konuşulan 10 festivali',meta:'6 dk okuma · 12 Tem'},
+	  {tag:'Kulis',title:'Bir konser nasıl sahneleniyor? Perde arkasına bakış',meta:'8 dk okuma · 04 Tem'},
+	  {tag:'İpucu',title:'En uygun bilet fiyatını yakalamanın 5 yolu',meta:'4 dk okuma · 28 Haz'},
+	];
+
+	const faqs = [
+	  {q:'Biletimi nasıl teslim alırım?',a:'Satın alma sonrası e-bilet ve QR kod anında hesabına ve e-posta adresine iletilir, dilersen dijital cüzdanına ekleyebilirsin.'},
+	  {q:'İade veya değişiklik yapabilir miyim?',a:'Etkinlik organizatörünün politikasına bağlı olarak iade ve tarih değişikliği talebini etkinlik sayfasından kolayca oluşturabilirsin.'},
+	  {q:'Ödeme bilgilerim güvende mi?',a:'Tüm ödemeler 256-bit şifreleme ile korunur, kart bilgilerin sunucularımızda saklanmaz.'},
+	  {q:'Organizatör olarak nasıl etkinlik oluşturabilirim?',a:'"Etkinlik Oluştur" sayfasından birkaç adımda etkinliğini yayına alabilir, satışları anlık takip edebilirsin.'},
+	];
+
+	/* ============ RENDER ============ */
+	const catGrid = document.getElementById('catGrid');
+	catGrid.innerHTML = categories.map(c=>`
+	  <div class="cat-card reveal scale">
+		<div class="cat-hex">${c.icon}</div>
+		<h4>${c.name}</h4>
+		<span>${c.count}</span>
+	  </div>`).join('');
+
+	function eventCardHTML(e){
+	  return `
+	  <div class="event-card reveal">
+		<div class="ev-media">
+		  <div class="img"></div>
+		  <span class="ev-badge ${e.premium?'premium':''}">${e.premium?'★ Premium':e.cat}</span>
+		  <button class="ev-fav">♥</button>
+		  <div class="ev-date-flag"><b>${e.date.split(' ')[0]}</b><span>${e.date.split(' ')[1]}</span></div>
+		  ${e.live?'<div class="ev-live"><i></i> Canlı ilgi</div>':''}
+		</div>
+		<div class="ev-body">
+		  <div class="ev-cat">${e.cat}</div>
+		  <h3>${e.title}</h3>
+		  <div class="ev-meta">
+			<span>📍 ${e.city} · ${e.venue}</span>
+			<span>🕒 ${e.time}</span>
+		  </div>
+		  <div class="ev-org">
+			<div class="av"></div>
+			<span>${e.org}</span>
+			${Math.random()>0.4?'<span class="verified">✓</span>':''}
+			<span class="rating">★ ${e.rating}</span>
+		  </div>
+		  <div class="ev-fill"><i style="width:${e.fill}%;"></i></div>
+		  <div class="ev-fill-label"><span>${e.fill}% dolu</span><span>👥 ${e.attendees} katılımcı</span></div>
+		  <div class="ev-foot">
+			<div class="ev-price"><b>₺${e.price}</b><span>başlangıç fiyatı</span></div>
+			<div class="ev-actions">
+			  <button class="icon-btn" title="QR">▤</button>
+			  <button class="icon-btn" title="Paylaş">↗</button>
+			</div>
+		  </div>
+		</div>
+	  </div>`;
+	}
+	document.getElementById('eventGrid').innerHTML = events.slice(0,6).map(eventCardHTML).join('');
+	document.getElementById('carousel').innerHTML = events.slice(0,5).reverse().map(eventCardHTML).join('');
+
+	const heights=['m-h1','m-h2','m-h3','m-h4','m-h2','m-h1'];
+	document.getElementById('masonry').innerHTML = events.map((e,i)=>`
+	  <div class="m-card reveal">
+		<div class="img ${heights[i%heights.length]}"></div>
+		<div class="m-overlay">
+		  <div class="ev-cat">${e.cat}</div>
+		  <h4>${e.title}</h4>
+		</div>
+	  </div>`).join('');
+
+	document.getElementById('orgGrid').innerHTML = orgs.map(o=>`
+	  <div class="org-card reveal">
+		<div class="org-logo">${o.n.slice(0,2).toUpperCase()}</div>
+		<h4>${o.n} ${o.v?'<span style="color:var(--accent);font-size:12px;">✓</span>':''}</h4>
+		<span>${o.c}</span>
+		<button class="btn btn-ghost btn-sm">Takip Et</button>
+	  </div>`).join('');
+
+	const cityMap = document.getElementById('cityMap');
+	cityMap.innerHTML = cities.map(c=>`
+	  <div class="city-pin" style="top:${c.top};left:${c.left};">
+		<div class="dot"></div>
+		<div class="label">${c.name}<span class="count">${c.count} etkinlik</span></div>
+	  </div>`).join('');
+
+	document.getElementById('testGrid').innerHTML = testimonials.map(t=>`
+	  <div class="test-card reveal">
+		<div class="test-video"><div class="play-btn">▶</div></div>
+		<div class="test-head">
+		  <div class="av"></div>
+		  <div><h5>${t.name} <span style="color:var(--accent);font-size:11px;">✓</span></h5><span>${t.city}</span></div>
+		</div>
+		<div class="test-stars">★★★★★</div>
+		<p>${t.text}</p>
+	  </div>`).join('');
+
+	document.getElementById('blogGrid').innerHTML = blogs.map(b=>`
+	  <a class="blog-card reveal">
+		<div class="blog-img"></div>
+		<div class="blog-body">
+		  <div class="blog-tag">${b.tag}</div>
+		  <h4>${b.title}</h4>
+		  <div class="blog-meta">${b.meta}</div>
+		</div>
+	  </a>`).join('');
+
+	document.getElementById('timeline').innerHTML = events.slice(0,4).map(e=>`
+	  <div class="t-item reveal">
+		<div class="t-date"><b>${e.date}</b>${e.time}</div>
+		<div class="t-card">
+		  <div><h4>${e.title}</h4><p>${e.city} · ${e.venue}</p></div>
+		  <button class="btn btn-ghost btn-sm">Detay →</button>
+		</div>
+	  </div>`).join('');
+
+	document.getElementById('faqList').innerHTML = faqs.map((f,i)=>`
+	  <div class="faq-item reveal ${i===0?'open':''}">
+		<button class="faq-q"><span>${f.q}</span><span class="plus">+</span></button>
+		<div class="faq-a"><p>${f.a}</p></div>
+	  </div>`).join('');
+
+	/* ============ INTERACTIONS ============ */
+	// navbar shrink
+	const navbar = document.getElementById('navbar');
+	window.addEventListener('scroll',()=>{ navbar.classList.toggle('scrolled', window.scrollY>40); });
+
+	// theme switch
+	const themeSwitch=document.getElementById('themeSwitch'), themeBtn=document.getElementById('themeBtn'), themeMenu=document.getElementById('themeMenu'), themeDot=document.getElementById('themeDot');
+	themeBtn.addEventListener('click',(e)=>{e.stopPropagation();themeSwitch.classList.toggle('open');});
+	document.addEventListener('click',()=>themeSwitch.classList.remove('open'));
+	document.querySelectorAll('.theme-opt').forEach(opt=>{
+	  opt.addEventListener('click',()=>{
+		const t=opt.dataset.theme;
+		document.body.setAttribute('data-theme',t);
+		document.querySelectorAll('.theme-opt').forEach(o=>o.classList.remove('active'));
+		opt.classList.add('active');
+		themeDot.style.background = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+		localStorage.setItem && null; // no-op, in-memory only per session
+	  });
+	});
+
+	// faq accordion
+	document.querySelectorAll('.faq-item').forEach(item=>{
+	  item.querySelector('.faq-q').addEventListener('click',()=>{
+		const wasOpen = item.classList.contains('open');
+		document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+		if(!wasOpen) item.classList.add('open');
+	  });
+	});
+
+	// chip filter (visual only)
+	document.querySelectorAll('.chip').forEach(chip=>{
+	  chip.addEventListener('click',()=>{
+		document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+		chip.classList.add('active');
+	  });
+	});
+
+	// carousel nav
+	const carousel=document.getElementById('carousel');
+	document.getElementById('carNext').addEventListener('click',()=>carousel.scrollBy({left:340,behavior:'smooth'}));
+	document.getElementById('carPrev').addEventListener('click',()=>carousel.scrollBy({left:-340,behavior:'smooth'}));
+
+	// ticket 3D tilt
+	const ticket=document.getElementById('tiltTicket');
+	document.querySelector('.hero-visual').addEventListener('mousemove',(e)=>{
+	  const r=e.currentTarget.getBoundingClientRect();
+	  const px=(e.clientX-r.left)/r.width-0.5, py=(e.clientY-r.top)/r.height-0.5;
+	  ticket.style.transform = `perspective(600px) rotateY(${px*18}deg) rotateX(${-py*18}deg)`;
+	});
+	document.querySelector('.hero-visual').addEventListener('mouseleave',()=>{ ticket.style.transform=''; });
+
+	// button glow follow
+	document.querySelectorAll('.btn-primary').forEach(btn=>{
+	  btn.addEventListener('mousemove',e=>{
+		const r=btn.getBoundingClientRect();
+		btn.style.setProperty('--mx', ((e.clientX-r.left)/r.width*100)+'%');
+		btn.style.setProperty('--my', ((e.clientY-r.top)/r.height*100)+'%');
+	  });
+	});
+
+	// scroll reveal
+	const io = new IntersectionObserver((entries)=>{
+	  entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+	},{threshold:.15});
+	document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+	// counters
+	function animateCounter(el, target){
+	  let cur=0; const dur=1600, start=performance.now();
+	  function tick(now){
+		const p=Math.min((now-start)/dur,1);
+		const eased = 1-Math.pow(1-p,3);
+		cur = Math.floor(eased*target);
+		el.textContent = target>9999 ? (cur/1000).toFixed(1).replace('.0','')+'K' : cur.toLocaleString('tr-TR');
+		if(p<1) requestAnimationFrame(tick); else el.textContent = target>9999 ? (target/1000).toFixed(0)+'K' : target.toLocaleString('tr-TR');
+	  }
+	  requestAnimationFrame(tick);
+	}
+	const counterIO = new IntersectionObserver(entries=>{
+	  entries.forEach(en=>{
+		if(en.isIntersecting){ animateCounter(en.target, +en.target.dataset.target); counterIO.unobserve(en.target); }
+	  });
+	},{threshold:.4});
+	document.querySelectorAll('.counter').forEach(el=>counterIO.observe(el));
+
+	// hero stat quick counters
+	animateCounter(document.getElementById('statEvents'), 12400);
+	animateCounter(document.getElementById('statUsers'), 980000);
+	animateCounter(document.getElementById('statCities'), 81);
+</script>
