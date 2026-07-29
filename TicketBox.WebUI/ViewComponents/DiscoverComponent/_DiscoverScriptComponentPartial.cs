@@ -2,6 +2,7 @@
 
 namespace TicketBox.WebUI.ViewComponents.DiscoverComponent
 {
+
     public class _DiscoverScriptComponentPartial:ViewComponent
     {
         public IViewComponentResult Invoke()
