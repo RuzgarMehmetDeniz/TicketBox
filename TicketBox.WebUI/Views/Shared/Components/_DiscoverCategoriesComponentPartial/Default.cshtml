@@ -1,10 +1,21 @@
-﻿<section class="section" id="categories">
+﻿@model List<CategoryCardViewModel>
+
+<section class="section" id="categories">
 	<div class="wrap">
 		<div class="section-head reveal">
 			<span class="eyebrow">Kategoriler</span>
 			<h2>İlgi alanına göre keşfet</h2>
 			<p>Konser, spor, sahne sanatları ve daha fazlası — sana en uygun etkinliği bul.</p>
 		</div>
-		<div class="cat-grid" id="catGrid"></div>
+		<div class="cat-grid" id="catGrid">
+			@foreach (var c in Model)
+			{
+				<div class="cat-card reveal scale">
+					<div class="cat-hex">@c.IconUrl</div>
+					<h4>@c.CategoryName</h4>
+					<span>@c.EventCount etkinlik</span>
+				</div>
+			}
+		</div>
 	</div>
 </section>

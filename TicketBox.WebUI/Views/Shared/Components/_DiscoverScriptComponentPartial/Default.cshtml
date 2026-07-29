@@ -1,13 +1,5 @@
 ﻿<script>
 	/* ============ DATA ============ */
-	const categories = [
-	  {icon:'🎵',name:'Konser',count:'1.240 etkinlik'},
-	  {icon:'🎭',name:'Tiyatro',count:'560 etkinlik'},
-	  {icon:'⚽',name:'Spor',count:'890 etkinlik'},
-	  {icon:'🎪',name:'Festival',count:'320 etkinlik'},
-	  {icon:'🎤',name:'Stand-up',count:'410 etkinlik'},
-	  {icon:'👨‍👩‍👧',name:'Aile',count:'275 etkinlik'},
-	];
 
 	const events = [
 	  {cat:'Konser',title:'Aurora Fest 2026',city:'İstanbul',venue:'KüçükÇiftlik Park',date:'18 AĞU',time:'20:00',price:'450',fill:82,org:'NovaEvents',rating:4.9,premium:true,live:true,attendees:'2.4K'},
@@ -55,13 +47,6 @@
 	];
 
 	/* ============ RENDER ============ */
-	const catGrid = document.getElementById('catGrid');
-	catGrid.innerHTML = categories.map(c=>`
-	  <div class="cat-card reveal scale">
-		<div class="cat-hex">${c.icon}</div>
-		<h4>${c.name}</h4>
-		<span>${c.count}</span>
-	  </div>`).join('');
 
 	function eventCardHTML(e){
 	  return `
