@@ -48,8 +48,8 @@
 						<div class="ev-foot">
 							<div class="ev-price"><b>₺@e.Price</b><span>başlangıç fiyatı</span></div>
 							<div class="ev-actions">
-								<button class="icon-btn" title="QR">▤</button>
-								<button class="icon-btn" title="Paylaş">↗</button>
+								<a asp-controller="Event" asp-action="Detail" asp-route-id="@e.EventId" class="icon-btn" title="Detay">🔍</a>
+								<a asp-controller="Ticket" asp-action="Reservation" asp-route-eventId="@e.EventId" class="icon-btn" title="Rezervasyon Yap">🎟️</a>
 							</div>
 						</div>
 					</div>

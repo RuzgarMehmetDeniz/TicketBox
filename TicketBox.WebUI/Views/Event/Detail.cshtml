@@ -1,0 +1,94 @@
+﻿@model GetEventDetailQueryResult
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+    @await Component.InvokeAsync("_DiscoverHeadComponentPartial")
+<body data-theme="midnight">
+    <div class="bg-noise"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-glow-a"></div>
+    <div class="bg-glow-b"></div>
+
+    @await Component.InvokeAsync("_DiscoverNavbarComponentPartial")
+
+    <section class="section" id="eventDetail">
+        <div class="wrap">
+            <div class="event-detail-hero" style="@(string.IsNullOrEmpty(Model.ImageUrl) ? "" : $"background-image:url('{Model.ImageUrl}');")">
+                <span class="ev-badge">@Model.CategoryName</span>
+            </div>
+
+            <div class="event-detail-body reveal">
+                <h1>@Model.Title</h1>
+                <div class="ev-meta">
+                    <span>📍 @Model.Location</span>
+                    <span>🕒 @Model.EventDate.ToString("dd MMM yyyy, HH:mm")</span>
+                    <span class="rating">★ @Model.AverageRating</span>
+                </div>
+
+                <p class="event-desc">@Model.Description</p>
+
+                <div class="ev-fill"><i style="width:@(Model.FillPercentage)%;"></i></div>
+                <div class="ev-fill-label">
+                    <span>@Model.FillPercentage% dolu</span>
+                    <span>👥 @(Model.Capacity - Model.RemainingCapacity) katılımcı</span>
+                </div>
+
+                <div class="ev-org">
+                    <div class="av"></div>
+                    <span>Organizatör: @Model.OrganizerName</span>
+                </div>
+
+                @if (Model.GalleryImageUrls.Any())
+                {
+                    <div class="ev-gallery">
+                        @foreach (var img in Model.GalleryImageUrls)
+                        {
+                            <img src="@img" />
+                        }
+                    </div>
+                }
+
+                <div class="ev-foot">
+                    <div class="ev-price"><b>₺@Model.Price</b><span>başlangıç fiyatı</span></div>
+                    <div class="ev-actions">
+                        @if (Model.RemainingCapacity > 0)
+                        {
+                            <a asp-controller="Ticket" asp-action="Reservation" asp-route-eventId="@Model.EventId" class="icon-btn" title="Rezervasyon Yap">🎟️</a>
+                        }
+                        else
+                        {
+                            <span class="sold-out">Tükendi</span>
+                        }
+                        <button class="icon-btn" title="QR">▤</button>
+                        <button class="icon-btn" title="Paylaş">↗</button>
+                    </div>
+                </div>
+
+                <div class="ev-reviews reveal">
+                    <h3>Yorumlar (@Model.Reviews.Count)</h3>
+                    @if (!Model.Reviews.Any())
+                    {
+                        <p class="no-reviews">Henüz yorum yapılmamış.</p>
+                    }
+                    @foreach (var r in Model.Reviews)
+                    {
+                        <div class="review-item">
+                            <b>@r.UserName</b> — ★ @r.Rating
+                            <span class="review-date">@r.CreatedDate.ToString("dd MMM yyyy")</span>
+                            @if (!string.IsNullOrEmpty(r.Comment))
+                            {
+                                <p>@r.Comment</p>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @await Component.InvokeAsync("_DiscoverFooterComponentPartial")
+    @await Component.InvokeAsync("_DiscoverScriptComponentPartial")
+</body>
+</html>

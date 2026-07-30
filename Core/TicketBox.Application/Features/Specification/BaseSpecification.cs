@@ -11,6 +11,7 @@ namespace TicketBox.Application.Features.Specification
     {
         public Expression<Func<T, bool>> Criteria { get; protected set; }
         public List<Expression<Func<T, object>>> Includes { get; } = new();
+        public List<string> IncludeStrings { get; } = new();
         public Expression<Func<T, object>>? OrderBy { get; private set; }
         public Expression<Func<T, object>>? OrderByDescending { get; private set; }
         public int Take { get; private set; }
@@ -28,6 +29,7 @@ namespace TicketBox.Application.Features.Specification
         {
             Includes.Add(includeExpression);
         }
+        protected void AddInclude(string includeString) => IncludeStrings.Add(includeString); // <-- YENİ overload
 
         protected void ApplyPaging(int skip, int take)
         {

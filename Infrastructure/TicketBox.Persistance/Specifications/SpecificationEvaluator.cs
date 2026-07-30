@@ -18,6 +18,8 @@ namespace TicketBox.Persistance.Specifications
                 query = query.Where(spec.Criteria);
 
             query = spec.Includes.Aggregate(query, (current, include) => current.Include(include));
+            query = spec.IncludeStrings.Aggregate(query, (current, include) => current.Include(include)); // <-- YENİ
+
 
             if (spec.OrderBy != null)
                 query = query.OrderBy(spec.OrderBy);

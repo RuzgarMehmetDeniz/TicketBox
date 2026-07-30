@@ -84,6 +84,19 @@ namespace TicketBox.Application.Features.Mapping
             CreateMap<Event, UpdateEventCommand>().ReverseMap();
             CreateMap<Event, GetEventQueryResult>().ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName)).ReverseMap();
             CreateMap<Event, GetEventByIdQueryResult>().ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName)).ReverseMap();
+            CreateMap<Event, GetEventDetailQueryResult>()
+    .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName))
+    .ForMember(dest => dest.OrganizerName, opt => opt.MapFrom(src => src.CreatedByUser.Name + " " + src.CreatedByUser.Surname))
+    .ForMember(dest => dest.AverageRating, opt => opt.MapFrom(src =>
+        src.Reviews.Any() ? Math.Round(src.Reviews.Average(r => r.Rating), 1) : 0))
+    .ForMember(dest => dest.FillPercentage, opt => opt.MapFrom(src =>
+        src.Capacity == 0 ? 0 : (int)Math.Round((src.Capacity - src.RemainingCapacity) * 100.0 / src.Capacity)))
+    .ForMember(dest => dest.GalleryImageUrls, opt => opt.MapFrom(src => src.Galleries.Select(g => g.ImageUrl).ToList()))
+    .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews.OrderByDescending(r => r.CreatedDate)));
+
+            CreateMap<Review, EventDetailReviewResult>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.AppUser.Name + " " + src.AppUser.Surname));
+
 
             //// ===== TICKET =====
             CreateMap<Ticket , CreateTicketCommand>().ReverseMap();
