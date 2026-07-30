@@ -1,10 +1,29 @@
-﻿<section class="section" id="calendar">
+﻿@model List<EventTimelineItemViewModel>
+
+<section class="section" id="timeline-section">
 	<div class="wrap">
 		<div class="section-head reveal">
 			<span class="eyebrow">Takvim</span>
 			<h2>Etkinlik takvimi</h2>
 			<p>Yaklaşan etkinlikleri kronolojik sırayla takip et, hiçbirini kaçırma.</p>
 		</div>
-		<div class="timeline" id="timeline"></div>
+		<div class="timeline" id="timeline">
+			@foreach (var e in Model)
+			{
+				<div class="t-item reveal">
+					<div class="t-date">
+						<b>@e.EventDate.Day @e.EventDate.ToString("MMM").ToUpper()</b>
+						@e.EventDate.ToString("HH:mm")
+					</div>
+					<div class="t-card">
+						<div>
+							<h4>@e.Title</h4>
+							<p>@e.Location</p>
+						</div>
+						<a class="btn btn-ghost btn-sm" href="/Discover/EventDetail/@e.EventId">Detay →</a>
+					</div>
+				</div>
+			}
+		</div>
 	</div>
 </section>

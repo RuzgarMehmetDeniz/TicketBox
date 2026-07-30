@@ -1,18 +1,75 @@
-﻿<section class="section" id="events">
+﻿@model List<EventCardViewModel>
+<section class="section" id="events">
 	<div class="wrap">
 		<div class="events-toolbar reveal">
-			<div class="section-head" style="margin-bottom:0;">
-				<span class="eyebrow">Öne çıkanlar</span>
-				<h2>Bu hafta popüler etkinlikler</h2>
-			</div>
-			<div class="chip-row">
-				<button class="chip active">Tümü</button>
-				<button class="chip">Konser</button>
-				<button class="chip">Tiyatro</button>
-				<button class="chip">Spor</button>
-				<button class="chip">Festival</button>
+			<h2>Bu hafta popüler etkinlikler</h2>
+			<div class="chip-row" id="categoryChips">
+				<button class="chip active" data-category="all">Tümü</button>
+				<button class="chip" data-category="Konser">Konser</button>
+				<button class="chip" data-category="Tiyatro">Tiyatro</button>
+				<button class="chip" data-category="Spor">Spor</button>
+				<button class="chip" data-category="Festival">Festival</button>
 			</div>
 		</div>
-		<div class="event-grid" id="eventGrid"></div>
+		<div class="event-grid" id="eventGrid">
+			@foreach (var e in Model)
+			{
+				<div class="event-card reveal" data-category="@e.CategoryName">
+					<div class="ev-media">
+						<div class="img" style="@(string.IsNullOrEmpty(e.ImageUrl) ? "" : $"background-image:url('{e.ImageUrl}');background-size:cover;background-position:center;")"></div>
+						<span class="ev-badge">@e.CategoryName</span>
+						<button class="ev-fav">♥</button>
+						<div class="ev-date-flag">
+							<b>@e.EventDate.Day</b>
+							<span>@e.EventDate.ToString("MMM").ToUpper()</span>
+						</div>
+						@if (e.IsLive)
+						{
+							<div class="ev-live"><i></i> Canlı ilgi</div>
+						}
+					</div>
+					<div class="ev-body">
+						<div class="ev-cat">@e.CategoryName</div>
+						<h3>@e.Title</h3>
+						<div class="ev-meta">
+							<span>📍 @e.Location</span>
+							<span>🕒 @e.EventDate.ToString("HH:mm")</span>
+						</div>
+						<div class="ev-org">
+							<div class="av"></div>
+							<span>@e.OrganizerName</span>
+							<span class="rating">★ @e.AverageRating</span>
+						</div>
+						<div class="ev-fill"><i style="width:@(e.FillPercentage)%;"></i></div>
+						<div class="ev-fill-label">
+							<span>@e.FillPercentage% dolu</span>
+							<span>👥 @e.AttendeeCount katılımcı</span>
+						</div>
+						<div class="ev-foot">
+							<div class="ev-price"><b>₺@e.Price</b><span>başlangıç fiyatı</span></div>
+							<div class="ev-actions">
+								<button class="icon-btn" title="QR">▤</button>
+								<button class="icon-btn" title="Paylaş">↗</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
 	</div>
 </section>
+
+<script>
+	document.querySelectorAll('#categoryChips .chip').forEach(chip => {
+		chip.addEventListener('click', () => {
+			document.querySelectorAll('#categoryChips .chip').forEach(c => c.classList.remove('active'));
+			chip.classList.add('active');
+
+			const selected = chip.dataset.category;
+			document.querySelectorAll('#eventGrid .event-card').forEach(card => {
+				const matches = selected === 'all' || card.dataset.category === selected;
+				card.style.display = matches ? '' : 'none';
+			});
+		});
+	});
+</script>

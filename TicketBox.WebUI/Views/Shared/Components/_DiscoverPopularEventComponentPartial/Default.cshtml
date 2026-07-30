@@ -1,10 +1,29 @@
-﻿<section class="section" id="popular">
+﻿@model List<PopularEventItemViewModel>
+
+@{
+	var heights = new[] { "m-h1", "m-h2", "m-h3", "m-h4", "m-h2", "m-h1" };
+}
+
+<section class="section" id="popular">
 	<div class="wrap">
 		<div class="section-head reveal">
 			<span class="eyebrow">Trend</span>
 			<h2>En popüler etkinlikler</h2>
 			<p>Topluluğun bu ay en çok ilgi gösterdiği etkinlikler.</p>
 		</div>
-		<div class="masonry" id="masonry"></div>
+		<div class="masonry" id="masonry">
+			@for (int i = 0; i < Model.Count; i++)
+			{
+				var e = Model[i];
+				var heightClass = heights[i % heights.Length];
+				<div class="m-card reveal">
+					<div class="img @heightClass" style="@(string.IsNullOrEmpty(e.ImageUrl) ? "" : $"background-image:url('{e.ImageUrl}');background-size:cover;background-position:center;")"></div>
+					<div class="m-overlay">
+						<div class="ev-cat">@e.CategoryName</div>
+						<h4>@e.Title</h4>
+					</div>
+				</div>
+			}
+		</div>
 	</div>
 </section>

@@ -1,10 +1,27 @@
-﻿<section class="section" id="cities">
+﻿@model List<CityMapItemViewModel>
+
+<section class="section" id="cities">
 	<div class="wrap">
 		<div class="section-head reveal">
 			<span class="eyebrow">Şehirler</span>
 			<h2>Türkiye genelinde etkinlikler</h2>
 			<p>Bulunduğun şehirdeki tüm etkinlikleri harita üzerinden keşfet.</p>
 		</div>
-		<div class="city-map reveal scale" id="cityMap"></div>
+		<div class="city-map reveal" id="cityMap" style="position:relative;">
+			<img src="/images/turkey-map.svg"
+				 alt="Türkiye haritası"
+				 style="position:absolute; inset:0; width:100%; height:100%; object-fit:fill; z-index:0;" />
+			@foreach (var c in Model)
+			{
+				<div class="city-pin" style="top:@c.Top;left:@c.Left; z-index:1;">
+					<div class="dot"></div>
+					<div class="label">@c.CityName<span class="count">@c.EventCount etkinlik</span></div>
+				</div>
+			}
+		</div>
+		<p style="font-size:10px;color:var(--subtitle);text-align:center;margin-top:8px;">
+			Harita: NordNordWest, Wikimedia Commons,
+			<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank">CC BY-SA 3.0</a>
+		</p>
 	</div>
 </section>

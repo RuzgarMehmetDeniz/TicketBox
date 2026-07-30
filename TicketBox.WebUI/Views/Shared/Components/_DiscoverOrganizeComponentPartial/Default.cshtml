@@ -1,10 +1,24 @@
-﻿<section class="section" id="organizers">
+﻿@model List<OrganizerCardViewModel>
+
+<section class="section" id="organizers">
 	<div class="wrap">
-		<div class="section-head center reveal" style="margin-left:auto;margin-right:auto;">
-			<span class="eyebrow">Güvenilir organizatörler</span>
+		<div class="section-head center reveal">
+			<span class="eyebrow">Güvenilir Organizatörler</span>
 			<h2>Sahnenin arkasındakiler</h2>
 			<p>Türkiye'nin en köklü etkinlik organizatörleri TicketBox'ta.</p>
 		</div>
-		<div class="org-grid" id="orgGrid"></div>
+		<div class="org-grid" id="orgGrid">
+			@foreach (var o in Model)
+			{
+				<div class="org-card reveal">
+					<div class="org-logo">
+						@(o.FullName.Length >= 2 ? o.FullName.Substring(0, 2).ToUpper() : o.FullName.ToUpper())
+					</div>
+					<h4>@o.FullName</h4>
+					<span>@o.EventCount etkinlik</span>
+					<button class="btn btn-ghost btn-sm">Takip Et</button>
+				</div>
+			}
+		</div>
 	</div>
 </section>

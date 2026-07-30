@@ -1,11 +1,25 @@
-﻿<section class="section" id="stats">
+﻿@model PlatformStatsViewModel
+
+<section class="section" id="stats">
 	<div class="wrap">
-		<div class="stats-band reveal scale">
+		<div class="stats-band reveal">
 			<div class="stats-grid">
-				<div class="stat"><b class="counter" data-target="12400">0</b><span>Toplam Etkinlik</span></div>
-				<div class="stat"><b class="counter" data-target="980000">0</b><span>Satılan Bilet</span></div>
-				<div class="stat"><b class="counter" data-target="81">0</b><span>Şehirde Hizmet</span></div>
-				<div class="stat"><b class="counter" data-target="3600">0</b><span>Organizatör</span></div>
+				<div class="stat">
+					<b class="counter" data-target="@Model.TotalEvents">0</b>
+					<span>Toplam Etkinlik</span>
+				</div>
+				<div class="stat">
+					<b class="counter" data-target="@Model.SoldTickets">0</b>
+					<span>Satılan Bilet</span>
+				</div>
+				<div class="stat">
+					<b class="counter" data-target="@Model.CityCount">0</b>
+					<span>Şehirde Hizmet</span>
+				</div>
+				<div class="stat">
+					<b class="counter" data-target="@Model.OrganizerCount">0</b>
+					<span>Organizatör</span>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -1,9 +1,27 @@
-﻿<section class="section" id="testimonials">
+﻿@model List<TestimonialItemViewModel>
+
+<section class="section" id="testimonials">
 	<div class="wrap">
 		<div class="section-head reveal">
 			<span class="eyebrow">Yorumlar</span>
 			<h2>Kullanıcılarımız ne diyor?</h2>
 		</div>
-		<div class="test-grid" id="testGrid"></div>
+		<div class="test-grid" id="testGrid">
+			@foreach (var t in Model)
+			{
+				<div class="test-card reveal">
+					<div class="test-video"><div class="play-btn">▶</div></div>
+					<div class="test-head">
+						<div class="av"></div>
+						<div>
+							<h5>@t.FullName</h5>
+							<span>@t.City</span>
+						</div>
+					</div>
+					<div class="test-stars">@(new string('★', t.Rating))</div>
+					<p>@t.Comment</p>
+				</div>
+			}
+		</div>
 	</div>
 </section>
