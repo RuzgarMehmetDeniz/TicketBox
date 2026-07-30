@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TicketBox.Application.Features.CQRS.AuditLogs.Queries;
 using TicketBox.Application.Features.CQRS.AuditLogs.Results;
 using TicketBox.Application.Features.Repository;
+using TicketBox.Application.Features.Specification;
 
 namespace TicketBox.Application.Features.CQRS.AuditLogs.Handlers
 {
@@ -22,7 +23,8 @@ namespace TicketBox.Application.Features.CQRS.AuditLogs.Handlers
 
         public async Task<List<GetAuditLogQueryResult>> Handle(GetAllAuditLogsQuery request, CancellationToken cancellationToken)
         {
-            var logs = await _unitOfWork.AuditLogRepository.GetAllAsync();
+            var spec = new AuditLogWithAppUserSpecification();
+            var logs = await _unitOfWork.AuditLogRepository.GetAllWithSpecAsync(spec);
             return _mapper.Map<List<GetAuditLogQueryResult>>(logs);
         }
     }

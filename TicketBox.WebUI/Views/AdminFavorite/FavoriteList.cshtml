@@ -55,14 +55,14 @@
                 <tbody id="favoritesBody">
                     @if (Model != null && Model.Any())
                     {
-                        @foreach (var item in Model)
+                        @foreach (var item in Model )
                         {
                             <tr>
                                 <td>
                                     <div class="cell-main">
                                         <div class="cell-title" style="font-weight:600;color:var(--primary);">#@item.FavoriteId</div>
                                     </div>
-                                </td>
+                                </td
                                 <td><span style="font-size:12px;opacity:0.8;">@item.AppUserId</span></td>
                                 <td>@item.EventId</td>
                                 <td>

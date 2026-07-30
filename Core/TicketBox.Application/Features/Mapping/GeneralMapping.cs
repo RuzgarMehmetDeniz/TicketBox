@@ -57,8 +57,9 @@ namespace TicketBox.Application.Features.Mapping
             //// ===== AUDITLOG  =====
             CreateMap<AuditLog, CreateAuditLogCommand>().ReverseMap();
             CreateMap<AuditLog, UpdateAuditLogCommand>().ReverseMap();
-            CreateMap<AuditLog, GetAuditLogQueryResult>().ReverseMap();
-            CreateMap<AuditLog, GetAuditLogByIdQueryResult>().ReverseMap();
+            CreateMap<AuditLog, GetAuditLogQueryResult>().ForMember(dest => dest.AppUserName, opt => opt.MapFrom(src => src.AppUser.UserName)).ReverseMap();
+
+            CreateMap<AuditLog, GetAuditLogByIdQueryResult>().ForMember(dest => dest.AppUserName, opt => opt.MapFrom(src => src.AppUser.UserName)).ReverseMap();
 
             //// ===== NOTIFICATION =====
             CreateMap<Notification, CreateNotificationCommand>().ReverseMap();

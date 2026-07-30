@@ -26,6 +26,13 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<TicketContext>()
 .AddDefaultTokenProviders();
 
+// Identity cookie yönlendirmeleri — kendi Login controller'ýmýza yönlensin
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Login/Index";
+    options.AccessDeniedPath = "/Login/Index";
+});
+
 // Repository
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -67,15 +74,16 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Error");   // 500 - beklenmeyen exception'lar
     app.UseHsts();
 }
 
+// 404, 401, 403 gibi status code döndüren (exception fýrlatmayan) durumlar için
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -10,6 +10,7 @@ namespace TicketBox.Application.Features.CQRS.AuditLogs.Results
     {
         public int AuditLogId { get; set; }
         public string AppUserId { get; set; }
+        public string AppUserName { get; set; }
         public string Action { get; set; }
         public string? Details { get; set; }
         public DateTime CreatedDate { get; set; }

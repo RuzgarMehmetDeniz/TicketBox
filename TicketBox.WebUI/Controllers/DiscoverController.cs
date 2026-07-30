@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace TicketBox.WebUI.Controllers
 {
@@ -15,6 +16,7 @@ namespace TicketBox.WebUI.Controllers
             return View();
         }
         // Kapalı Tema 1
+        [Authorize]
         public IActionResult Index3()
         {
             return View();

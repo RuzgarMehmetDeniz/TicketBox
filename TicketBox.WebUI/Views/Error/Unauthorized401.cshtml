@@ -1,0 +1,73 @@
+﻿@{
+	Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+	@await Component.InvokeAsync("_DiscoverHeadComponentPartial")
+<body data-theme="midnight">
+	<div class="bg-noise"></div>
+	<div class="bg-grid"></div>
+	<div class="bg-glow-a"></div>
+	<div class="bg-glow-b"></div>
+
+	<style>
+		.error-wrap {
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 60px 20px;
+			position: relative;
+			z-index: 1;
+			text-align: center;
+		}
+
+		.error-card {
+			max-width: 520px;
+			padding: 50px 40px;
+			border-radius: var(--radius-xl);
+			box-shadow: var(--shadow-lift);
+		}
+
+		.error-code {
+			font-family: var(--font-display);
+			font-size: 88px;
+			font-weight: 700;
+			color: var(--danger);
+			line-height: 1;
+			margin-bottom: 8px;
+		}
+
+		.error-card h2 {
+			font-size: 24px;
+			margin-bottom: 12px;
+		}
+
+		.error-card p {
+			color: var(--subtitle);
+			font-size: 14.5px;
+			line-height: 1.6;
+			margin-bottom: 28px;
+		}
+
+		.error-actions {
+			display: flex;
+			gap: 12px;
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+	</style>
+
+	<div class="error-wrap">
+		<div class="error-card glass reveal in">
+			<div class="error-code">401</div>
+			<h2>Giriş yapmalısın</h2>
+			<p>Bu sayfayı görüntülemek için önce hesabına giriş yapman gerekiyor.</p>
+			<div class="error-actions">
+				<a href="/Login/Index" class="btn btn-primary">Giriş yap</a>
+				<a href="/Discover/Index3" class="btn btn-ghost">Ana sayfa</a>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
