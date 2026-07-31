@@ -1,0 +1,125 @@
+﻿@model TicketBox.WebUI.Models.ReservationViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+    @await Component.InvokeAsync("_DiscoverHeadComponentPartial")
+<body data-theme="midnight">
+    <div class="bg-noise"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-glow-a"></div>
+    <div class="bg-glow-b"></div>
+
+    @await Component.InvokeAsync("_DiscoverNavbarComponentPartial")
+
+    <section class="section" id="reservation">
+        <div class="wrap">
+            <div class="reservation-grid">
+                <div class="reservation-summary glass">
+                    <div class="rs-img" style="@(string.IsNullOrEmpty(Model.ImageUrl) ? "" : $"background-image:url('{Model.ImageUrl}');")"></div>
+                    <h2>@Model.Title</h2>
+                    <div class="ev-meta">
+                        <span>🕒 @Model.EventDate.ToString("dd MMM yyyy, HH:mm")</span>
+                        <span>📍 @Model.Location</span>
+                    </div>
+                    <div class="rs-price"><b>₺@Model.Price</b><span>birim fiyat</span></div>
+                    <div class="rs-stock">Kalan kontenjan: @Model.RemainingCapacity</div>
+                </div>
+
+                <form asp-controller="Ticket" asp-action="Reservation" method="post" class="reservation-form glass">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="EventId" />
+                    <input type="hidden" asp-for="Title" />
+                    <input type="hidden" asp-for="ImageUrl" />
+                    <input type="hidden" asp-for="EventDate" />
+                    <input type="hidden" asp-for="Location" />
+                    <input type="hidden" asp-for="Price" />
+                    <input type="hidden" asp-for="RemainingCapacity" />
+
+                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                    <h3>Rezervasyon Bilgileri</h3>
+
+                    <div class="f-field">
+                        <input type="number" asp-for="Quantity" min="1" max="@Model.RemainingCapacity" id="qtyInput" placeholder=" " />
+                        <label>Adet</label>
+                    </div>
+
+                    <div class="f-field">
+                        <select asp-for="CouponCode" class="pay-select" id="couponSelect">
+                            <option value="">Kupon Yok</option>
+                            @foreach (var c in Model.AvailableCoupons)
+                            {
+                                <option value="@c.Code" data-discount="@c.DiscountPercentage">
+                                    @c.Code (%@c.DiscountPercentage indirim)
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <h3>Ödeme Bilgileri</h3>
+
+                    <div class="f-field">
+                        <select asp-for="PaymentMethod" class="pay-select">
+                            <option value="Kredi Kartı">Kredi Kartı</option>
+                            <option value="Havale">Havale</option>
+                        </select>
+                    </div>
+
+                    <div class="f-field">
+                        <input type="text" asp-for="CardNumber" placeholder=" " />
+                        <label>Kart Numarası</label>
+                    </div>
+
+                    <div class="f-field">
+                        <input type="text" asp-for="CardHolderName" placeholder=" " />
+                        <label>Kart Üzerindeki İsim</label>
+                    </div>
+
+                    <div class="rs-row">
+                        <div class="f-field">
+                            <input type="text" asp-for="ExpiryDate" placeholder=" " />
+                            <label>AA/YY</label>
+                        </div>
+                        <div class="f-field">
+                            <input type="text" asp-for="Cvv" placeholder=" " />
+                            <label>CVV</label>
+                        </div>
+                    </div>
+
+                    <div class="rs-total">
+                        <span>Toplam</span>
+                        <b id="totalPrice">₺@Model.Price</b>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary rs-submit">Rezervasyonu Onayla</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    @await Component.InvokeAsync("_DiscoverFooterComponentPartial")
+    @await Component.InvokeAsync("_DiscoverScriptComponentPartial")
+
+    <script>
+        const price = @Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        const qtyInput = document.getElementById('qtyInput');
+        const couponSelect = document.getElementById('couponSelect');
+        const totalEl = document.getElementById('totalPrice');
+
+        function updateTotal() {
+            const qty = parseInt(qtyInput.value) || 0;
+            const selectedOption = couponSelect.options[couponSelect.selectedIndex];
+            const discount = selectedOption ? parseFloat(selectedOption.dataset.discount) || 0 : 0;
+            const unitPrice = price - (price * discount / 100);
+            const total = unitPrice * qty;
+            totalEl.innerText = '₺' + total.toLocaleString('tr-TR', { minimumFractionDigits: 2 });
+        }
+
+        qtyInput.addEventListener('input', updateTotal);
+        couponSelect.addEventListener('change', updateTotal);
+        updateTotal();
+    </script>
+</body>
+</html>

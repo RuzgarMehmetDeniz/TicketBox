@@ -14,5 +14,7 @@
         public double AverageRating { get; set; }
         public string? ImageUrl { get; set; }
         public bool IsLive { get; set; }
+        public bool IsFavorited { get; set; }
+
     }
 }

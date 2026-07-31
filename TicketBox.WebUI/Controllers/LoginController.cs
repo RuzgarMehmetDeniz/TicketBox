@@ -34,7 +34,7 @@ namespace TicketBox.WebUI.Controllers
                 return View(command);
             }
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index3", "Disvoer");
         }
     }
 }

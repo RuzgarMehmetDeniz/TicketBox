@@ -1,0 +1,54 @@
+﻿@model List<TicketBox.Application.Features.CQRS.Tickets.Results.GetTicketByIdQueryResult>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+    @await Component.InvokeAsync("_DiscoverHeadComponentPartial")
+<body data-theme="midnight">
+    <div class="bg-noise"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-glow-a"></div>
+    <div class="bg-glow-b"></div>
+
+    @await Component.InvokeAsync("_DiscoverNavbarComponentPartial")
+
+    <section class="section" id="confirmation">
+        <div class="wrap">
+            <div class="confirmation-head reveal">
+                <span class="ev-badge premium">✓ Onaylandı</span>
+                <h1>Rezervasyonun tamamlandı!</h1>
+                <p class="event-desc">@Model.Count adet bilet oluşturuldu. PNR kodlarını aşağıda bulabilirsin.</p>
+            </div>
+
+            <div class="ticket-list">
+                @foreach (var t in Model)
+                {
+                    <div class="ticket-stub reveal">
+                        <div class="ticket-stub-main">
+                            <div class="ticket-stub-cat">@t.Status</div>
+                            <h4>@t.EventTitle</h4>
+                            <span class="ticket-stub-price">₺@t.Price</span>
+                        </div>
+                        <div class="ticket-stub-divider">
+                            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <div class="ticket-stub-code">
+                            <div class="ticket-qr">▤</div>
+                            <b>@t.PNRCode</b>
+                            <span>PNR Kodu</span>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="confirmation-actions reveal">
+                <a asp-controller="Discover" asp-action="Index3" class="btn btn-ghost">Etkinliklere Dön</a>
+            </div>
+        </div>
+    </section>
+
+    @await Component.InvokeAsync("_DiscoverFooterComponentPartial")
+    @await Component.InvokeAsync("_DiscoverScriptComponentPartial")
+</body>
+</html>

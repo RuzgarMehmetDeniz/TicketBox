@@ -1,0 +1,391 @@
+﻿@model TicketBox.WebUI.Models.ProfileViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+    @await Component.InvokeAsync("_DiscoverHeadComponentPartial")
+<body data-theme="midnight">
+    <div class="bg-noise"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-glow-a"></div>
+    <div class="bg-glow-b"></div>
+
+    @await Component.InvokeAsync("_DiscoverNavbarComponentPartial")
+
+    <section class="section" id="profile">
+        <div class="wrap">
+            <div class="profile-head reveal">
+                <div class="profile-avatar" style="@(string.IsNullOrEmpty(Model.ProfileImageUrl) ? "" : $"background-image:url('{Model.ProfileImageUrl}');")">
+                    @if (string.IsNullOrEmpty(Model.ProfileImageUrl))
+                    {
+                        <span>@(Model.Name?.Substring(0, 1))@(Model.Surname?.Substring(0, 1))</span>
+                    }
+                </div>
+                <div class="profile-info">
+                    <h1>@Model.Name @Model.Surname</h1>
+                    <span>@Model.Email</span>
+                    <div class="profile-meta">
+                        @if (!string.IsNullOrEmpty(Model.City))
+                        {
+                            <span>📍 @Model.City, @Model.Country</span>
+                        }
+                        <span>📅 Üyelik: @Model.CreatedDate.ToString("MMM yyyy")</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chip-row profile-tabs" id="profileTabs">
+                <button class="chip active" data-tab="biletler">🎟️ Biletlerim (@Model.Tickets.Count)</button>
+                <button class="chip" data-tab="favoriler">♥ Favorilerim (@Model.Favorites.Count)</button>
+                <button class="chip" data-tab="yorumlar">💬 Yorumlarım (@Model.Reviews.Count)</button>
+            </div>
+
+            <div class="profile-panel" data-panel="biletler">
+                @if (!Model.Tickets.Any())
+                {
+                    <p class="no-reviews">Henüz bilet alınmamış.</p>
+                }
+                else
+                {
+                    <div class="ticket-list">
+                        @foreach (var t in Model.Tickets)
+                        {
+                            <div class="ticket-stub reveal">
+                                <div class="ticket-stub-main">
+                                    <div class="ticket-stub-cat">@t.Status</div>
+                                    <h4>@t.EventTitle</h4>
+                                    <span class="ticket-stub-price">₺@t.Price · @t.PurchaseDate.ToString("dd MMM yyyy")</span>
+
+                                    @if (t.Status == "Active")
+                                    {
+                                        <button type="button" class="btn-refund-toggle" onclick="toggleRefundForm(@t.TicketId)">İptal Talebi Gönder</button>
+                                        <div class="refund-form" id="refundForm-@t.TicketId" style="display:none;">
+                                            <textarea id="refundReason-@t.TicketId" placeholder="İptal sebebinizi yazın" rows="2"></textarea>
+                                            <button type="button" class="btn btn-primary btn-sm" onclick="submitRefund(@t.TicketId)">Gönder</button>
+                                        </div>
+                                        <div class="refund-message" id="refundMsg-@t.TicketId"></div>
+                                    }
+                                    else if (t.Status == "İade Talep Edildi")
+                                    {
+                                        <span class="refund-pending">⏳ İade talebiniz inceleniyor</span>
+                                    }
+                                    else if (t.Status == "Refunded")
+                                    {
+                                        <span class="refund-done">✓ İade edildi</span>
+                                    }
+                                </div>
+                                <div class="ticket-stub-divider">
+                                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                                </div>
+                                <div class="ticket-stub-code">
+                                    <div class="ticket-qr">▤</div>
+                                    <b>@t.PNRCode</b>
+                                    <span>PNR Kodu</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="profile-panel" data-panel="favoriler" style="display:none;">
+                @if (!Model.Favorites.Any())
+                {
+                    <p class="no-reviews">Henüz favori etkinlik yok.</p>
+                }
+                else
+                {
+                    <div class="fav-grid">
+                        @foreach (var f in Model.Favorites)
+                        {
+                            <div class="fav-item reveal">
+                                <a asp-controller="Event" asp-action="Detail" asp-route-id="@f.EventId"><span>@f.EventTitle</span></a>
+                                <button class="icon-btn fav-remove" title="Favoriden çıkar" onclick="removeFavorite(@f.EventId, this)">✕</button>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="profile-panel" data-panel="yorumlar" style="display:none;">
+                @if (!Model.Reviews.Any())
+                {
+                    <p class="no-reviews">Henüz yorum yapılmamış.</p>
+                }
+                else
+                {
+                    <div class="ev-reviews" style="border:none; margin-top:0; padding-top:0;">
+                        @foreach (var r in Model.Reviews)
+                        {
+                            <div class="review-item">
+                                <b>@r.EventTitle</b> — ★ @r.Rating
+                                <span class="review-date">@r.CreatedDate.ToString("dd MMM yyyy")</span>
+                                @if (!string.IsNullOrEmpty(r.Comment))
+                                {
+                                    <p>@r.Comment</p>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    @await Component.InvokeAsync("_DiscoverFooterComponentPartial")
+    @await Component.InvokeAsync("_DiscoverScriptComponentPartial")
+
+    <form id="afToken" style="display:none">@Html.AntiForgeryToken()</form>
+
+    <script>
+        document.querySelectorAll('#profileTabs .chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('#profileTabs .chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                const tab = chip.dataset.tab;
+                document.querySelectorAll('.profile-panel').forEach(p => {
+                    p.style.display = p.dataset.panel === tab ? '' : 'none';
+                });
+            });
+        });
+
+        async function removeFavorite(eventId, btn) {
+            const token = document.querySelector('#afToken input[name="__RequestVerificationToken"]').value;
+            const res = await fetch('/Favorite/Toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: '__RequestVerificationToken=' + encodeURIComponent(token) + '&eventId=' + eventId
+            });
+            const data = await res.json();
+            if (!data.favorited) {
+                btn.closest('.fav-item').remove();
+            }
+        }
+                function toggleRefundForm(ticketId) {
+            const form = document.getElementById('refundForm-' + ticketId);
+            form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        async function submitRefund(ticketId) {
+            const reasonInput = document.getElementById('refundReason-' + ticketId);
+            const msgEl = document.getElementById('refundMsg-' + ticketId);
+            const token = document.querySelector('#afToken input[name="__RequestVerificationToken"]').value;
+
+            try {
+                    const res = await fetch('/Profile/RequestRefund', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: '__RequestVerificationToken=' + encodeURIComponent(token)
+                + '&ticketId=' + ticketId
+                + '&reason=' + encodeURIComponent(reasonInput.value)
+        });
+                const data = await res.json();
+
+                if (data.success) {
+                    msgEl.innerHTML = '<span class="refund-pending">⏳ İade talebiniz alındı, inceleniyor.</span>';
+                    document.getElementById('refundForm-' + ticketId).style.display = 'none';
+                    document.querySelector('#refundForm-' + ticketId).closest('.ticket-stub-main').querySelector('.btn-refund-toggle')?.remove();
+                } else {
+                    msgEl.innerHTML = '<span class="sold-out">' + data.message + '</span>';
+                }
+            } catch (err) {
+                msgEl.innerHTML = '<span class="sold-out">Bir hata oluştu, tekrar deneyin.</span>';
+            }
+        }
+    </script>
+</body>
+</html>
+<style>
+    .btn-refund-toggle {
+        margin-top: 10px;
+        font-size: 12.5px;
+        color: var(--danger);
+        border: 1px solid var(--danger);
+        border-radius: 100px;
+        padding: 6px 14px;
+        background: rgba(255,77,109,.08);
+        transition: .2s;
+    }
+
+        .btn-refund-toggle:hover {
+            background: rgba(255,77,109,.16);
+        }
+
+    .refund-form {
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 12px;
+        max-width: 320px;
+    }
+
+        .refund-form textarea {
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-strong);
+            background: rgba(255,255,255,.03);
+            color: var(--text);
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+    .refund-message {
+        margin-top: 8px;
+        font-size: 12.5px;
+    }
+
+    .refund-pending {
+        color: #FFB454;
+    }
+
+    .refund-done {
+        color: var(--accent);
+    }
+    /* ============ PROFILE ============ */
+    .profile-head {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    .profile-avatar {
+        width: 88px;
+        height: 88px;
+        border-radius: 50%;
+        background: var(--grad-brand);
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-display);
+        font-size: 28px;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+        border: 2px solid var(--border-strong);
+    }
+
+    .profile-info h1 {
+        font-size: 26px;
+        margin-bottom: 6px;
+    }
+
+    .profile-info > span {
+        color: var(--subtitle);
+        font-size: 14px;
+    }
+
+    .profile-meta {
+        display: flex;
+        gap: 16px;
+        margin-top: 10px;
+        font-size: 12.5px;
+        color: var(--subtitle);
+    }
+
+    .profile-tabs {
+        margin-bottom: 32px;
+    }
+
+    .profile-panel {
+        min-height: 200px;
+    }
+
+    .fav-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 14px;
+    }
+
+    .fav-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 18px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        transition: .25s;
+    }
+
+        .fav-item:hover {
+            border-color: var(--border-strong);
+            transform: translateY(-2px);
+        }
+
+        .fav-item span {
+            font-size: 14.5px;
+            font-weight: 600;
+        }
+
+    .fav-remove {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+
+    .fav-toggle-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid var(--border-strong);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: var(--subtitle);
+        background: rgba(255,255,255,.03);
+        transition: .25s;
+    }
+
+        .fav-toggle-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .fav-toggle-btn.active {
+            color: #fff;
+            background: linear-gradient(135deg,#FF4D6D,#FF758C);
+            border-color: transparent;
+        }
+
+    .review-form {
+        display: grid;
+        gap: 12px;
+        max-width: 480px;
+        margin-bottom: 32px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .review-form textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-strong);
+            background: rgba(255,255,255,.03);
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+    .rating-select {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: var(--subtitle);
+    }
+
+        .rating-select select {
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-strong);
+            background: rgba(255,255,255,.03);
+            color: var(--text);
+        }
+</style>

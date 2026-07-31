@@ -1,7 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using TicketBox.Application.Features.CQRS.Events.Queries;
+using TicketBox.Application.Features.CQRS.Favorites.Queries;
 
 namespace TicketBox.WebUI.Controllers
 {
@@ -15,7 +17,16 @@ namespace TicketBox.WebUI.Controllers
             var result = await _mediator.Send(new GetEventDetailQuery { EventId = id });
             if (result == null) return NotFound();
 
-            return View(result); // Result direkt view model olarak kullanılıyor
+            bool isFavorited = false;
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var favId = await _mediator.Send(new IsFavoritedQuery { AppUserId = userId, EventId = id });
+                isFavorited = favId.HasValue;
+            }
+            ViewData["IsFavorited"] = isFavorited;
+
+            return View(result);
         }
     }
 }

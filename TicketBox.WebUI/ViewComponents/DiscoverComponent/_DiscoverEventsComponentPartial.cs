@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using TicketBox.Persistance.Context;
 using TicketBox.WebUI.Models;
 
@@ -9,7 +12,6 @@ namespace TicketBox.WebUI.ViewComponents.DiscoverComponent
     public class _DiscoverEventsComponentPartial : ViewComponent
     {
         private readonly TicketContext _context;
-
         public _DiscoverEventsComponentPartial(TicketContext context)
         {
             _context = context;
@@ -23,10 +25,9 @@ namespace TicketBox.WebUI.ViewComponents.DiscoverComponent
                 .Include(e => e.Reviews)
                 .Where(e => e.IsActive && e.EventDate >= DateTime.Now);
 
-            // category parametresine artık burada gerek yok, JS tarafında filtrelenecek
             var events = await query
                 .OrderBy(e => e.EventDate)
-                .Take(20) // client-side filtre için yeterli havuz
+                .Take(20)
                 .Select(e => new EventCardViewModel
                 {
                     EventId = e.EventId,
@@ -46,9 +47,20 @@ namespace TicketBox.WebUI.ViewComponents.DiscoverComponent
             foreach (var ev in events)
                 ev.IsLive = ev.FillPercentage >= 80;
 
+            // Giriş yapmış kullanıcının favorilerini işaretle
+            if (HttpContext.User.Identity?.IsAuthenticated == true)
+            {
+                var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var favoritedEventIds = await _context.Favorites
+                    .Where(f => f.AppUserId == userId)
+                    .Select(f => f.EventId)
+                    .ToListAsync();
+
+                foreach (var ev in events)
+                    ev.IsFavorited = favoritedEventIds.Contains(ev.EventId);
+            }
+
             return View(events);
         }
-
-
     }
 }

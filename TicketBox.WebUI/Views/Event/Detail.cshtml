@@ -1,6 +1,7 @@
-﻿@model GetEventDetailQueryResult
+﻿@model TicketBox.Application.Features.CQRS.Events.Results.GetEventDetailQueryResult
 @{
     Layout = null;
+    bool isFavorited = ViewData["IsFavorited"] as bool? ?? false;
 }
 <!DOCTYPE html>
 <html lang="tr">
@@ -20,7 +21,13 @@
             </div>
 
             <div class="event-detail-body reveal">
-                <h1>@Model.Title</h1>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <h1>@Model.Title</h1>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <button type="button" class="fav-toggle-btn @(isFavorited ? "active" : "")" id="favToggleBtn" data-event-id="@Model.EventId">♥</button>
+                    }
+                </div>
                 <div class="ev-meta">
                     <span>📍 @Model.Location</span>
                     <span>🕒 @Model.EventDate.ToString("dd MMM yyyy, HH:mm")</span>
@@ -68,6 +75,37 @@
 
                 <div class="ev-reviews reveal">
                     <h3>Yorumlar (@Model.Reviews.Count)</h3>
+
+                    @if (TempData["ReviewError"] != null)
+                    {
+                        <p class="sold-out">@TempData["ReviewError"]</p>
+                    }
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-controller="Review" asp-action="Create" method="post" class="review-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="eventId" value="@Model.EventId" />
+                            <div class="rating-select">
+                                <label>Puanınız:</label>
+                                <select name="rating" required>
+                                    <option value="">Seçiniz</option>
+                                    <option value="5">★★★★★ (5)</option>
+                                    <option value="4">★★★★ (4)</option>
+                                    <option value="3">★★★ (3)</option>
+                                    <option value="2">★★ (2)</option>
+                                    <option value="1">★ (1)</option>
+                                </select>
+                            </div>
+                            <textarea name="comment" placeholder="Yorumunuzu yazın (opsiyonel)" rows="3"></textarea>
+                            <button type="submit" class="btn btn-primary btn-sm">Yorum Yap</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <p class="no-reviews">Yorum yapabilmek için <a href="/Login/Index">giriş yapın</a>.</p>
+                    }
+
                     @if (!Model.Reviews.Any())
                     {
                         <p class="no-reviews">Henüz yorum yapılmamış.</p>
@@ -90,5 +128,42 @@
 
     @await Component.InvokeAsync("_DiscoverFooterComponentPartial")
     @await Component.InvokeAsync("_DiscoverScriptComponentPartial")
+
+    <form id="afToken" style="display:none">@Html.AntiForgeryToken()</form>
+
+    <script>
+        const favBtn = document.getElementById('favToggleBtn');
+
+        if (favBtn) {
+            favBtn.addEventListener('click', async function () {
+                const tokenInput = document.querySelector('#afToken input[name="__RequestVerificationToken"]');
+                if (!tokenInput) {
+                    console.error('Antiforgery token bulunamadı.');
+                    return;
+                }
+
+                try {
+                    const res = await fetch('/Favorite/Toggle', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        credentials: 'same-origin',
+                        body: '__RequestVerificationToken=' + encodeURIComponent(tokenInput.value) + '&eventId=' + favBtn.dataset.eventId
+                    });
+
+                    if (!res.ok) {
+                        console.error('Favorite/Toggle isteği başarısız:', res.status, await res.text());
+                        alert('Favori işlemi başarısız oldu (HTTP ' + res.status + '). Konsolu kontrol edin.');
+                        return;
+                    }
+
+                    const data = await res.json();
+                    favBtn.classList.toggle('active', data.favorited);
+                } catch (err) {
+                    console.error('Favorite/Toggle hata:', err);
+                    alert('Favori işlemi sırasında bir hata oluştu.');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
