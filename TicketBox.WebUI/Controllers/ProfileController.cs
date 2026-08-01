@@ -13,7 +13,6 @@ using TicketBox.Application.Features.CQRS.Tickets.Commands;
 using TicketBox.Application.Features.CQRS.Tickets.Queries;
 using TicketBox.Domain.Entities;
 using TicketBox.WebUI.Models;
-
 namespace TicketBox.WebUI.Controllers
 {
     [Authorize]
