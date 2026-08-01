@@ -7,6 +7,7 @@ namespace TicketBox.Application.Features.Specification.SpecificationTickets
         public TicketByUserSpecification(string appUserId) : base(t => t.AppUserId == appUserId)
         {
             AddInclude(t => t.Event);
+            AddInclude(t => t.AppUser);
             ApplyOrderByDescending(t => t.PurchaseDate);
         }
     }

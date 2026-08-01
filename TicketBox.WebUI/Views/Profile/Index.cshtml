@@ -78,13 +78,51 @@
                                 <div class="ticket-stub-divider">
                                     <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
                                 </div>
-                                <div class="ticket-stub-code">
+                                <div class="ticket-stub-code"
+                                     onclick="openTicketDetail('@t.EventTitle', '@t.CustomerFullName', '@t.PurchaseDate.ToString("dd MMM yyyy")', '@t.Price', '@t.PNRCode', '@t.Status')"
+                                     style="cursor:pointer;">
                                     <div class="ticket-qr">▤</div>
                                     <b>@t.PNRCode</b>
                                     <span>PNR Kodu</span>
                                 </div>
                             </div>
                         }
+                    </div>
+
+                    <!-- Bilet Detay Modalı -->
+                    <div class="ticket-modal-overlay" id="ticketModalOverlay" onclick="closeTicketDetail(event)">
+                        <div class="ticket-modal ticket-shape">
+                            <button type="button" class="ticket-modal-close" onclick="closeTicketDetail()">✕</button>
+
+                            <div class="ticket-notch ticket-notch-top"></div>
+                            <div class="ticket-notch ticket-notch-bottom"></div>
+
+                            <div class="ticket-main">
+                                <div class="ticket-modal-badge" id="modalStatus"></div>
+                                <h2 id="modalEventTitle"></h2>
+
+                                <div class="ticket-modal-info">
+                                    <div class="ticket-modal-row">
+                                        <span>Ad Soyad</span>
+                                        <b id="modalCustomerName"></b>
+                                    </div>
+                                    <div class="ticket-modal-row">
+                                        <span>Etkinlik Tarihi</span>
+                                        <b id="modalDate"></b>
+                                    </div>
+                                    <div class="ticket-modal-row">
+                                        <span>Fiyat</span>
+                                        <b id="modalPrice"></b>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ticket-stub-section">
+                                <div class="ticket-modal-qr">▤</div>
+                                <b id="modalPnr" class="ticket-modal-pnr"></b>
+                                <span class="ticket-stub-label">PNR Kodu</span>
+                            </div>
+                        </div>
                     </div>
                 }
             </div>
@@ -139,6 +177,21 @@
     <form id="afToken" style="display:none">@Html.AntiForgeryToken()</form>
 
     <script>
+                function openTicketDetail(eventTitle, customerName, date, price, pnr, status) {
+            document.getElementById('modalEventTitle').textContent = eventTitle;
+            document.getElementById('modalCustomerName').textContent = customerName;
+            document.getElementById('modalDate').textContent = date;
+            document.getElementById('modalPrice').textContent = '₺' + price;
+            document.getElementById('modalPnr').textContent = pnr;
+            document.getElementById('modalStatus').textContent = status;
+
+            document.getElementById('ticketModalOverlay').classList.add('open');
+        }
+
+        function closeTicketDetail(evt) {
+            if (evt && evt.target !== evt.currentTarget) return; // overlay dışına tıklanınca kapanmasın
+            document.getElementById('ticketModalOverlay').classList.remove('open');
+        }
         document.querySelectorAll('#profileTabs .chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 document.querySelectorAll('#profileTabs .chip').forEach(c => c.classList.remove('active'));
@@ -197,6 +250,219 @@
 </body>
 </html>
 <style>
+    .ticket-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: .25s;
+    }
+
+        .ticket-modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+    /* ============ TICKET-SHAPED MODAL ============ */
+    .ticket-modal {
+        position: relative;
+        background: var(--card);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lift);
+        transform: scale(.95) translateY(10px);
+        transition: .25s;
+    }
+
+    .ticket-modal-overlay.open .ticket-modal {
+        transform: scale(1) translateY(0);
+    }
+
+    .ticket-modal.ticket-shape {
+        display: flex;
+        align-items: stretch;
+        padding: 0;
+        width: 460px;
+        max-width: 92vw;
+        text-align: left;
+        overflow: visible;
+    }
+
+    .ticket-main {
+        flex: 1 1 auto;
+        width: 300px;
+        min-width: 0;
+        padding: 30px 26px;
+    }
+
+    .ticket-stub-section {
+        width: 150px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 24px 14px;
+        text-align: center;
+        border-left: 2px dashed var(--border-strong);
+        position: relative;
+    }
+
+    .ticket-stub-label {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: var(--subtitle);
+    }
+
+    /* Gerçek biletlerdeki yuvarlak çentik (notch) efekti */
+    .ticket-notch {
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        left: 300px;
+        background: rgba(0,0,0,.6);
+        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(4px);
+        box-shadow: inset 0 0 0 1px var(--border-strong);
+        z-index: 5;
+    }
+
+    .ticket-notch-top {
+        top: 0;
+        transform: translate(-50%, -50%);
+    }
+
+    .ticket-notch-bottom {
+        bottom: 0;
+        transform: translate(-50%, 50%);
+    }
+
+    .ticket-modal-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: 1px solid var(--border-strong);
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        color: var(--subtitle);
+        cursor: pointer;
+        z-index: 6;
+    }
+
+    .ticket-modal-badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: var(--accent);
+        background: rgba(255,255,255,.05);
+        padding: 4px 12px;
+        border-radius: 100px;
+        margin-bottom: 14px;
+    }
+
+    .ticket-modal h2 {
+        font-size: 19px;
+        line-height: 1.3;
+        margin-bottom: 20px;
+        padding-right: 20px;
+    }
+
+    .ticket-modal-qr {
+        width: 76px;
+        height: 76px;
+        margin: 0 auto;
+        background: rgba(255,255,255,.05);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 34px;
+    }
+
+    .ticket-modal-info {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .ticket-modal-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+        font-size: 13.5px;
+        gap: 12px;
+    }
+
+        .ticket-modal-row span {
+            color: var(--subtitle);
+            white-space: nowrap;
+        }
+
+        .ticket-modal-row b {
+            text-align: right;
+        }
+
+    .ticket-modal-pnr {
+        font-family: var(--font-mono);
+        color: var(--primary);
+        letter-spacing: .05em;
+        font-size: 14px;
+        word-break: break-all;
+    }
+
+    /* Mobilde bileti alt alta diz */
+    @@media (max-width: 480px) {
+        .ticket-modal.ticket-shape {
+            flex-direction: column;
+            width: 320px;
+        }
+
+        .ticket-main {
+            width: auto;
+        }
+
+        .ticket-stub-section {
+            width: auto;
+            border-left: none;
+            border-top: 2px dashed var(--border-strong);
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        .ticket-notch {
+            left: 50%;
+            top: auto;
+        }
+
+        .ticket-notch-top {
+            top: 0;
+            transform: translate(-50%, -50%);
+        }
+
+        .ticket-notch-bottom {
+            bottom: auto;
+            top: 100%;
+            transform: translate(-50%, -50%);
+        }
+    }
+
     .btn-refund-toggle {
         margin-top: 10px;
         font-size: 12.5px;

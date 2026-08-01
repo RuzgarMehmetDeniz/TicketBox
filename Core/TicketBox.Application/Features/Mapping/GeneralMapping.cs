@@ -105,8 +105,10 @@ namespace TicketBox.Application.Features.Mapping
             //// ===== TICKET =====
             CreateMap<Ticket , CreateTicketCommand>().ReverseMap();
             CreateMap<Ticket, UpdateTicketCommand>().ReverseMap();
-            CreateMap<Ticket, GetTicketQueryResult>().ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title)).ReverseMap();
-            CreateMap<Ticket, GetTicketByIdQueryResult>().ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title)).ReverseMap();
+            CreateMap<Ticket, GetTicketQueryResult>()
+                .ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title))
+                .ForMember(dest => dest.CustomerFullName, opt => opt.MapFrom(src => src.AppUser.Name + " " + src.AppUser.Surname))
+                .ReverseMap(); CreateMap<Ticket, GetTicketByIdQueryResult>().ForMember(dest => dest.EventTitle, opt => opt.MapFrom(src => src.Event.Title)).ReverseMap();
 
             //// ===== PAYMENT =====
             CreateMap<Payment,CreatePaymentCommand>().ReverseMap();

@@ -8,6 +8,7 @@ namespace TicketBox.Application.Features.CQRS.Tickets.Results
         public int EventId { get; set; }
         public string EventTitle { get; set; }
         public string AppUserId { get; set; }
+        public string CustomerFullName { get; set; }
         public string PNRCode { get; set; }
         public string? TicketImageUrl { get; set; }
         public DateTime PurchaseDate { get; set; }

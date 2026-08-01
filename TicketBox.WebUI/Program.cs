@@ -8,6 +8,7 @@ using TicketBox.Application.Features.Repository;
 using TicketBox.Application.Features.Services;
 using TicketBox.Application.Validation.CategoryValidation;
 using TicketBox.Domain.Entities;
+using TicketBox.Infrastructure.Services;
 using TicketBox.Persistance.Context;
 using TicketBox.Persistance.Repositories;
 using TicketBox.Persistance.Services;
@@ -17,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 // DbContext
 builder.Services.AddDbContext<TicketContext>();
 builder.Services.AddHttpClient<IOpenAiChatService, OpenAiChatService>();
+
 
 // Identity
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -38,6 +40,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // Repository
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // MediatR
 builder.Services.AddMediatR(cfg =>
