@@ -2,7 +2,7 @@
 	<div class="navbar-inner">
 		<a href="#" class="logo"><span class="logo-mark">TB</span> TicketBox</a>
 		<div class="nav-links">
-			<a href="#events" class="active">Etkinlikler</a>
+			<a href="/Discover/Index3/ #events" class="active">Etkinlikler</a>
 			<a href="#categories">Kategoriler</a>
 			<a href="#organizers">Organizatörler</a>
 			<a href="#cities">Şehirler</a>
@@ -23,6 +23,7 @@
 			</div>
 			@if (User.Identity?.IsAuthenticated == true)
 			{
+				<a asp-controller="Chat" asp-action="History" class="btn btn-ghost btn-sm">Sohbetlerim</a>
 				<a asp-controller="Profile" asp-action="Index" class="btn btn-ghost btn-sm">Profilim</a>
 			}
 			else

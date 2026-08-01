@@ -1,0 +1,206 @@
+﻿@model List<TicketBox.Application.Features.CQRS.ChatSessions.Results.ChatSessionWithMessagesResult>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+    @await Component.InvokeAsync("_DiscoverHeadComponentPartial")
+<body data-theme="midnight">
+    <div class="bg-noise"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-glow-a"></div>
+    <div class="bg-glow-b"></div>
+
+    @await Component.InvokeAsync("_DiscoverNavbarComponentPartial")
+
+    <form id="afToken" style="display:none">@Html.AntiForgeryToken()</form>
+
+    <section class="section" id="chatHistory">
+        <div class="wrap">
+            <div class="chat-history-head reveal">
+                <h1>Sohbet Geçmişim</h1>
+                <p class="event-desc">TicketBox Asistan ile yaptığınız tüm konuşmalar burada listelenir.</p>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <p class="no-reviews">Henüz bir sohbet başlatmadınız.</p>
+            }
+            else
+            {
+                <div class="chat-session-list" id="sessionList">
+                    @foreach (var session in Model)
+                    {
+                        <div class="chat-session-card glass reveal" id="sessionCard-@session.ChatSessionId">
+                            <div class="chat-session-header">
+                                <div class="chat-session-header-click" onclick="toggleSession(@session.ChatSessionId)">
+                                    <div>
+                                        <b>Sohbet #@session.ChatSessionId</b>
+                                        <span class="chat-session-date">@session.StartedDate.ToString("dd MMM yyyy, HH:mm")</span>
+                                    </div>
+                                    <span class="chat-session-count">@session.Messages.Count mesaj</span>
+                                    <span class="chat-session-arrow" id="arrow-@session.ChatSessionId">▾</span>
+                                </div>
+                                <div class="chat-session-actions">
+                                    <button type="button" class="btn-resume" onclick="resumeSession(@session.ChatSessionId)">Devam Et</button>
+                                    <button type="button" class="btn-delete-session" onclick="deleteSession(@session.ChatSessionId)" title="Sohbeti sil">🗑️</button>
+                                </div>
+                            </div>
+
+                            <div class="chat-session-body" id="sessionBody-@session.ChatSessionId" style="display:none;">
+                                @foreach (var msg in session.Messages)
+                                {
+                                    <div class="chat-msg-row @(msg.Sender == "User" ? "user" : "bot")" id="msgRow-@msg.ChatMessageId">
+                                        <div class="chat-msg">
+                                            <span class="chat-msg-meta">@(msg.Sender == "User" ? "Siz" : "Asistan") · @msg.SentDate.ToString("HH:mm")</span>
+                                            @msg.Content
+                                        </div>
+                                        <button type="button" class="btn-delete-msg" onclick="deleteMessage(@msg.ChatMessageId)" title="Mesajı sil">✕</button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+    @await Component.InvokeAsync("_DiscoverFooterComponentPartial")
+    @await Component.InvokeAsync("_DiscoverScriptComponentPartial")
+    @await Component.InvokeAsync("_ChatWidgetComponentPartial")
+
+    <script>
+        function getToken() {
+            return document.querySelector('#afToken input[name="__RequestVerificationToken"]').value;
+        }
+
+        function toggleSession(id) {
+            const body = document.getElementById('sessionBody-' + id);
+            const arrow = document.getElementById('arrow-' + id);
+            const isOpen = body.style.display !== 'none';
+            body.style.display = isOpen ? 'none' : 'flex';
+            arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+
+        function resumeSession(id) {
+            // Widget'ın bu oturumu açması için sessionStorage'a yazıp sayfayı yeniliyoruz
+            sessionStorage.setItem('resumeChatSessionId', id);
+            window.location.reload();
+        }
+
+        async function deleteSession(id) {
+            if (!confirm('Bu sohbetin tamamı silinsin mi? Bu işlem geri alınamaz.')) return;
+
+            const res = await fetch('/Chat/DeleteSession', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: '__RequestVerificationToken=' + encodeURIComponent(getToken()) + '&chatSessionId=' + id
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                document.getElementById('sessionCard-' + id).remove();
+            } else {
+                alert('Sohbet silinemedi.');
+            }
+        }
+
+        async function deleteMessage(id) {
+            const res = await fetch('/Chat/DeleteMessage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: '__RequestVerificationToken=' + encodeURIComponent(getToken()) + '&chatMessageId=' + id
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                document.getElementById('msgRow-' + id).remove();
+            } else {
+                alert('Mesaj silinemedi.');
+            }
+        }
+    </script>
+</body>
+</html>
+<style>
+    .chat-session-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 22px;
+    }
+
+    .chat-session-header-click {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex: 1;
+        cursor: pointer;
+    }
+
+    .chat-session-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    .btn-resume {
+        font-size: 12px;
+        padding: 8px 14px;
+        border-radius: 100px;
+        border: 1px solid var(--border-strong);
+        background: rgba(255,255,255,.03);
+        color: var(--text);
+        white-space: nowrap;
+        transition: .2s;
+    }
+
+        .btn-resume:hover {
+            background: var(--grad-brand);
+            border-color: transparent;
+            color: #fff;
+        }
+
+    .btn-delete-session, .btn-delete-msg {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        background: rgba(255,77,109,.06);
+        color: var(--danger);
+        font-size: 13px;
+        transition: .2s;
+    }
+
+        .btn-delete-session:hover, .btn-delete-msg:hover {
+            background: rgba(255,77,109,.16);
+            border-color: var(--danger);
+        }
+
+    .chat-msg-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+        .chat-msg-row.user {
+            flex-direction: row-reverse;
+        }
+
+    .btn-delete-msg {
+        width: 24px;
+        height: 24px;
+        font-size: 11px;
+        flex-shrink: 0;
+        opacity: 0;
+        transition: opacity .2s;
+    }
+
+    .chat-msg-row:hover .btn-delete-msg {
+        opacity: 1;
+    }
+</style>

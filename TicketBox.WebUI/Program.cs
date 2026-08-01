@@ -5,15 +5,18 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using TicketBox.Application.Features.Mediator;
 using TicketBox.Application.Features.Repository;
+using TicketBox.Application.Features.Services;
 using TicketBox.Application.Validation.CategoryValidation;
 using TicketBox.Domain.Entities;
 using TicketBox.Persistance.Context;
 using TicketBox.Persistance.Repositories;
+using TicketBox.Persistance.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // DbContext
 builder.Services.AddDbContext<TicketContext>();
+builder.Services.AddHttpClient<IOpenAiChatService, OpenAiChatService>();
 
 // Identity
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>

@@ -1,0 +1,423 @@
+﻿@if (User.Identity?.IsAuthenticated == true)
+{
+    <form id="chatAfToken" style="display:none">@Html.AntiForgeryToken()</form>
+}
+
+<style>
+    .chat-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .chat-new {
+        background: none;
+        border: 1px solid var(--border-strong);
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        color: var(--subtitle);
+        font-size: 15px;
+        cursor: pointer;
+        line-height: 1;
+        transition: .2s;
+    }
+
+        .chat-new:hover {
+            background: var(--grad-brand);
+            border-color: transparent;
+            color: #fff;
+        }
+    .chat-widget {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 999;
+    }
+
+    .chat-fab {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--grad-brand);
+        border: none;
+        font-size: 26px;
+        box-shadow: var(--shadow-lift);
+        cursor: pointer;
+        color: #fff;
+    }
+
+    .chat-panel {
+        position: absolute;
+        bottom: 76px;
+        right: 0;
+        width: 340px;
+        height: 480px;
+        background: var(--card);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lift);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(16px) scale(.98);
+        pointer-events: none;
+        transition: .25s;
+    }
+
+        .chat-panel.open {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+    .chat-panel-header {
+        padding: 16px 18px;
+        background: var(--card2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 700;
+        font-size: 14.5px;
+    }
+
+    .chat-close {
+        background: none;
+        border: none;
+        color: var(--subtitle);
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .chat-panel-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .chat-msg {
+        max-width: 80%;
+        padding: 10px 14px;
+        border-radius: var(--radius-md);
+        font-size: 13.5px;
+        line-height: 1.5;
+    }
+
+        .chat-msg.bot {
+            align-self: flex-start;
+            background: rgba(255,255,255,.05);
+        }
+
+        .chat-msg.user {
+            align-self: flex-end;
+            background: var(--grad-brand);
+            color: #fff;
+        }
+
+        .chat-msg.typing {
+            opacity: .6;
+            font-style: italic;
+        }
+
+    .chat-panel-input {
+        display: flex;
+        border-top: 1px solid var(--border);
+        padding: 10px;
+        gap: 8px;
+    }
+
+        .chat-panel-input input {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-strong);
+            background: rgba(255,255,255,.03);
+            color: var(--text);
+            font-size: 13.5px;
+        }
+
+        .chat-panel-input button[type="submit"] {
+            width: 38px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: var(--grad-brand);
+            color: #fff;
+            cursor: pointer;
+        }
+
+    #micBtn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 1px solid var(--border-strong);
+        background: rgba(255,255,255,.03);
+        color: var(--text);
+        font-size: 16px;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: .2s;
+    }
+
+        #micBtn.recording {
+            background: linear-gradient(135deg,#FF4D6D,#FF758C);
+            border-color: transparent;
+            animation: pulse-mic 1.2s infinite;
+        }
+
+    @@keyframes pulse-mic {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(255,77,109,.5);
+        }
+
+        50% {
+            box-shadow: 0 0 0 8px rgba(255,77,109,0);
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .chat-panel {
+            width: calc(100vw - 32px);
+            right: -8px;
+        }
+    }
+</style>
+
+<div class="chat-widget" id="chatWidget">
+    <button class="chat-fab" id="chatFab" title="Canlı Destek">💬</button>
+
+    <div class="chat-panel" id="chatPanel">
+        <div class="chat-panel-header">
+            <span>TicketBox Asistan</span>
+            <div class="chat-header-actions">
+                <button class="chat-new" id="chatNewBtn" type="button" title="Yeni sohbet başlat">＋</button>
+                <button class="chat-close" id="chatClose" type="button">✕</button>
+            </div>
+        </div>
+        <div class="chat-panel-body" id="chatBody">
+            @if (User.Identity?.IsAuthenticated != true)
+            {
+                <div class="chat-msg bot">Merhaba! Sorularını yanıtlayabilmem için önce <a href="/Login/Index">giriş yapmalısın</a>.</div>
+            }
+            else
+            {
+                <div class="chat-msg bot">Merhaba! Ben TicketBox asistanı. Etkinlikler, rezervasyon veya iade hakkında sorularını yanıtlayabilirim 🎟️</div>
+            }
+        </div>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <form class="chat-panel-input" id="chatForm">
+                <button type="button" id="micBtn" title="Sesli soru sor">🎤</button>
+                <input type="text" id="chatInput" placeholder="Bir soru yaz..." autocomplete="off" />
+                <button type="submit">➤</button>
+            </form>
+            <audio id="chatAudioPlayer" style="display:none;"></audio>
+        }
+    </div>
+</div>
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <script>
+        (function () {
+            const fab = document.getElementById('chatFab');
+            const panel = document.getElementById('chatPanel');
+            const closeBtn = document.getElementById('chatClose');
+            const body = document.getElementById('chatBody');
+            const form = document.getElementById('chatForm');
+            const input = document.getElementById('chatInput');
+            const micBtn = document.getElementById('micBtn');
+            const audioPlayer = document.getElementById('chatAudioPlayer');
+
+            let chatSessionId = null;
+            let sessionLoaded = false;
+            let mediaRecorder = null;
+            let audioChunks = [];
+            let isRecording = false;
+
+            function getToken() {
+                return document.querySelector('#chatAfToken input[name="__RequestVerificationToken"]').value;
+            }
+
+            function appendMessage(sender, content) {
+                const div = document.createElement('div');
+                div.className = 'chat-msg ' + (sender === 'User' || sender === 'user' ? 'user' : 'bot');
+                div.textContent = content;
+                body.appendChild(div);
+                body.scrollTop = body.scrollHeight;
+            }
+
+            // sessionStorage: tarayıcı sekmesi/penceresi kapanınca otomatik silinir.
+            // Bu sayede yeni bir tarayıcı oturumunda her zaman YENİ bir sohbet başlar.
+            async function ensureSession() {
+                if (sessionLoaded) return;
+                sessionLoaded = true;
+
+                const savedId = sessionStorage.getItem('chatSessionId');
+
+                const res = await fetch('/Chat/GetOrCreateSession', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: '__RequestVerificationToken=' + encodeURIComponent(getToken())
+                        + (savedId ? '&chatSessionId=' + savedId : '')
+                });
+                const data = await res.json();
+                chatSessionId = data.chatSessionId;
+                sessionStorage.setItem('chatSessionId', chatSessionId);
+
+                if (data.messages && data.messages.length > 0) {
+                    body.innerHTML = '';
+                    data.messages.forEach(m => appendMessage(m.sender, m.content));
+                }
+            }
+
+            async function playReply(text) {
+                try {
+                    const res = await fetch('/Chat/Speak', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: '__RequestVerificationToken=' + encodeURIComponent(getToken()) + '&text=' + encodeURIComponent(text)
+                    });
+                    if (!res.ok) return;
+
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    audioPlayer.src = url;
+                    audioPlayer.play();
+                } catch (err) {
+                    console.error('Seslendirme hatası:', err);
+                }
+            }
+
+            async function sendTextMessage(text) {
+                appendMessage('User', text);
+
+                const typingEl = document.createElement('div');
+                typingEl.className = 'chat-msg bot typing';
+                typingEl.textContent = 'Yazıyor...';
+                body.appendChild(typingEl);
+                body.scrollTop = body.scrollHeight;
+
+                try {
+                    const res = await fetch('/Chat/SendMessage', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: '__RequestVerificationToken=' + encodeURIComponent(getToken())
+                            + '&chatSessionId=' + chatSessionId
+                            + '&message=' + encodeURIComponent(text)
+                    });
+                    const data = await res.json();
+                    typingEl.remove();
+
+                    const replyText = data.success ? data.reply : (data.error || 'Bir hata oluştu.');
+                    appendMessage('Bot', replyText);
+
+                    if (data.success) {
+                        playReply(replyText);
+                    }
+                } catch (err) {
+                    typingEl.remove();
+                    appendMessage('Bot', 'Bağlantı hatası, tekrar deneyin.');
+                }
+            }
+
+            fab.addEventListener('click', async () => {
+                panel.classList.toggle('open');
+                if (panel.classList.contains('open')) {
+                    await ensureSession();
+                }
+            });
+
+            closeBtn.addEventListener('click', () => panel.classList.remove('open'));
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const text = input.value.trim();
+                if (!text || !chatSessionId) return;
+
+                input.value = '';
+                await sendTextMessage(text);
+            });
+                    const newBtn = document.getElementById('chatNewBtn');
+
+        newBtn.addEventListener('click', async () => {
+            if (!confirm('Yeni bir sohbet başlatmak istiyor musunuz? Mevcut sohbet geçmişte (Sohbetlerim sayfasında) saklı kalacak.')) return;
+
+            sessionStorage.removeItem('chatSessionId');
+            chatSessionId = null;
+            sessionLoaded = false;
+            body.innerHTML = '<div class="chat-msg bot">Merhaba! Ben TicketBox asistanı. Etkinlikler, rezervasyon veya iade hakkında sorularını yanıtlayabilirim 🎟️</div>';
+
+            await ensureSession();
+        });
+
+            micBtn.addEventListener('click', async () => {
+                if (!chatSessionId) await ensureSession();
+
+                if (!isRecording) {
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        mediaRecorder = new MediaRecorder(stream);
+                        audioChunks = [];
+
+                        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+                        mediaRecorder.onstop = async () => {
+                            stream.getTracks().forEach(track => track.stop());
+
+                            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                            const formData = new FormData();
+                            formData.append('audio', audioBlob, 'recording.webm');
+                            formData.append('__RequestVerificationToken', getToken());
+
+                            const typingEl = document.createElement('div');
+                            typingEl.className = 'chat-msg bot typing';
+                            typingEl.textContent = 'Ses işleniyor...';
+                            body.appendChild(typingEl);
+                            body.scrollTop = body.scrollHeight;
+
+                            try {
+                                const res = await fetch('/Chat/TranscribeAudio', { method: 'POST', body: formData });
+                                const data = await res.json();
+                                typingEl.remove();
+
+                                if (data.success && data.text.trim()) {
+                                    await sendTextMessage(data.text.trim());
+                                } else {
+                                    appendMessage('Bot', 'Sesinizi anlayamadım, tekrar deneyin.');
+                                }
+                            } catch (err) {
+                                typingEl.remove();
+                                appendMessage('Bot', 'Ses işlenirken hata oluştu.');
+                            }
+                        };
+
+                        mediaRecorder.start();
+                        isRecording = true;
+                        micBtn.classList.add('recording');
+                        micBtn.textContent = '⏹️';
+                    } catch (err) {
+                        appendMessage('Bot', 'Mikrofon erişimi reddedildi veya bulunamadı.');
+                    }
+                } else {
+                    mediaRecorder.stop();
+                    isRecording = false;
+                    micBtn.classList.remove('recording');
+                    micBtn.textContent = '🎤';
+                }
+            });
+
+            // History sayfasından "Bu sohbete devam et" ile geldiyse otomatik aç
+            const resumeId = sessionStorage.getItem('resumeChatSessionId');
+            if (resumeId) {
+                sessionStorage.setItem('chatSessionId', resumeId);
+                sessionStorage.removeItem('resumeChatSessionId');
+                panel.classList.add('open');
+                ensureSession();
+            }
+        })();
+    </script>
+}

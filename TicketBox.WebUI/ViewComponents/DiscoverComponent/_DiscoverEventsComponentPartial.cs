@@ -19,7 +19,7 @@ namespace TicketBox.WebUI.ViewComponents.DiscoverComponent
 
         public async Task<IViewComponentResult> InvokeAsync(string? category = null)
         {
-            var query = _context.Events
+            var query = _context.Events.Take(6)
                 .Include(e => e.Category)
                 .Include(e => e.CreatedByUser)
                 .Include(e => e.Reviews)

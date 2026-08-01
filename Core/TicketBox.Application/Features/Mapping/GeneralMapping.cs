@@ -73,6 +73,10 @@ namespace TicketBox.Application.Features.Mapping
             CreateMap<ChatSession, GetChatSessionQueryResult>().ReverseMap();
             CreateMap<ChatSession, GetChatSessionByIdQueryResult>().ReverseMap();
 
+            //// ===== CHAT (kullanıcı tarafı) =====
+            CreateMap<ChatSession, ChatSessionWithMessagesResult>();
+            CreateMap<ChatMessage, ChatMessageItem>();
+
             //// ===== CHATMESSAGE =====
             CreateMap<CreateChatMessageCommand, ChatMessage>().ReverseMap();
             CreateMap<ChatMessage, UpdateChatMessageCommand>().ReverseMap();
