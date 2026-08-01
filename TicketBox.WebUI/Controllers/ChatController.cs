@@ -109,6 +109,66 @@ namespace TicketBox.WebUI.Controllers
             return Json(new { success = true, reply = botReply });
         }
 
+        // Mood-Based Chatbot: kullanıcının o anki ruh haline göre gerçek etkinlik önerisi yapar.
+        // Aynı ChatSession/ChatMessage altyapısını kullanır, sadece OpenAI tarafında
+        // farklı bir system prompt + function calling (get_events_by_mood) devreye girer.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendMoodMessage(int chatSessionId, string message)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                return Json(new { success = false, error = "Mesaj boş olamaz." });
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var session = await _mediator.Send(new GetChatSessionByIdQuery { ChatSessionId = chatSessionId });
+            if (session == null || session.AppUserId != userId)
+                return Json(new { success = false, error = "Geçersiz sohbet oturumu." });
+
+            await _mediator.Send(new CreateChatMessageCommand
+            {
+                ChatSessionId = chatSessionId,
+                Sender = "User",
+                Content = message
+            });
+
+            var history = await _mediator.Send(new GetChatMessagesBySessionQuery { ChatSessionId = chatSessionId });
+
+            var conversation = new List<(string Role, string Content)>
+            {
+                ("system",
+                    "Sen TicketBox platformunda kullanıcının o anki ruh haline / moduna göre gerçek etkinlik " +
+                    "öneren bir asistansın. Kullanıcı ruh halini anlattığında (yorgun, enerjik, sakin, romantik, " +
+                    "kalabalıktan sıkılmış, vb. — sabit bir kategori listesi yok, kullanıcının kendi ifadesine göre " +
+                    "serbestçe yorumla) get_events_by_mood aracını çağırarak veritabanındaki gerçek ve aktif " +
+                    "etkinlikleri getirt. Sana dönen gerçek verideki isim, tarih, fiyat ve kategori bilgilerini " +
+                    "kullanarak samimi, kısa ve Türkçe bir öneri cümlesi kur. Asla var olmayan bir etkinlik uydurma; " +
+                    "eğer uygun etkinlik bulunamazsa bunu dürüstçe belirt.")
+            };
+
+            foreach (var m in history.OrderBy(m => m.SentDate))
+                conversation.Add((m.Sender == "User" ? "user" : "assistant", m.Content));
+
+            string botReply;
+            try
+            {
+                botReply = await _openAiChatService.GetMoodBasedReplyAsync(conversation, HttpContext.RequestAborted);
+            }
+            catch
+            {
+                botReply = "Şu anda öneri veremiyorum, lütfen biraz sonra tekrar deneyin.";
+            }
+
+            await _mediator.Send(new CreateChatMessageCommand
+            {
+                ChatSessionId = chatSessionId,
+                Sender = "Bot",
+                Content = botReply
+            });
+
+            return Json(new { success = true, reply = botReply });
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> TranscribeAudio(IFormFile audio)

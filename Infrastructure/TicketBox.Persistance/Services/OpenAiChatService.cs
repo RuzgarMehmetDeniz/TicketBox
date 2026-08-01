@@ -8,19 +8,23 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using TicketBox.Application.Features.Repository;
 using TicketBox.Application.Features.Services;
+using TicketBox.Domain.Entities;
 
 namespace TicketBox.Persistance.Services
 {
     public class OpenAiChatService : IOpenAiChatService
     {
         private readonly HttpClient _httpClient;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly string _apiKey;
         private readonly string _model;
 
-        public OpenAiChatService(HttpClient httpClient, IConfiguration configuration)
+        public OpenAiChatService(HttpClient httpClient, IConfiguration configuration, IUnitOfWork unitOfWork)
         {
             _httpClient = httpClient;
+            _unitOfWork = unitOfWork;
             _apiKey = configuration["OpenAI:ApiKey"];
             _model = configuration["OpenAI:Model"] ?? "gpt-4o-mini";
         }
@@ -58,6 +62,7 @@ namespace TicketBox.Persistance.Services
 
             return content?.Trim() ?? "Üzgünüm, şu anda cevap veremiyorum.";
         }
+
         public async Task<string> TranscribeAsync(Stream audioStream, string fileName, CancellationToken cancellationToken)
         {
             using var content = new MultipartFormDataContent();
@@ -108,6 +113,181 @@ namespace TicketBox.Persistance.Services
             }
 
             return await response.Content.ReadAsByteArrayAsync(cancellationToken);
+        }
+
+        // ================= MOOD-BASED CHATBOT (function calling) =================
+
+        public async Task<string> GetMoodBasedReplyAsync(List<(string Role, string Content)> conversation, CancellationToken cancellationToken)
+        {
+            var messages = conversation
+                .Select(m => new Dictionary<string, object?> { ["role"] = m.Role, ["content"] = m.Content })
+                .ToList();
+
+            var tools = new object[]
+            {
+                new
+                {
+                    type = "function",
+                    function = new
+                    {
+                        name = "get_events_by_mood",
+                        description = "Kullanıcının o anki ruh haline / moduna uygun, veritabanındaki gerçek ve aktif etkinlikleri getirir.",
+                        parameters = new
+                        {
+                            type = "object",
+                            properties = new
+                            {
+                                mood_description = new
+                                {
+                                    type = "string",
+                                    description = "Kullanıcının ruh halinin serbest metinle kısa özeti (örn. 'yorgun ve sakinlik arıyor', 'enerjik, arkadaşlarıyla kalabalık bir ortam istiyor', 'romantik bir akşam istiyor')."
+                                },
+                                keywords = new
+                                {
+                                    type = "array",
+                                    items = new { type = "string" },
+                                    description = "Bu ruh haline uygun düşebilecek, etkinlik başlığı/açıklaması/kategorisinde aranacak Türkçe anahtar kelimeler (örn. ['tiyatro','sergi'] ya da ['konser','festival'])."
+                                }
+                            },
+                            required = new[] { "mood_description", "keywords" }
+                        }
+                    }
+                }
+            };
+
+            using var firstResponse = await SendChatRequestAsync(messages, tools, cancellationToken);
+
+            var choice = firstResponse.RootElement.GetProperty("choices")[0];
+            var message = choice.GetProperty("message");
+
+            if (message.TryGetProperty("tool_calls", out var toolCallsElement) && toolCallsElement.GetArrayLength() > 0)
+            {
+                var toolCall = toolCallsElement[0];
+                var toolCallId = toolCall.GetProperty("id").GetString();
+                var functionArgsJson = toolCall.GetProperty("function").GetProperty("arguments").GetString();
+
+                var keywords = new List<string>();
+                using (var argsDoc = JsonDocument.Parse(string.IsNullOrEmpty(functionArgsJson) ? "{}" : functionArgsJson))
+                {
+                    if (argsDoc.RootElement.TryGetProperty("keywords", out var kwEl) && kwEl.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var kw in kwEl.EnumerateArray())
+                        {
+                            var value = kw.GetString();
+                            if (!string.IsNullOrWhiteSpace(value))
+                                keywords.Add(value);
+                        }
+                    }
+                }
+
+                var matchedEvents = await GetEventsByKeywordsAsync(keywords, cancellationToken);
+                var toolResultJson = JsonSerializer.Serialize(matchedEvents);
+
+                // Modelin tool_calls içeren asistan mesajını olduğu gibi geri ekliyoruz
+                messages.Add(new Dictionary<string, object?>
+                {
+                    ["role"] = "assistant",
+                    ["content"] = null,
+                    ["tool_calls"] = JsonSerializer.Deserialize<object>(toolCallsElement.GetRawText())
+                });
+
+                // Tool'un sonucunu ekliyoruz
+                messages.Add(new Dictionary<string, object?>
+                {
+                    ["role"] = "tool",
+                    ["tool_call_id"] = toolCallId,
+                    ["content"] = toolResultJson
+                });
+
+                using var secondResponse = await SendChatRequestAsync(messages, tools: null, cancellationToken);
+                var finalContent = secondResponse.RootElement
+                    .GetProperty("choices")[0]
+                    .GetProperty("message")
+                    .GetProperty("content")
+                    .GetString();
+
+                return finalContent?.Trim() ?? "Şu an uygun bir etkinlik önerisi oluşturamadım.";
+            }
+
+            return message.TryGetProperty("content", out var contentEl)
+                ? (contentEl.GetString()?.Trim() ?? "Üzgünüm, şu anda cevap veremiyorum.")
+                : "Üzgünüm, şu anda cevap veremiyorum.";
+        }
+
+        private async Task<JsonDocument> SendChatRequestAsync(
+            List<Dictionary<string, object?>> messages,
+            object[]? tools,
+            CancellationToken cancellationToken)
+        {
+            var requestBodyDict = new Dictionary<string, object?>
+            {
+                ["model"] = _model,
+                ["messages"] = messages,
+                ["temperature"] = 0.6,
+                ["max_tokens"] = 500
+            };
+
+            if (tools != null)
+            {
+                requestBodyDict["tools"] = tools;
+                requestBodyDict["tool_choice"] = "auto";
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions")
+            {
+                Content = new StringContent(JsonSerializer.Serialize(requestBodyDict), Encoding.UTF8, "application/json")
+            };
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
+
+            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"OpenAI API hatası ({response.StatusCode}): {responseBody}");
+
+            return JsonDocument.Parse(responseBody);
+        }
+
+        private async Task<List<object>> GetEventsByKeywordsAsync(List<string> keywords, CancellationToken cancellationToken)
+        {
+            var allEvents = await _unitOfWork.EventRepository.GetAllAsync();
+
+            var candidates = allEvents
+                .Where(e => e.IsActive && e.RemainingCapacity > 0 && e.EventDate >= DateTime.Now)
+                .ToList();
+
+            List<Event> matched = new();
+
+            if (keywords.Any())
+            {
+                matched = candidates
+                    .Where(e => keywords.Any(k =>
+                        (e.Title?.Contains(k, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                        (e.Description?.Contains(k, StringComparison.OrdinalIgnoreCase) ?? false)))
+                    .ToList();
+            }
+
+            // Anahtar kelimeyle eşleşme bulunamazsa en yakın tarihli aktif etkinliklere düş
+            if (!matched.Any())
+                matched = candidates.OrderBy(e => e.EventDate).ToList();
+
+            var topMatches = matched.OrderBy(e => e.EventDate).Take(5).ToList();
+
+            var result = new List<object>();
+            foreach (var e in topMatches)
+            {
+                var category = await _unitOfWork.CategoryRepository.GetByIdAsync(e.CategoryId);
+                result.Add(new
+                {
+                    e.Title,
+                    Category = category?.CategoryName,
+                    Date = e.EventDate.ToString("dd MMM yyyy"),
+                    Price = e.Price,
+                    RemainingCapacity = e.RemainingCapacity
+                });
+            }
+
+            return result;
         }
     }
 }
