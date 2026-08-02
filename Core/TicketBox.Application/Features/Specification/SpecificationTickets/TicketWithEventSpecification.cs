@@ -1,6 +1,5 @@
 ﻿using TicketBox.Application.Features.Specification;
 using TicketBox.Domain.Entities;
-
 namespace TicketBox.Application.Features.Specification.SpecificationTickets
 {
     public class TicketWithEventSpecification : BaseSpecification<Ticket>
@@ -8,8 +7,8 @@ namespace TicketBox.Application.Features.Specification.SpecificationTickets
         public TicketWithEventSpecification()
         {
             AddInclude(t => t.Event);
+            AddInclude("Event.Category"); 
         }
-
         public TicketWithEventSpecification(int ticketId) : base()
         {
             Criteria = t => t.TicketId == ticketId;

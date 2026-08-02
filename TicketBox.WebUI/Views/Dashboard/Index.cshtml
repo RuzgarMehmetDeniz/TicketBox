@@ -1,0 +1,432 @@
+﻿@model TicketBox.WebUI.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/AdminLayout/Index.cshtml";
+}
+    
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div>
+            <div class="page-title" id="pageTitle">Dashboard</div>
+            <div class="page-sub" id="pageSub">Genel bakış ve son hareketler</div>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <div class="search-box"><span>🔍</span><input placeholder="Ara..."></div>
+        <button class="icon-btn">🔔<span class="dot"></span></button>
+        <div class="theme-switch" id="themeSwitch">
+            <button class="theme-btn" id="themeBtn"><span class="theme-dot" id="themeDot"></span> Tema ▾</button>
+            <div class="theme-menu" id="themeMenu">
+                <button class="theme-opt active" data-theme="midnight"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#4F8CFF)"></span> 🌙 Midnight</button>
+                <button class="theme-opt" data-theme="aurora"><span class="sw" style="background:linear-gradient(135deg,#34D8C7,#6C5CE7)"></span> 🌌 Aurora</button>
+                <button class="theme-opt" data-theme="purple"><span class="sw" style="background:linear-gradient(135deg,#A855F7,#EC4899)"></span> 💜 Purple</button>
+                <button class="theme-opt" data-theme="ocean"><span class="sw" style="background:linear-gradient(135deg,#2DA8FF,#00C2D1)"></span> 💙 Ocean</button>
+                <button class="theme-opt" data-theme="graphite"><span class="sw" style="background:linear-gradient(135deg,#9CA3AF,#6B7280)"></span> 🩶 Graphite</button>
+                <button class="theme-opt" data-theme="light"><span class="sw" style="background:linear-gradient(135deg,#7C5CFF,#00B894)"></span> 🤍 Light</button>
+            </div>
+        </div>
+        <div class="admin-mini" style="padding:6px 10px;"><div class="av" style="width:30px;height:30px;"></div></div>
+    </div>
+</div>
+
+<div class="content">
+    <section class="view active" id="view-dashboard">
+
+        <div class="view-head">
+            <div><h2>Dashboard</h2><p>Sistemdeki tüm varlıklara genel bakış.</p></div>
+        </div>
+
+        <!-- ============ ÖZET KARTLAR ============ -->
+        <div class="row" style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:22px;">
+            <div class="card" style="flex:1;min-width:180px;">
+                <div class="cell-sub">Toplam Kullanıcı</div>
+                <h2 style="margin-top:6px;">@Model.TotalUsers</h2>
+            </div>
+            <div class="card" style="flex:1;min-width:180px;">
+                <div class="cell-sub">Toplam Etkinlik</div>
+                <h2 style="margin-top:6px;">@Model.TotalEvents</h2>
+            </div>
+            <div class="card" style="flex:1;min-width:180px;">
+                <div class="cell-sub">Toplam Bilet</div>
+                <h2 style="margin-top:6px;">@Model.TotalTickets</h2>
+            </div>
+            <div class="card" style="flex:1;min-width:180px;">
+                <div class="cell-sub">Toplam Gelir</div>
+                <h2 style="margin-top:6px;">₺@Model.TotalRevenue.ToString("N0")</h2>
+            </div>
+            <div class="card" style="flex:1;min-width:180px;">
+                <div class="cell-sub">Bekleyen İade</div>
+                <h2 style="margin-top:6px;color:var(--danger);">@Model.PendingRefunds</h2>
+            </div>
+        </div>
+
+        <!-- ============ AYLIK GELİR TRENDİ ============ -->
+        <div class="card" style="margin-bottom:24px;">
+            <div class="view-head" style="margin-bottom:14px;">
+                <div><h2 style="font-size:16px;">Aylık Gelir Trendi</h2><p>Son 6 ay</p></div>
+            </div>
+            <canvas id="revenueChart" height="90"></canvas>
+        </div>
+
+        <!-- ============ SATIR 1 — col-md-4 x 3 ============ -->
+        <div class="row" style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:18px;">
+
+            <div class="table-card" style="flex:1 1 30%;min-width:300px;">
+                <div class="table-toolbar"><b>Son Kullanıcılar</b></div>
+                <table>
+                    <tbody>
+                        @foreach (var u in Model.RecentUsers)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="cell-main">
+                                        <div class="cell-avatar round"></div>
+                                        <div>
+                                            <div class="cell-title">@u.Name @u.Surname</div>
+                                            <div class="cell-sub">@u.City, @u.Country</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="text-align:right;" class="cell-sub">@u.CreatedDate.ToString("dd.MM.yyyy")</td>
+                            </tr>
+                        }
+                        @if (!Model.RecentUsers.Any())
+                        {
+                            <tr><td class="empty-hint">Kayıt yok.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-card" style="flex:1 1 30%;min-width:300px;">
+                <div class="table-toolbar"><b>Son Kategoriler</b></div>
+                <table>
+                    <tbody>
+                        @foreach (var c in Model.RecentCategories)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="cell-title">@c.CategoryName</div>
+                                    <div class="cell-sub">@c.Description</div>
+                                </td>
+                                <td style="text-align:right;">
+                                    @if (c.IsActive)
+                                    {
+                                        <span class="badge green">Aktif</span>
+                                    }
+                                    else
+                                    {
+
+                                        <span class="badge gray">Pasif</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.RecentCategories.Any())
+                        {
+                            <tr><td class="empty-hint">Kayıt yok.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-card" style="flex:1 1 30%;min-width:300px;">
+                <div class="table-toolbar"><b>Son Rezervasyonlar</b></div>
+                <table>
+                    <tbody>
+                        @foreach (var t in Model.RecentReservations)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="cell-title">@t.PNRCode</div>
+                                    <div class="cell-sub">@t.PurchaseDate.ToString("dd.MM.yyyy HH:mm")</div>
+                                </td>
+                                <td style="text-align:right;"><b>₺@t.Price.ToString("N0")</b></td>
+                            </tr>
+                        }
+                        @if (!Model.RecentReservations.Any())
+                        {
+                            <tr><td class="empty-hint">Kayıt yok.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ============ SATIR 2 — col-md-6 x 2 ============ -->
+        <div class="row" style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:18px;">
+
+            <div class="table-card" style="flex:1 1 46%;min-width:340px;">
+                <div class="table-toolbar"><b>Son Biletler</b></div>
+                <table>
+                    <tbody>
+                        @foreach (var t in Model.RecentTickets)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="cell-title">@t.PNRCode</div>
+                                    <div class="cell-sub">@t.PurchaseDate.ToString("dd.MM.yyyy")</div>
+                                </td>
+                                <td>
+                                    @{
+                                        var badgeClass = t.Status == "Onaylandı" ? "green" : t.Status == "İptal" ? "red" : "gray";
+                                    }
+                                    <span class="badge @badgeClass">@t.Status</span>
+                                </td>
+                                <td style="text-align:right;"><b>₺@t.Price.ToString("N0")</b></td>
+                            </tr>
+                        }
+                        @if (!Model.RecentTickets.Any())
+                        {
+                            <tr><td class="empty-hint">Kayıt yok.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-card" style="flex:1 1 46%;min-width:340px;">
+                <div class="table-toolbar"><b>Son Değerlendirmeler</b></div>
+                <table>
+                    <tbody>
+                        @foreach (var r in Model.RecentReviews)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="cell-title">@r.AppUser?.Name @r.AppUser?.Surname</div>
+                                    <div class="cell-sub">@r.Comment</div>
+                                </td>
+                                <td style="text-align:right;">⭐ @r.Rating/5</td>
+                            </tr>
+                        }
+                        @if (!Model.RecentReviews.Any())
+                        {
+                            <tr><td class="empty-hint">Kayıt yok.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ============ SATIR 3 — col-md-4 x 3 ============ -->
+        <div class="row" style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:18px;">
+
+            <div class="table-card" style="flex:1 1 30%;min-width:300px;">
+                <div class="table-toolbar"><b>Son İade Talepleri</b></div>
+                <table>
+                    <tbody>
+                        @foreach (var r in Model.RecentRefunds)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="cell-title">₺@r.RefundAmount.ToString("N0")</div>
+                                    <div class="cell-sub">@r.Reason</div>
+                                </td>
+                                <td style="text-align:right;">
+                                    @{
+                                        var refundBadge = r.Status == "Onaylandı" ? "green" : r.Status == "Reddedildi" ? "red" : "orange";
+                                    }
+                                    <span class="badge @refundBadge">@r.Status</span>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.RecentRefunds.Any())
+                        {
+                            <tr><td class="empty-hint">Kayıt yok.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-card" style="flex:1 1 30%;min-width:300px;">
+                <div class="table-toolbar"><b>Son Ödemeler</b></div>
+                <table>
+                    <tbody>
+                        @foreach (var p in Model.RecentPayments)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="cell-title">₺@p.Amount.ToString("N0")</div>
+                                    <div class="cell-sub">@p.PaymentMethod</div>
+                                </td>
+                                <td style="text-align:right;">
+                                    @{
+                                        var payBadge = p.Status == "Başarılı" ? "green" : p.Status == "Başarısız" ? "red" : "orange";
+                                    }
+                                    <span class="badge @payBadge">@p.Status</span>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.RecentPayments.Any())
+                        {
+                            <tr><td class="empty-hint">Kayıt yok.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-card" style="flex:1 1 30%;min-width:300px;">
+                <div class="table-toolbar"><b>Son Bildirimler</b></div>
+                <table>
+                    <tbody>
+                        @foreach (var n in Model.RecentNotifications)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="cell-title">@n.Title</div>
+                                    <div class="cell-sub">@n.Message</div>
+                                </td>
+                                <td style="text-align:right;">
+                                    @if (!n.IsRead)
+                                    {
+                                        <span class="badge blue">Yeni</span>
+                                    }
+                                    else
+                                    {
+
+                                        <span class="badge gray">Okundu</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.RecentNotifications.Any())
+                        {
+                            <tr><td class="empty-hint">Kayıt yok.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ============ SATIR 4 — col-md-6 x 2 ============ -->
+        <div class="row" style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:18px;">
+
+            <div class="table-card" style="flex:1 1 46%;min-width:340px;">
+                <div class="table-toolbar"><b>Aktif Kuponlar</b></div>
+                <table>
+                    <tbody>
+                        @foreach (var c in Model.ActiveCoupons)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="cell-title">@c.Code</div>
+                                    <div class="cell-sub">Son kullanım: @c.ExpiryDate.ToString("dd.MM.yyyy")</div>
+                                </td>
+                                <td style="text-align:right;"><span class="badge green">%@c.DiscountPercentage</span></td>
+                            </tr>
+                        }
+                        @if (!Model.ActiveCoupons.Any())
+                        {
+                            <tr><td class="empty-hint">Aktif kupon yok.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-card" style="flex:1 1 46%;min-width:340px;">
+                <div class="table-toolbar"><b>Sistem / Denetim Logları</b></div>
+                <table>
+                    <tbody>
+                        @foreach (var a in Model.RecentAuditLogs)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="cell-title">@a.Action</div>
+                                    <div class="cell-sub">@a.Details</div>
+                                </td>
+                                <td style="text-align:right;" class="cell-sub">@a.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                            </tr>
+                        }
+                        @if (!Model.RecentAuditLogs.Any())
+                        {
+                            <tr><td class="empty-hint">Kayıt yok.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ============ SATIR 5 — col-md-12 ============ -->
+        <div class="table-card" style="margin-bottom:18px;">
+            <div class="table-toolbar"><b>Son Etkinlikler</b></div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Etkinlik</th>
+                        <th>Kategori</th>
+                        <th>Tarih</th>
+                        <th>Kapasite</th>
+                        <th>Fiyat</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model.RecentEvents)
+                    {
+                        <tr>
+                            <td>
+                                <div class="cell-main">
+                                    <div class="cell-avatar"></div>
+                                    <div class="cell-title">@e.Title</div>
+                                </div>
+                            </td>
+                            <td><span class="badge blue">@e.Category?.CategoryName</span></td>
+                            <td>@e.EventDate.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>@e.RemainingCapacity / @e.Capacity</td>
+                            <td><b>₺@e.Price.ToString("N0")</b></td>
+                            <td>
+                                @if (e.IsActive)
+                                {
+                                    <span class="badge green">Yayında</span>
+                                }
+                                else
+                                {
+
+                                    <span class="badge gray">Pasif</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.RecentEvents.Any())
+                    {
+                        <tr><td colspan="6" class="empty-hint">Henüz etkinlik eklenmemiş.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+    const ctx = document.getElementById('revenueChart');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: @Html.Raw(Json.Serialize(Model.MonthlyLabels)),
+            datasets: [{
+                label: 'Gelir (₺)',
+                data: @Html.Raw(Json.Serialize(Model.MonthlyRevenue)),
+                borderColor: '#7C5CFF',
+                backgroundColor: 'rgba(124,92,255,.15)',
+                tension: 0.35,
+                fill: true,
+                pointRadius: 4,
+                pointBackgroundColor: '#7C5CFF'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>

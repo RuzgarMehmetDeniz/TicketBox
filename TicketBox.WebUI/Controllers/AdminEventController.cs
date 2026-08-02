@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
 using System.Threading.Tasks;
 using TicketBox.Application.Features.CQRS.Categories.Queries;
 using TicketBox.Application.Features.CQRS.Events.Commands;
@@ -22,12 +23,30 @@ namespace TicketBox.WebUI.Controllers
             ViewBag.Categories = new SelectList(categories, "CategoryId", "CategoryName", selectedId);
         }
 
-        // ============ LİSTELEME ============
+        // ============ LİSTELEME (SAYFALAMA İLE) ============
         [HttpGet]
-        public async Task<IActionResult> EventList()
+        public async Task<IActionResult> EventList(int page = 1, int pageSize = 10)
         {
-            var events = await _mediator.Send(new GetAllEventsQuery());
-            return View(events);
+            var allEvents = await _mediator.Send(new GetAllEventsQuery());
+
+            if (page < 1) page = 1;
+
+            var totalCount = allEvents.Count;
+            var totalPages = (int)System.Math.Ceiling(totalCount / (double)pageSize);
+            if (totalPages < 1) totalPages = 1;
+            if (page > totalPages) page = totalPages;
+
+            var pagedEvents = allEvents
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalCount = totalCount;
+
+            return View(pagedEvents);
         }
 
         // ============ EKLEME - GET ============
@@ -48,7 +67,6 @@ namespace TicketBox.WebUI.Controllers
                 await PopulateCategoriesAsync(command.CategoryId);
                 return View(command);
             }
-
             await _mediator.Send(command);
             return RedirectToAction(nameof(EventList));
         }
@@ -60,7 +78,6 @@ namespace TicketBox.WebUI.Controllers
             var ev = await _mediator.Send(new GetEventByIdQuery { EventId = id });
             if (ev == null)
                 return NotFound();
-
             var command = new UpdateEventCommand
             {
                 EventId = ev.EventId,
@@ -74,7 +91,6 @@ namespace TicketBox.WebUI.Controllers
                 IsActive = ev.IsActive,
                 CategoryId = ev.CategoryId
             };
-
             await PopulateCategoriesAsync(ev.CategoryId);
             return View(command);
         }
@@ -89,7 +105,6 @@ namespace TicketBox.WebUI.Controllers
                 await PopulateCategoriesAsync(command.CategoryId);
                 return View(command);
             }
-
             await _mediator.Send(command);
             return RedirectToAction(nameof(EventList));
         }

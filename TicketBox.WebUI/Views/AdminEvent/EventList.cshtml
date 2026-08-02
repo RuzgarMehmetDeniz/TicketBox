@@ -2,6 +2,10 @@
 @{
     ViewData["Title"] = "EventList";
     Layout = "~/Views/AdminLayout/Index.cshtml";
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+    int totalCount = ViewBag.TotalCount;
+    int pageSize = ViewBag.PageSize;
 }
 
 <div class="topbar">
@@ -41,7 +45,7 @@
         <div class="table-card">
             <div class="table-toolbar">
                 <div class="filter-chips">
-                    <button class="f-chip active" data-filter="all">Tümü (@(Model?.Count ?? 0))</button>
+                    <button class="f-chip active" data-filter="all">Tümü (@totalCount)</button>
                     <button class="f-chip" data-filter="active">Yayında</button>
                     <button class="f-chip" data-filter="inactive">Pasif</button>
                 </div>
@@ -109,7 +113,62 @@
                     }
                 </tbody>
             </table>
-            <div class="table-foot"><span>@(Model?.Count ?? 0) kayıt gösteriliyor</span></div>
+
+            <!-- ============ SAYFALAMA ============ -->
+            <div class="table-foot">
+                <span>
+                    @totalCount kayıttan
+                    @(((currentPage - 1) * pageSize) + 1)-@(System.Math.Min(currentPage * pageSize, totalCount))
+                    arası gösteriliyor
+                </span>
+
+                @if (totalPages > 1)
+                {
+                    <div class="pager">
+                        <button @(currentPage <= 1 ? "disabled" : "")
+                                onclick="location.href='@Url.Action("EventList", "AdminEvent", new { page = currentPage - 1, pageSize = pageSize })'">
+                            ‹
+                        </button>
+
+                        @{
+                            int startPage = System.Math.Max(1, currentPage - 2);
+                            int endPage = System.Math.Min(totalPages, startPage + 4);
+                            startPage = System.Math.Max(1, endPage - 4);
+                        }
+
+                        @if (startPage > 1)
+                        {
+                            <button onclick="location.href='@Url.Action("EventList", "AdminEvent", new { page = 1, pageSize = pageSize })'">1</button>
+                            if (startPage > 2)
+                            {
+                                <span style="padding:0 4px;color:var(--subtitle);">…</span>
+                            }
+                        }
+
+                        @for (int p = startPage; p <= endPage; p++)
+                        {
+                            <button class="@(p == currentPage ? "active" : "")"
+                                    onclick="location.href='@Url.Action("EventList", "AdminEvent", new { page = p, pageSize = pageSize })'">
+                                @p
+                            </button>
+                        }
+
+                        @if (endPage < totalPages)
+                        {
+                            if (endPage < totalPages - 1)
+                            {
+                                <span style="padding:0 4px;color:var(--subtitle);">…</span>
+                            }
+                            <button onclick="location.href='@Url.Action("EventList", "AdminEvent", new { page = totalPages, pageSize = pageSize })'">@totalPages</button>
+                        }
+
+                        <button @(currentPage >= totalPages ? "disabled" : "")
+                                onclick="location.href='@Url.Action("EventList", "AdminEvent", new { page = currentPage + 1, pageSize = pageSize })'">
+                            ›
+                        </button>
+                    </div>
+                }
+            </div>
         </div>
     </section>
 </div>

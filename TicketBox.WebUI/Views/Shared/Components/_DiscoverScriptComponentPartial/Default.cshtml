@@ -154,9 +154,12 @@
 	  });
 	},{threshold:.4});
 	document.querySelectorAll('.counter').forEach(el=>counterIO.observe(el));
+	// hero stat quick counters (gerçek veriden, data-target attribute'u üzerinden)
+	const statEventsEl = document.getElementById('statEvents');
+	const statUsersEl = document.getElementById('statUsers');
+	const statCitiesEl = document.getElementById('statCities');
 
-	// hero stat quick counters
-	animateCounter(document.getElementById('statEvents'), 12400);
-	animateCounter(document.getElementById('statUsers'), 980000);
-	animateCounter(document.getElementById('statCities'), 81);
+	if (statEventsEl) animateCounter(statEventsEl, +statEventsEl.dataset.target);
+	if (statUsersEl) animateCounter(statUsersEl, +statUsersEl.dataset.target);
+	if (statCitiesEl) animateCounter(statCitiesEl, +statCitiesEl.dataset.target);
 </script>

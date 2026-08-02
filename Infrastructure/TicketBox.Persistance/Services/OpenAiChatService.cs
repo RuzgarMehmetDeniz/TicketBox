@@ -28,7 +28,108 @@ namespace TicketBox.Persistance.Services
             _apiKey = configuration["OpenAI:ApiKey"];
             _model = configuration["OpenAI:Model"] ?? "gpt-4o-mini";
         }
+        public async Task<string> AskWithToolsAsync(string systemPrompt, string userQuestion, List<ToolDefinition> tools, CancellationToken cancellationToken)
+        {
+            var toolsJson = tools.Select(t => new
+            {
+                type = "function",
+                function = new
+                {
+                    name = t.Name,
+                    description = t.Description,
+                    parameters = t.ParametersSchema
+                }
+            }).ToList();
 
+            var messages = new List<object>
+    {
+        new { role = "system", content = systemPrompt },
+        new { role = "user", content = userQuestion }
+    };
+
+            // 1. round: modele soruyu + araç listesini gönderiyoruz
+            var firstRequestBody = new
+            {
+                model = _model,
+                messages,
+                tools = toolsJson,
+                tool_choice = "auto",
+                temperature = 0.3
+            };
+
+            var firstResponseBody = await PostToOpenAiAsync("https://api.openai.com/v1/chat/completions", firstRequestBody, cancellationToken);
+
+            using var firstDoc = JsonDocument.Parse(firstResponseBody);
+            var choiceMessage = firstDoc.RootElement.GetProperty("choices")[0].GetProperty("message");
+
+            if (!choiceMessage.TryGetProperty("tool_calls", out var toolCallsElement) || toolCallsElement.GetArrayLength() == 0)
+            {
+                // Model araç kullanmadan direkt cevap verdi
+                return choiceMessage.GetProperty("content").GetString() ?? "Cevap üretilemedi.";
+            }
+
+            // Modelin assistant mesajını (tool_calls dahil) sohbete geri ekliyoruz
+            messages.Add(JsonSerializer.Deserialize<object>(choiceMessage.GetRawText()));
+
+            // Her tool_call için ilgili lokal fonksiyonu çalıştırıp sonucu ekliyoruz
+            foreach (var toolCall in toolCallsElement.EnumerateArray())
+            {
+                var toolCallId = toolCall.GetProperty("id").GetString();
+                var functionName = toolCall.GetProperty("function").GetProperty("name").GetString();
+                var argumentsJson = toolCall.GetProperty("function").GetProperty("arguments").GetString();
+
+                var matchedTool = tools.FirstOrDefault(t => t.Name == functionName);
+                string resultJson;
+
+                if (matchedTool == null)
+                {
+                    resultJson = JsonSerializer.Serialize(new { error = "Bilinmeyen araç." });
+                }
+                else
+                {
+                    using var argsDoc = JsonDocument.Parse(string.IsNullOrWhiteSpace(argumentsJson) ? "{}" : argumentsJson);
+                    resultJson = await matchedTool.Execute(argsDoc.RootElement);
+                }
+
+                messages.Add(new
+                {
+                    role = "tool",
+                    tool_call_id = toolCallId,
+                    content = resultJson
+                });
+            }
+
+            // 2. round: gerçek veriyle birlikte modelden nihai doğal dil cevabını istiyoruz
+            var secondRequestBody = new
+            {
+                model = _model,
+                messages,
+                temperature = 0.4
+            };
+
+            var secondResponseBody = await PostToOpenAiAsync("https://api.openai.com/v1/chat/completions", secondRequestBody, cancellationToken);
+
+            using var secondDoc = JsonDocument.Parse(secondResponseBody);
+            return secondDoc.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString()
+                ?? "Cevap üretilemedi.";
+        }
+
+        private async Task<string> PostToOpenAiAsync(string url, object body, CancellationToken cancellationToken)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json")
+            };
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
+
+            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"OpenAI API hatası ({response.StatusCode}): {responseBody}");
+
+            return responseBody;
+        }
         public async Task<string> GetReplyAsync(List<(string Role, string Content)> conversation, CancellationToken cancellationToken)
         {
             var messages = conversation.Select(m => new { role = m.Role, content = m.Content }).ToList();

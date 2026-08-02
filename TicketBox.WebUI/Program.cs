@@ -42,6 +42,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ITabiliAnalyticsService, TabiliAnalyticsService>();
 
 // MediatR
 builder.Services.AddMediatR(cfg =>

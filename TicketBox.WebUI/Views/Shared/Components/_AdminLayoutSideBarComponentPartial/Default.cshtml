@@ -8,6 +8,14 @@
     </div>
 
     <nav class="nav-scroll">
+        <!-- DASHBOARD -->
+        <div class="nav-group">
+            <a class="nav-item @(currentController == "Dashboard" ? "active" : "")"
+               href="@Url.Action("Index", "Dashboard")">
+                <span class="ic">📊</span> Dashboard
+            </a>
+        </div>
+
         <!-- İÇERİK MANTIĞI & ETKİNLİKLER -->
         <div class="nav-group">
             <div class="nav-group-label">İçerik Yönetimi</div>
@@ -85,6 +93,16 @@
             <a class="nav-item @(currentController == "AdminChatMessage" ? "active" : "")"
                href="@Url.Action("ChatMessageList", "AdminChatMessage")">
                 <span class="ic">📩</span> Sohbet Mesajları
+            </a>
+        </div>
+
+        <!-- YAPAY ZEKA -->
+        <div class="nav-group">
+            <div class="nav-group-label">Yapay Zeka</div>
+
+            <a class="nav-item @(currentController == "Tabili" ? "active" : "")"
+               href="@Url.Action("Index", "Tabili")">
+                <span class="ic">🔮</span> Tabili AI
             </a>
         </div>
 
