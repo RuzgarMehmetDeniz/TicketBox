@@ -154,10 +154,11 @@ Konser, tiyatro, spor, festival gibi kategorilere göre hızlı filtreleme kartl
 
 #### Ana Sayfa — Bu Hafta Popüler Etkinlikler
 Kategori bazlı sekmelerle filtrelenebilen, haftanın öne çıkan etkinlik listesi.
+<img width="1920" height="1080" alt="Anasayfa3" src="https://github.com/user-attachments/assets/5a2f3b94-ed49-4e89-b857-3b8fa334313c" />
+
 
 #### Ana Sayfa — En Popüler Etkinlikler
 Topluluğun en çok ilgi gösterdiği etkinliklerin görsel ağırlıklı vitrin bölümü.
-<img width="1920" height="1080" alt="Anasayfa3" src="https://github.com/user-attachments/assets/5a2f3b94-ed49-4e89-b857-3b8fa334313c" />
 
 
 #### Ana Sayfa — Yaklaşan Etkinlikler
