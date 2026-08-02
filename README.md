@@ -168,15 +168,14 @@ Doluluk oranı, katılımcı sayısı ve başlangıç fiyatıyla birlikte yatay 
 Topluluğun en çok ilgi gösterdiği etkinliklerin görsel ağırlıklı vitrin bölümü.
 <img width="1920" height="1080" alt="Anasayfa6" src="https://github.com/user-attachments/assets/a7d57fea-5483-4560-b3a7-96d586571744" />
 
+#### Ana Sayfa — Organizatörler
+Platformdaki güvenilir/köklü organizatörlerin etkinlik sayılarıyla listelendiği tanıtım bölümü.
+<img width="1897" height="687" alt="Anasayfa7" src="https://github.com/user-attachments/assets/8d17a0ca-f412-4901-9b18-df76fa7996a7" />
+
 
 #### Ana Sayfa — Şehir Haritası
 Türkiye haritası üzerinde şehir bazlı etkinlik sayılarının interaktif olarak gösterildiği bölüm.
 <img width="1920" height="1080" alt="Anasayfa8" src="https://github.com/user-attachments/assets/61533026-1425-4992-b15e-c17cff0dfd0b" />
-
-
-#### Ana Sayfa — Organizatörler
-Platformdaki güvenilir/köklü organizatörlerin etkinlik sayılarıyla listelendiği tanıtım bölümü.
-<img width="1897" height="687" alt="Anasayfa7" src="https://github.com/user-attachments/assets/8d17a0ca-f412-4901-9b18-df76fa7996a7" />
 
 #### Ana Sayfa — Kullanıcı Yorumları
 Gerçek kullanıcıların video/metin yorumlarının ve puanlarının sergilendiği sosyal kanıt bölümü.
