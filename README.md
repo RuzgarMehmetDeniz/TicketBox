@@ -147,11 +147,6 @@ Bağımsız entity sınıfları: `AppUser`, `Event`, `Category`, `Ticket`, `Paym
 Platformun karşılama alanı; öne çıkan etkinlik kartı, canlı katılımcı bilgisi ve "Etkinlikleri Keşfet" çağrısı.
 <img width="1920" height="1080" alt="Anasayfa1" src="https://github.com/user-attachments/assets/ad12d39f-7792-4581-8daa-92fc47d7553f" />
 
-
-#### Ana Sayfa — Platform İstatistikleri
-Toplam etkinlik, satılan bilet, hizmet verilen şehir ve organizatör sayılarının özet şeridi.
-<img width="1920" height="1080" alt="Anasayfa11" src="https://github.com/user-attachments/assets/452b0ab2-4730-47c7-b9c8-e7a399bb165c" />
-
 #### Ana Sayfa — Kategorilere Göre Keşif
 Konser, tiyatro, spor, festival gibi kategorilere göre hızlı filtreleme kartları.
 <img width="1898" height="716" alt="Anasayfa2" src="https://github.com/user-attachments/assets/663bf6fc-7335-44f8-87ef-74caa11e3a3a" />
@@ -188,6 +183,10 @@ Gerçek kullanıcıların video/metin yorumlarının ve puanlarının sergilendi
 #### Ana Sayfa — Blog & Sponsorlar
 Etkinlik dünyasından haberler içeren blog kartları ve iş ortağı/sponsor logoları.
 <img width="1920" height="1080" alt="Anasayfa10" src="https://github.com/user-attachments/assets/5b797731-80fa-4b62-86ff-cee127c7bf7b" />
+
+#### Ana Sayfa — Platform İstatistikleri
+Toplam etkinlik, satılan bilet, hizmet verilen şehir ve organizatör sayılarının özet şeridi.
+<img width="1920" height="1080" alt="Anasayfa11" src="https://github.com/user-attachments/assets/452b0ab2-4730-47c7-b9c8-e7a399bb165c" />
 
 #### Ana Sayfa — Sık Sorulan Sorular
 Bilet teslimi, iade ve ödeme güvenliği gibi konularda açılır/kapanır SSS bölümü.
