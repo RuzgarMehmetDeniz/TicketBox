@@ -197,6 +197,10 @@ Bilet teslimi, iade ve ödeme güvenliği gibi konularda açılır/kapanır SSS 
 E-posta bültenine abone olma alanı ve site geneli footer bağlantıları.
 <img width="1920" height="1080" alt="Anasayfa13" src="https://github.com/user-attachments/assets/a520adf1-0051-40dc-aa79-8b8750d2fed7" />
 
+#### Ana Sayfa — Canlı ChatBot
+Kullanıcıya destek olmaya çalışan bir yapayzeka aracı.
+<img width="476" height="579" alt="UIAİ" src="https://github.com/user-attachments/assets/0afb7455-8df2-4e69-ad93-5fcd84091686" />
+
 #### Etkinlik Detay Sayfası
 Etkinlik görseli, açıklaması, galerisi, doluluk oranı, fiyat bilgisi ve kullanıcı yorumlarının yer aldığı detay ekranı.
 <img width="1920" height="2080" alt="Detail1" src="https://github.com/user-attachments/assets/11bead6f-1e6e-4608-8258-17daef5480e9" />
