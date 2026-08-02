@@ -156,30 +156,27 @@ Konser, tiyatro, spor, festival gibi kategorilere göre hızlı filtreleme kartl
 Kategori bazlı sekmelerle filtrelenebilen, haftanın öne çıkan etkinlik listesi.
 <img width="1920" height="1080" alt="Anasayfa3" src="https://github.com/user-attachments/assets/5a2f3b94-ed49-4e89-b857-3b8fa334313c" />
 
-
-#### Ana Sayfa — En Popüler Etkinlikler
-Topluluğun en çok ilgi gösterdiği etkinliklerin görsel ağırlıklı vitrin bölümü.
-
+#### Ana Sayfa — Etkinlik Takvimi
+Yaklaşan etkinliklerin tarih sırasına göre listelendiği kronolojik zaman çizelgesi.
+<img width="1920" height="1080" alt="Anasayfa4" src="https://github.com/user-attachments/assets/f2531bbb-17f0-4129-bd12-b386a222d879" />
 
 #### Ana Sayfa — Yaklaşan Etkinlikler
 Doluluk oranı, katılımcı sayısı ve başlangıç fiyatıyla birlikte yatay kaydırmalı yaklaşan etkinlik kartları.
 <img width="1920" height="1080" alt="Anasayfa5" src="https://github.com/user-attachments/assets/40a38e00-1af4-48f7-97a8-a0e9d696d63e" />
 
-
-#### Ana Sayfa — Etkinlik Takvimi
-Yaklaşan etkinliklerin tarih sırasına göre listelendiği kronolojik zaman çizelgesi.
-<img width="1920" height="1080" alt="Anasayfa4" src="https://github.com/user-attachments/assets/f2531bbb-17f0-4129-bd12-b386a222d879" />
+#### Ana Sayfa — En Popüler Etkinlikler
+Topluluğun en çok ilgi gösterdiği etkinliklerin görsel ağırlıklı vitrin bölümü.
+<img width="1920" height="1080" alt="Anasayfa6" src="https://github.com/user-attachments/assets/a7d57fea-5483-4560-b3a7-96d586571744" />
 
 
 #### Ana Sayfa — Şehir Haritası
 Türkiye haritası üzerinde şehir bazlı etkinlik sayılarının interaktif olarak gösterildiği bölüm.
 <img width="1920" height="1080" alt="Anasayfa8" src="https://github.com/user-attachments/assets/61533026-1425-4992-b15e-c17cff0dfd0b" />
 
-<img width="1897" height="687" alt="Anasayfa7" src="https://github.com/user-attachments/assets/8d17a0ca-f412-4901-9b18-df76fa7996a7" />
 
 #### Ana Sayfa — Organizatörler
 Platformdaki güvenilir/köklü organizatörlerin etkinlik sayılarıyla listelendiği tanıtım bölümü.
-<img width="1920" height="1080" alt="Anasayfa6" src="https://github.com/user-attachments/assets/a7d57fea-5483-4560-b3a7-96d586571744" />
+<img width="1897" height="687" alt="Anasayfa7" src="https://github.com/user-attachments/assets/8d17a0ca-f412-4901-9b18-df76fa7996a7" />
 
 #### Ana Sayfa — Kullanıcı Yorumları
 Gerçek kullanıcıların video/metin yorumlarının ve puanlarının sergilendiği sosyal kanıt bölümü.
