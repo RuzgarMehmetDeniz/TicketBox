@@ -154,7 +154,6 @@ Konser, tiyatro, spor, festival gibi kategorilere göre hızlı filtreleme kartl
 
 #### Ana Sayfa — Bu Hafta Popüler Etkinlikler
 Kategori bazlı sekmelerle filtrelenebilen, haftanın öne çıkan etkinlik listesi.
-<img width="1920" height="1080" alt="Anasayfa9" src="https://github.com/user-attachments/assets/07e99294-4398-4d9e-bfad-e0477374e838" />
 
 #### Ana Sayfa — En Popüler Etkinlikler
 Topluluğun en çok ilgi gösterdiği etkinliklerin görsel ağırlıklı vitrin bölümü.
@@ -170,6 +169,8 @@ Yaklaşan etkinliklerin tarih sırasına göre listelendiği kronolojik zaman ç
 
 #### Ana Sayfa — Şehir Haritası
 Türkiye haritası üzerinde şehir bazlı etkinlik sayılarının interaktif olarak gösterildiği bölüm.
+<img width="1920" height="1080" alt="Anasayfa8" src="https://github.com/user-attachments/assets/61533026-1425-4992-b15e-c17cff0dfd0b" />
+
 <img width="1897" height="687" alt="Anasayfa7" src="https://github.com/user-attachments/assets/8d17a0ca-f412-4901-9b18-df76fa7996a7" />
 
 #### Ana Sayfa — Organizatörler
@@ -178,7 +179,7 @@ Platformdaki güvenilir/köklü organizatörlerin etkinlik sayılarıyla listele
 
 #### Ana Sayfa — Kullanıcı Yorumları
 Gerçek kullanıcıların video/metin yorumlarının ve puanlarının sergilendiği sosyal kanıt bölümü.
-<img width="1920" height="1080" alt="Anasayfa8" src="https://github.com/user-attachments/assets/61533026-1425-4992-b15e-c17cff0dfd0b" />
+<img width="1920" height="1080" alt="Anasayfa9" src="https://github.com/user-attachments/assets/07e99294-4398-4d9e-bfad-e0477374e838" />
 
 #### Ana Sayfa — Blog & Sponsorlar
 Etkinlik dünyasından haberler içeren blog kartları ve iş ortağı/sponsor logoları.
