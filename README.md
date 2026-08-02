@@ -311,24 +311,6 @@ Beklenmeyen bir sunucu hatası oluştuğunda kullanıcıya gösterilen özel 500
 
 ---
 
-## 📂 Proje Yapısı (Özet)
-
-```
-TicketBox.Application/Features/CQRS/
-├── AppUsers/  Categories/  Coupons/  Events/  Favorites/
-├── Notifications/  Payments/  Refunds/  Reviews/  Tickets/
-├── ChatMessages/  ChatSessions/  EventGalleries/  AuditLogs/
-└── (Her biri kendi Commands/Queries alt klasörüyle)
-
-TicketBox.WebUI/Controllers/
-├── Admin*Controller.cs   → 14 admin modülü
-├── EventController / HomeController / DiscoverController
-├── LoginController / RegisterController / ProfileController
-├── ReviewController / FavoriteController / TabiliController
-├── ChatController / CategoryController / DashboardController
-```
-
----
 
 <div align="center">
 
