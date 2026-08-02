@@ -310,10 +310,3 @@ Beklenmeyen bir sunucu hatası oluştuğunda kullanıcıya gösterilen özel 500
 <img width="932" height="611" alt="500" src="https://github.com/user-attachments/assets/f4e88575-7d8f-4b39-ae9f-83a671ea68b0" />
 
 ---
-
-
-<div align="center">
-
-**Türkiye'de ❤️ ile geliştirildi.**
-
-</div>
