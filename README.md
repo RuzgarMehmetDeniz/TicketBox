@@ -157,15 +157,18 @@ Kategori bazlı sekmelerle filtrelenebilen, haftanın öne çıkan etkinlik list
 
 #### Ana Sayfa — En Popüler Etkinlikler
 Topluluğun en çok ilgi gösterdiği etkinliklerin görsel ağırlıklı vitrin bölümü.
-<img width="1920" height="1080" alt="Anasayfa5" src="https://github.com/user-attachments/assets/40a38e00-1af4-48f7-97a8-a0e9d696d63e" />
+<img width="1920" height="1080" alt="Anasayfa3" src="https://github.com/user-attachments/assets/5a2f3b94-ed49-4e89-b857-3b8fa334313c" />
+
 
 #### Ana Sayfa — Yaklaşan Etkinlikler
 Doluluk oranı, katılımcı sayısı ve başlangıç fiyatıyla birlikte yatay kaydırmalı yaklaşan etkinlik kartları.
-<img width="1920" height="1080" alt="Anasayfa4" src="https://github.com/user-attachments/assets/f2531bbb-17f0-4129-bd12-b386a222d879" />
+<img width="1920" height="1080" alt="Anasayfa5" src="https://github.com/user-attachments/assets/40a38e00-1af4-48f7-97a8-a0e9d696d63e" />
+
 
 #### Ana Sayfa — Etkinlik Takvimi
 Yaklaşan etkinliklerin tarih sırasına göre listelendiği kronolojik zaman çizelgesi.
-<img width="1920" height="1080" alt="Anasayfa3" src="https://github.com/user-attachments/assets/5a2f3b94-ed49-4e89-b857-3b8fa334313c" />
+<img width="1920" height="1080" alt="Anasayfa4" src="https://github.com/user-attachments/assets/f2531bbb-17f0-4129-bd12-b386a222d879" />
+
 
 #### Ana Sayfa — Şehir Haritası
 Türkiye haritası üzerinde şehir bazlı etkinlik sayılarının interaktif olarak gösterildiği bölüm.
